@@ -14,8 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,14 +33,15 @@ class MainActivity : ComponentActivity() {
             BearVBullTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = DeepPurple
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                            .background(DeepPurple),
                     ) {
+                        TopBar()
                         Row(
+                            modifier = Modifier.align(Alignment.Center),
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             BetButton(
@@ -65,12 +68,14 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BetButton(percentage: Int, icon: Int, backgroundColor: Color, description: String) {
     Button(
-        onClick = {  },
+        onClick = { },
         modifier = Modifier
             .clip(shape = RoundedCornerShape(12.dp)),
         colors = ButtonDefaults.buttonColors
-            (backgroundColor = backgroundColor.copy(alpha = 0.9f),
-            contentColor = DeepPurple)
+            (
+            backgroundColor = backgroundColor.copy(alpha = 0.9f),
+            contentColor = DeepPurple
+        )
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -95,8 +100,42 @@ fun BetButton(percentage: Int, icon: Int, backgroundColor: Color, description: S
     }
 }
 
+@Preview
+@Composable
+fun UserTotalBalance(balance: Double = 1123.44) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.bucks_iconv2),
+            contentDescription = "Bucks icon",
+            modifier = Modifier.height(13.dp).padding(end = 2.5.dp),
+            colorFilter = ColorFilter.tint(color = Color.LightGray)
+        )
+        Text(
+            text = balance.toString(),
+            fontFamily = interFontFamily,
+            color = Color.LightGray
+        )
+    }
+}
 
-
+@Preview
+@Composable
+fun TopBar(title: String = "BearVBull") {
+    Row(
+        modifier = Modifier.wrapContentSize()
+            .padding(8.dp)
+    ) {
+        Text(
+            text = title,
+            fontFamily = interFontFamily,
+            color = Color.White
+        )
+        Spacer(modifier = Modifier.weight(1.0f))
+        UserTotalBalance()
+    }
+}
 
 
 //@Preview(showBackground = true)
