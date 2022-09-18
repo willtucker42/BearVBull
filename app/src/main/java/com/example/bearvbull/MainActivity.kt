@@ -2,6 +2,7 @@ package com.example.bearvbull
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.widget.TextClock
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -13,12 +14,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -103,6 +107,13 @@ fun BetButton(percentage: Int, icon: Int, backgroundColor: Color, description: S
 @Preview
 @Composable
 fun UserTotalBalance(balance: Double = 1123.44) {
+    val shadowStyle = MaterialTheme.typography.button.copy(
+        shadow = Shadow(
+            color = Color.White,
+            offset = Offset(4f,4f),
+            blurRadius = 6f
+        )
+    )
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -110,12 +121,13 @@ fun UserTotalBalance(balance: Double = 1123.44) {
             painter = painterResource(id = R.drawable.bucks_iconv2),
             contentDescription = "Bucks icon",
             modifier = Modifier.height(13.dp).padding(end = 2.5.dp),
-            colorFilter = ColorFilter.tint(color = Color.LightGray)
+            colorFilter = ColorFilter.tint(color = Color.White)
         )
         Text(
             text = balance.toString(),
             fontFamily = interFontFamily,
-            color = Color.LightGray
+            color = Color.White,
+            style = shadowStyle
         )
     }
 }
@@ -130,11 +142,18 @@ fun TopBar(title: String = "BearVBull") {
         Text(
             text = title,
             fontFamily = interFontFamily,
-            color = Color.White
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp
         )
         Spacer(modifier = Modifier.weight(1.0f))
         UserTotalBalance()
     }
+}
+
+@Preview
+@Composable
+fun MainBetTitle(title: String = "Betting is live") {
 }
 
 
