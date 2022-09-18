@@ -1,3 +1,3 @@
 package com.example.bearvbull.util
 
-val PERCENT_SIGN = "%"
+const val PERCENT_SIGN = "%"

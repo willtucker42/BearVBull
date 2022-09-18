@@ -40,7 +40,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Box(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                             .background(DeepPurple),
                     ) {
                         TopBar()
@@ -104,7 +105,6 @@ fun BetButton(percentage: Int, icon: Int, backgroundColor: Color, description: S
     }
 }
 
-@Preview
 @Composable
 fun UserTotalBalance(balance: Double = 1123.44) {
     val shadowStyle = MaterialTheme.typography.button.copy(
@@ -120,7 +120,9 @@ fun UserTotalBalance(balance: Double = 1123.44) {
         Image(
             painter = painterResource(id = R.drawable.bucks_iconv2),
             contentDescription = "Bucks icon",
-            modifier = Modifier.height(13.dp).padding(end = 2.5.dp),
+            modifier = Modifier
+                .height(13.dp)
+                .padding(end = 2.5.dp),
             colorFilter = ColorFilter.tint(color = Color.White)
         )
         Text(
@@ -136,7 +138,8 @@ fun UserTotalBalance(balance: Double = 1123.44) {
 @Composable
 fun TopBar(title: String = "BearVBull") {
     Row(
-        modifier = Modifier.wrapContentSize()
+        modifier = Modifier
+            .wrapContentSize()
             .padding(8.dp)
     ) {
         Text(
@@ -153,7 +156,25 @@ fun TopBar(title: String = "BearVBull") {
 
 @Preview
 @Composable
-fun MainBetTitle(title: String = "Betting is live") {
+fun MainBetPromptTitle(title: String = "Betting is ",ticker: String = "SPY") {
+    val betPrompt = "Will $$ticker open red or green tomorrow?"
+    Box (
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+    ) {
+        Column (
+            modifier = Modifier.align(Alignment.Center),
+        ) {
+            Text(
+                text = betPrompt,
+                fontFamily = interFontFamily,
+                color = Color.White,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = ""
+            )
+        }
+    }
 }
 
 
