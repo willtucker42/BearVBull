@@ -14,15 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bearvbull.ui.theme.BearVBullTheme
-import com.example.bearvbull.ui.theme.BetGreen
-import com.example.bearvbull.ui.theme.BetRed
+import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.PERCENT_SIGN
 
 class MainActivity : ComponentActivity() {
@@ -33,7 +32,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.Black
+                    color = DeepPurple
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -64,11 +63,6 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!", color = Color.White)
-}
-
-@Composable
 fun BetButton(percentage: Int, icon: Int, backgroundColor: Color, description: String) {
     Button(
         onClick = {  },
@@ -76,7 +70,7 @@ fun BetButton(percentage: Int, icon: Int, backgroundColor: Color, description: S
             .clip(shape = RoundedCornerShape(12.dp)),
         colors = ButtonDefaults.buttonColors
             (backgroundColor = backgroundColor.copy(alpha = 0.9f),
-            contentColor = Color.White)
+            contentColor = DeepPurple)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,20 +85,24 @@ fun BetButton(percentage: Int, icon: Int, backgroundColor: Color, description: S
                     .size(50.dp)
             )
             Text(
-                fontStyle = FontStyle.Italic,
+                fontFamily = interFontFamily,
                 fontSize = 32.sp,
                 text = "$percentage$PERCENT_SIGN",
                 textAlign = TextAlign.Center,
-                color = Color.White
+                color = DeepPurple
             )
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    BearVBullTheme {
-        Greeting("Android")
-    }
-}
+
+
+
+
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreview() {
+//    BearVBullTheme {
+//        Greeting("Android")
+//    }
+//}
