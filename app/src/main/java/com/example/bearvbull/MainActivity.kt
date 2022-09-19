@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -45,24 +46,7 @@ class MainActivity : ComponentActivity() {
                             .background(DeepPurple),
                     ) {
                         TopBar()
-                        Row(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            BetButton(
-                                percentage = 54,
-                                icon = R.drawable.arrow_down,
-                                backgroundColor = BetRed,
-                                description = "Down arrow"
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            BetButton(
-                                percentage = 46,
-                                icon = R.drawable.arrow_up,
-                                backgroundColor = BetGreen,
-                                description = "Up arrow"
-                            )
-                        }
+                        BetWindow(modifier = Modifier.align(Alignment.Center))
                     }
                 }
             }
@@ -71,32 +55,69 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BetButton(percentage: Int, icon: Int, backgroundColor: Color, description: String) {
+fun BetWindow(modifier: Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        MainBetPromptTitle()
+        Spacer(modifier = Modifier.height(16.dp))
+        BetButtonRow()
+    }
+}
+
+@Composable
+fun BetButtonRow() {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        BetButton(
+            percentage = 54,
+            icon = R.drawable.arrow_down,
+            backgroundColor = BetRed,
+            description = "Down arrow"
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        BetButton(
+            percentage = 46,
+            icon = R.drawable.arrow_up,
+            backgroundColor = BetGreen,
+            description = "Up arrow"
+        )
+    }
+}
+
+@Composable
+fun BetButton(
+    percentage: Int = 50,
+    icon: Int = R.drawable.arrow_up,
+    backgroundColor: Color = BetGreen,
+    description: String = "blah"
+) {
     Button(
         onClick = { },
         modifier = Modifier
             .clip(shape = RoundedCornerShape(12.dp)),
-        colors = ButtonDefaults.buttonColors
-            (
-            backgroundColor = backgroundColor.copy(alpha = 0.9f),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = backgroundColor.copy(alpha = 0.85f),
             contentColor = DeepPurple
         )
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(10.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+        Row(
+            modifier = Modifier.padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = painterResource(id = icon),
                 contentDescription = description,
                 modifier = Modifier
-                    .padding(8.dp)
-                    .size(50.dp)
+                    .padding(4.dp)
+                    .size(25.dp)
             )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 fontFamily = interFontFamily,
-                fontSize = 32.sp,
+                fontSize = 16.sp,
                 text = "$percentage$PERCENT_SIGN",
                 textAlign = TextAlign.Center,
                 color = DeepPurple
@@ -110,8 +131,8 @@ fun UserTotalBalance(balance: Double = 1123.44) {
     val shadowStyle = MaterialTheme.typography.button.copy(
         shadow = Shadow(
             color = Color.White,
-            offset = Offset(4f,4f),
-            blurRadius = 6f
+            offset = Offset(4f, 4f),
+            blurRadius = 4f
         )
     )
     Row(
@@ -156,22 +177,32 @@ fun TopBar(title: String = "BearVBull") {
 
 @Preview
 @Composable
-fun MainBetPromptTitle(title: String = "Betting is ",ticker: String = "SPY") {
+fun MainBetPromptTitle(title: String = "Betting is ", ticker: String = "SPY") {
     val betPrompt = "Will $$ticker open red or green tomorrow?"
-    Box (
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+    Box(
+        modifier = Modifier
+            .wrapContentWidth()
+            .background(Color.LightGray.copy(alpha = 0.05f))
     ) {
-        Column (
-            modifier = Modifier.align(Alignment.Center),
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = betPrompt,
                 fontFamily = interFontFamily,
                 color = Color.White,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = ""
+                text = "Bets close in 00:14:32",
+                textAlign = TextAlign.Center,
+                fontFamily = interFontFamily,
+                color = Color.LightGray
             )
         }
     }
