@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BearVBull</string>
+    <string name ="get_bet_ratio_error">UNKNOWN VALUE IN getBetRatio()</string>
 </resources>

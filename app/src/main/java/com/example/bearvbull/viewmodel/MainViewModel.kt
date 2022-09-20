@@ -63,4 +63,8 @@ class MainViewModel : ViewModel() {
         }.start()
     }
 
+    fun getTotalWagered(betId: String = "123"): String {
+        return ""
+    }
+
 }
