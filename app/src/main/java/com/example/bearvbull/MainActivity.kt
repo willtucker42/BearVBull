@@ -175,7 +175,7 @@ fun BetButton(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                fontFamily = interFontFamily,
+                fontFamily = poppinsFontFamily,
                 fontSize = 16.sp,
                 text = "$percentage$PERCENT_SIGN",
                 textAlign = TextAlign.Center,
@@ -207,7 +207,7 @@ fun UserTotalBalance(balance: Double = 1123.44, viewModel: MainViewModel) {
 //        )
         Text(
             text = balance.toString(),
-            fontFamily = interFontFamily,
+            fontFamily = poppinsFontFamily,
             color = Color.White,
             style = shadowStyle
         )
@@ -233,12 +233,7 @@ fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel
             fontSize = 20.sp
         )
         Spacer(modifier = Modifier.weight(1.0f))
-        Image(
-            painter = painterResource(id = R.drawable.money_bag_icon),
-            contentDescription = "Profile",
-            colorFilter = ColorFilter.tint(color = Color.White),
-            modifier = Modifier.size(28.dp)
-        )
+        TopBarIcon(icon = R.drawable.resume_icon)
     }
 }
 
@@ -264,7 +259,7 @@ fun MainBetPromptTitle(
         ) {
             Text(
                 text = betPrompt,
-                fontFamily = interFontFamily,
+                fontFamily = poppinsFontFamily,
                 color = Color.White,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center
@@ -273,7 +268,7 @@ fun MainBetPromptTitle(
             Text(
                 text = "Bets close in $countDownTime",
                 textAlign = TextAlign.Center,
-                fontFamily = interFontFamily,
+                fontFamily = poppinsFontFamily,
                 color = Color.LightGray
             )
         }

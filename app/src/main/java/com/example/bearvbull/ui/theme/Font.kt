@@ -21,6 +21,7 @@ val interFontFamily = FontFamily(
 val poppinsFontFamily = FontFamily(
     Font(R.font.poppins_regular, weight = FontWeight.Normal),
     Font(R.font.poppins_bold, weight = FontWeight.Bold),
+    Font(R.font.poppins_semi_bold, weight = FontWeight.SemiBold),
     Font(R.font.poppins_bold_italic, style = FontStyle.Italic, weight = FontWeight.Bold),
     Font(R.font.poppins_extra_bold, weight = FontWeight.ExtraBold),
     Font(R.font.poppins_medium, weight = FontWeight.Medium),
