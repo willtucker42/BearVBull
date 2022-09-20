@@ -3,7 +3,6 @@ package com.example.bearvbull
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,6 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.bearvbull.ui.components.BetInfoImage
+import com.example.bearvbull.ui.components.BetInfoLabel
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.BetInfoType
 import com.example.bearvbull.util.BetSide
@@ -76,7 +77,7 @@ fun BetButtonRow(viewModel: MainViewModel) {
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         BetButtonContainer(
-            percentage = 54,
+            percentage = viewModel.liveBetInformationTestData.getBearAndBullPercentages().first,
             icon = R.drawable.arrow_down,
             backgroundColor = BetRed,
             description = "Down arrow",
@@ -85,7 +86,7 @@ fun BetButtonRow(viewModel: MainViewModel) {
         )
         Spacer(modifier = Modifier.width(16.dp))
         BetButtonContainer(
-            percentage = 46,
+            percentage = viewModel.liveBetInformationTestData.getBearAndBullPercentages().second,
             icon = R.drawable.arrow_up,
             backgroundColor = BetGreen,
             description = "Up arrow",
@@ -97,7 +98,7 @@ fun BetButtonRow(viewModel: MainViewModel) {
 
 @Composable
 fun BetButtonContainer(
-    percentage: Int = 50,
+    percentage: Double,
     icon: Int = R.drawable.arrow_up,
     backgroundColor: Color = BetGreen,
     betSide: BetSide,
@@ -105,14 +106,13 @@ fun BetButtonContainer(
     viewModel: MainViewModel
 ) {
     Surface(
-        modifier = Modifier.width(130.dp),
-        border = BorderStroke(0.5.dp, Purple700),
+        modifier = Modifier.width(150.dp),
         shape = RoundedCornerShape(8.dp),
         elevation = 8.dp
     ) {
         Column(
             modifier = Modifier
-                .background(DeepPurple)
+                .background(DeepPurple),
         ) {
             BetButton(
                 percentage = percentage,
@@ -122,7 +122,9 @@ fun BetButtonContainer(
                 viewModel = viewModel
             )
             Column(
-                modifier = Modifier.background(DeepPurple)
+                modifier = Modifier
+                    .background(DeepPurple)
+                    .padding(4.dp)
             ) {
                 for (infoType in betInfoTypeList) {
                     BetInformationRow(infoType = infoType, betSide = betSide, viewModel = viewModel)
@@ -134,28 +136,22 @@ fun BetButtonContainer(
 
 @Composable
 fun BetInformationRow(infoType: BetInfoType, betSide: BetSide, viewModel: MainViewModel) {
-    Row(
-    ) {
-        Image(
-            painter = painterResource(id = infoType.icon),
-            contentDescription = infoType.name,
-            modifier = Modifier
-                .padding(4.dp)
-                .size(10.dp),
-            colorFilter = ColorFilter.tint(color = Color.White)
-        )
-        Spacer(modifier = Modifier.weight(1.0f))
-        Text(
-            text = viewModel.createBetInfoLabel(infoType, betSide),
-            fontFamily = interFontFamily,
-            fontSize = 12.sp
-        )
+    Row {
+        if (betSide == BetSide.BEAR) {
+            BetInfoImage(infoType = infoType)
+            Spacer(modifier = Modifier.weight(1.0f))
+            BetInfoLabel(infoType = infoType, betSide = betSide, viewModel = viewModel)
+        } else {
+            BetInfoLabel(infoType = infoType, betSide = betSide, viewModel = viewModel)
+            Spacer(modifier = Modifier.weight(1.0f))
+            BetInfoImage(infoType = infoType)
+        }
     }
 }
 
 @Composable
 fun BetButton(
-    percentage: Int = 50,
+    percentage: Double,
     icon: Int = R.drawable.arrow_up,
     backgroundColor: Color = BetGreen,
     description: String = "blah",
@@ -163,7 +159,6 @@ fun BetButton(
 ) {
     Button(
         onClick = { },
-
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = backgroundColor.copy(alpha = 0.85f),
@@ -179,7 +174,7 @@ fun BetButton(
                 contentDescription = description,
                 modifier = Modifier
                     .padding(4.dp)
-                    .size(25.dp)
+                    .size(18.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -224,22 +219,26 @@ fun UserTotalBalance(balance: Double = 1123.44, viewModel: MainViewModel) {
 
 @Preview
 @Composable
-fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel()) {
-    Row(
-        modifier = Modifier
-            .wrapContentSize()
-            .padding(8.dp)
-    ) {
-        Text(
-            text = title,
-            fontFamily = interFontFamily,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
-        )
-        Spacer(modifier = Modifier.weight(1.0f))
-        UserTotalBalance(viewModel = viewModel)
+fun TopBar(title: String = "Bear V Bull", viewModel: MainViewModel = MainViewModel()) {
+    Column() {
+        Row(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(8.dp)
+        ) {
+            Spacer(modifier = Modifier.weight(1.0f))
+            Text(
+                text = title,
+                fontFamily = interFontFamily,
+                color = Color.White,
+                fontWeight = FontWeight.Normal,
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.weight(1.0f))
+//            UserTotalBalance(viewModel = viewModel)
+        }
     }
+
 }
 
 //@Preview
