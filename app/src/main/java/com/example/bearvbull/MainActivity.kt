@@ -137,15 +137,9 @@ fun BetButtonContainer(
 @Composable
 fun BetInformationRow(infoType: BetInfoType, betSide: BetSide, viewModel: MainViewModel) {
     Row {
-        if (betSide == BetSide.BEAR) {
-            BetInfoImage(infoType = infoType)
-            Spacer(modifier = Modifier.weight(1.0f))
-            BetInfoLabel(infoType = infoType, betSide = betSide, viewModel = viewModel)
-        } else {
-            BetInfoLabel(infoType = infoType, betSide = betSide, viewModel = viewModel)
-            Spacer(modifier = Modifier.weight(1.0f))
-            BetInfoImage(infoType = infoType)
-        }
+        BetInfoImage(infoType = infoType)
+        Spacer(modifier = Modifier.weight(1.0f))
+        BetInfoLabel(infoType = infoType, betSide = betSide, viewModel = viewModel)
     }
 }
 
