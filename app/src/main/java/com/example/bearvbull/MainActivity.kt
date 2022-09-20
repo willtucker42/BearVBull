@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bearvbull.ui.components.BetInfoImage
 import com.example.bearvbull.ui.components.BetInfoLabel
+import com.example.bearvbull.ui.components.TopBarIcon
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.BetInfoType
 import com.example.bearvbull.util.BetSide
@@ -222,11 +223,7 @@ fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.profile_icon),
-            contentDescription = "Profile",
-            modifier = Modifier.size(28.dp)
-        )
+        TopBarIcon(icon = R.drawable.profile_icon)
         Spacer(modifier = Modifier.weight(1.0f))
         Text(
             text = title,

@@ -4,6 +4,7 @@ package com.example.bearvbull.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -36,4 +37,16 @@ fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, viewModel: MainViewMod
         fontFamily = interFontFamily,
         fontSize = 12.sp
     )
+}
+
+@Composable
+fun TopBarIcon(icon: Int) {
+    // 0 = Left icon 1 = Right icon
+    Button(onClick = {}) {
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = "Profile",
+            modifier = Modifier.size(28.dp)
+        )
+    }
 }
