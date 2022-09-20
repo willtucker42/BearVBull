@@ -157,7 +157,7 @@ fun BetButton(
         onClick = { },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = backgroundColor.copy(alpha = 0.85f),
+            backgroundColor = backgroundColor.copy(alpha = 1f),
             contentColor = DeepPurple
         )
     ) {
