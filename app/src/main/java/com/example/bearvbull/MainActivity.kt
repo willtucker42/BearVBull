@@ -3,6 +3,7 @@ package com.example.bearvbull
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -108,6 +109,7 @@ fun BetButtonContainer(
     Surface(
         modifier = Modifier.width(150.dp),
         shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(0.5.dp, ButtonOutline),
         elevation = 8.dp
     ) {
         Column(
