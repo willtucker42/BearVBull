@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,15 +30,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.PERCENT_SIGN
+import com.example.bearvbull.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BearVBullTheme {
-                // A surface container using the 'background' color from the theme
+                val mainViewModel = viewModel<MainViewModel>()
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -46,7 +51,10 @@ class MainActivity : ComponentActivity() {
                             .background(DeepPurple),
                     ) {
                         TopBar()
-                        BetWindow(modifier = Modifier.align(Alignment.Center))
+                        BetWindow(
+                            modifier = Modifier.align(Alignment.Center),
+                            viewModel = mainViewModel
+                        )
                     }
                 }
             }
@@ -55,19 +63,19 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BetWindow(modifier: Modifier) {
+fun BetWindow(modifier: Modifier, viewModel: MainViewModel) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        MainBetPromptTitle()
+        MainBetPromptTitle(viewModel = viewModel)
         Spacer(modifier = Modifier.height(16.dp))
-        BetButtonRow()
+        BetButtonRow(viewModel = viewModel)
     }
 }
 
 @Composable
-fun BetButtonRow() {
+fun BetButtonRow(viewModel: MainViewModel) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -75,14 +83,16 @@ fun BetButtonRow() {
             percentage = 54,
             icon = R.drawable.arrow_down,
             backgroundColor = BetRed,
-            description = "Down arrow"
+            description = "Down arrow",
+            viewModel = viewModel
         )
         Spacer(modifier = Modifier.width(16.dp))
         BetButton(
             percentage = 46,
             icon = R.drawable.arrow_up,
             backgroundColor = BetGreen,
-            description = "Up arrow"
+            description = "Up arrow",
+            viewModel = viewModel
         )
     }
 }
@@ -92,7 +102,8 @@ fun BetButton(
     percentage: Int = 50,
     icon: Int = R.drawable.arrow_up,
     backgroundColor: Color = BetGreen,
-    description: String = "blah"
+    description: String = "blah",
+    viewModel: MainViewModel
 ) {
     Button(
         onClick = { },
@@ -127,7 +138,7 @@ fun BetButton(
 }
 
 @Composable
-fun UserTotalBalance(balance: Double = 1123.44) {
+fun UserTotalBalance(balance: Double = 1123.44, viewModel: MainViewModel) {
     val shadowStyle = MaterialTheme.typography.button.copy(
         shadow = Shadow(
             color = Color.White,
@@ -157,7 +168,7 @@ fun UserTotalBalance(balance: Double = 1123.44) {
 
 @Preview
 @Composable
-fun TopBar(title: String = "BearVBull") {
+fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel()) {
     Row(
         modifier = Modifier
             .wrapContentSize()
@@ -171,14 +182,20 @@ fun TopBar(title: String = "BearVBull") {
             fontSize = 16.sp
         )
         Spacer(modifier = Modifier.weight(1.0f))
-        UserTotalBalance()
+        UserTotalBalance(viewModel = viewModel)
     }
 }
 
-@Preview
+//@Preview
 @Composable
-fun MainBetPromptTitle(title: String = "Betting is ", ticker: String = "SPY") {
+fun MainBetPromptTitle(
+    title: String = "Betting is ",
+    ticker: String = "SPY",
+    viewModel: MainViewModel
+) {
     val betPrompt = "Will $$ticker open red or green tomorrow?"
+//    val countDownTime = viewModel.countDownFlow.collectAsState(60000F)
+    val countDownTime by viewModel.countDownTime.ob
     Box(
         modifier = Modifier
             .wrapContentWidth()
@@ -199,7 +216,7 @@ fun MainBetPromptTitle(title: String = "Betting is ", ticker: String = "SPY") {
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Bets close in 00:14:32",
+                text = "Bets close in ${countDownTime.value}",
                 textAlign = TextAlign.Center,
                 fontFamily = interFontFamily,
                 color = Color.LightGray

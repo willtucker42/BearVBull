@@ -1,63 +1,64 @@
 package com.example.bearvbull.viewmodel
 
 import android.os.CountDownTimer
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.bearvbull.util.Utility
-import com.example.bearvbull.util.Utility.formatTime
-import com.example.bearvbull.util.helper.SingleLiveEvent
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
     private var countDownTimer: CountDownTimer? = null
 
-    private val _time = MutableLiveData(Utility.TIME_COUNTDOWN.formatTime())
-    val time: LiveData<String> = _time
+    private var _countDownTime = MutableStateFlow(60000F)
+    val countDownTime: StateFlow<Float> = _countDownTime
 
-    private val _progress = MutableLiveData(1.00f)
-    val progress: LiveData<Float> = _progress
-
-    private val _isPlaying = MutableLiveData(false)
-    val isPlaying: LiveData<Boolean> = _isPlaying
-
-    private val _celebrate = SingleLiveEvent<Boolean>()
-
-    private val celebrate : LiveData<Boolean> get() = _celebrate
-
-    fun handleCountDownTimer() {
-        if (isPlaying.value == true) {
-            pauseTimer()
-            _celebrate.postValue(false)
-        } else {
-            startTimer()
+    val countDownFlow = flow {
+        val startingValue = 10
+        var currentValue = startingValue
+        emit(startingValue)
+        while (currentValue > 0) {
+            delay(1000L)
+            currentValue--
+            emit(currentValue)
         }
     }
 
-    private fun pauseTimer() {
-        countDownTimer?.cancel()
-        handleTimerValues(false, Utility.TIME_COUNTDOWN.formatTime(), 1.0F, false)
+    init {
+        startTimer()
+        collectTimerFlow()
     }
 
+    private fun collectTimerFlow() {
+        viewModelScope.launch {
+            countDownTime.collectLatest {
+                println(it)
+            }
+        }
+    }
+
+//    fun handleCountDownTimer() {
+//        if (isPlaying.value == true) {
+//            _celebrate.postValue(false)
+//        } else {
+//            startTimer()
+//        }
+//    }
+
     private fun startTimer() {
-        _isPlaying.value = true
         countDownTimer = object : CountDownTimer(Utility.TIME_COUNTDOWN, 1000) {
             override fun onTick(millisRemaining: Long) {
-                val progressValue = millisRemaining.toFloat() / Utility.TIME_COUNTDOWN
-                handleTimerValues(true, millisRemaining.formatTime(), progressValue, false)
-                _celebrate.postValue((false))
+//                val progressValue = millisRemaining.toFloat() / Utility.TIME_COUNTDOWN
+                _countDownTime.value = millisRemaining.toFloat()
             }
 
             override fun onFinish() {
-                pauseTimer()
-                _celebrate.postValue(true)
             }
         }.start()
     }
 
-    private fun handleTimerValues(isPlaying: Boolean, text: String, progress: Float, celebrate: Boolean) {
-        _isPlaying.value = isPlaying
-        _time.value = text
-        _progress.value = progress
-        _celebrate.postValue(celebrate)
-    }
 }
