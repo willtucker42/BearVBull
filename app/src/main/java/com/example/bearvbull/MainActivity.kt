@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -194,8 +195,7 @@ fun MainBetPromptTitle(
     viewModel: MainViewModel
 ) {
     val betPrompt = "Will $$ticker open red or green tomorrow?"
-//    val countDownTime = viewModel.countDownFlow.collectAsState(60000F)
-    val countDownTime by viewModel.countDownTime.ob
+    val countDownTime by viewModel.countDownTime.collectAsState()
     Box(
         modifier = Modifier
             .wrapContentWidth()
@@ -216,7 +216,7 @@ fun MainBetPromptTitle(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Bets close in ${countDownTime.value}",
+                text = "Bets close in $countDownTime",
                 textAlign = TextAlign.Center,
                 fontFamily = interFontFamily,
                 color = Color.LightGray
