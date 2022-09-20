@@ -21,42 +21,40 @@ object Utility {
         TimeUnit.MILLISECONDS.toMillis(this) % 10
     )
 
-    fun getBetRatio(bearPercentage: Double, bullPercentage: Double, betSide: String): String {
-        return buildString {
-            when (betSide) {
-                "BEAR" -> append((100 / bearPercentage)).append(COLON).append(ONE)
-                "BULL" -> append((100 / bullPercentage)).append(COLON).append(ONE)
-                else -> Timber.e("get_bet_ratio_error")
-            }
-        }
-    }
+
 }
 
-enum class BetInfoType(icon: Int, createLabel: (viewModel: MainViewModel) -> String) {
-    BET_TOTAL(R.drawable.coin_stack_icon, {
-        it.getTotalWagered()
-    }),
-    RETURN_RATIO(R.drawable.trophy_icon, {
-        "1:1"
-    }),
-    TOTAL_USERS(R.drawable.user_icon, {
-        "1,112,900"
-    }),
-    BIGGEST_BET(R.drawable.money_bag_icon, {
-        "87.68B"
-    })
+enum class BetSide(val bearOrBull: String) {
+    BEAR(com.example.bearvbull.util.BEAR), BULL(com.example.bearvbull.util.BULL)
 }
 
+enum class BetInfoType(val icon: Int) {
+    TOTAL_WAGERED(R.drawable.coin_stack_icon),
+    RETURN_RATIO(R.drawable.trophy_icon),
+    TOTAL_USERS(R.drawable.user_icon),
+    BIGGEST_BET(R.drawable.money_bag_icon)
+}
 
-fun Int.formatBigNumber(): String {
-    var i = 1
-    var finalString = ""
-    for (c in this.toString().reversed()) {
-        i++
-        if (i % 3 == 0) {
-            finalString.plus(COMMA)
-        }
-        finalString.plus(c)
-    }
-    return finalString
+val betInfoTypeList = listOf(
+    BetInfoType.TOTAL_WAGERED,
+    BetInfoType.RETURN_RATIO,
+    BetInfoType.TOTAL_USERS,
+    BetInfoType.BIGGEST_BET,
+)
+
+fun Double.formatBigNumber(): String {
+    val theInt = toString().substringBefore(".").split(".")
+    val remainderAfterDecimal = toString().substringAfter(".")
+
+    return theInt.reversed()
+        .chunked(3)
+        .joinToString(",")
+        .reversed()
+        .plus(remainderAfterDecimal)
+}
+
+fun Double.round(decimals: Int): Double {
+    var multiplier = 1.0
+    repeat(decimals) { multiplier *= 10 }
+    return kotlin.math.round(this * multiplier) / multiplier
 }
