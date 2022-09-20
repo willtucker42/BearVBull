@@ -4,6 +4,7 @@ import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bearvbull.data.LiveBetInformation
+import com.example.bearvbull.data.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
 import kotlinx.coroutines.delay
@@ -28,6 +29,11 @@ class MainViewModel : ViewModel() {
         totalBulls = 10075,
         biggestBearBet = 50000.00,
         biggestBullBet = 103098.00
+    )
+
+    val liveUserAccountInformation = UserAccountInformation(
+        userId = "123",
+        userBalance = 1092832.99
     )
 
     val countDownFlow = flow {

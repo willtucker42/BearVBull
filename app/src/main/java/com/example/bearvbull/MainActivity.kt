@@ -196,14 +196,14 @@ fun UserTotalBalance(balance: Double = 1123.44, viewModel: MainViewModel) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.bucks_iconv2),
-            contentDescription = "Bucks icon",
-            modifier = Modifier
-                .height(13.dp)
-                .padding(end = 2.5.dp),
-            colorFilter = ColorFilter.tint(color = Color.White)
-        )
+//        Image(
+//            painter = painterResource(id = R.drawable.bucks_iconv2),
+//            contentDescription = "Bucks icon",
+//            modifier = Modifier
+//                .height(13.dp)
+//                .padding(end = 2.5.dp),
+//            colorFilter = ColorFilter.tint(color = Color.White)
+//        )
         Text(
             text = balance.toString(),
             fontFamily = interFontFamily,
@@ -215,26 +215,34 @@ fun UserTotalBalance(balance: Double = 1123.44, viewModel: MainViewModel) {
 
 @Preview
 @Composable
-fun TopBar(title: String = "Bear V Bull", viewModel: MainViewModel = MainViewModel()) {
-    Column() {
-        Row(
-            modifier = Modifier
-                .wrapContentSize()
-                .padding(8.dp)
-        ) {
-            Spacer(modifier = Modifier.weight(1.0f))
-            Text(
-                text = title,
-                fontFamily = interFontFamily,
-                color = Color.White,
-                fontWeight = FontWeight.Normal,
-                fontSize = 18.sp
-            )
-            Spacer(modifier = Modifier.weight(1.0f))
-//            UserTotalBalance(viewModel = viewModel)
-        }
+fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel()) {
+    Row(
+        modifier = Modifier
+            .wrapContentWidth()
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.profile_icon),
+            contentDescription = "Profile",
+            modifier = Modifier.size(28.dp)
+        )
+        Spacer(modifier = Modifier.weight(1.0f))
+        Text(
+            text = title,
+            fontFamily = poppinsFontFamily,
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.weight(1.0f))
+        Image(
+            painter = painterResource(id = R.drawable.money_bag_icon),
+            contentDescription = "Profile",
+            colorFilter = ColorFilter.tint(color = Color.White),
+            modifier = Modifier.size(28.dp)
+        )
     }
-
 }
 
 //@Preview
