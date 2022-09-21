@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
@@ -82,12 +83,13 @@ class MainViewModel : ViewModel() {
 
     private suspend fun generateOrderBookEntries() {
         while (true) {
-            delay(Random.nextLong(100, 2000))
-            val userName = (1..6)
+            delay(Random.nextLong(1111, 2222))
+            val userName = (1..10)
                 .map { _ -> Random.nextInt(0, charPool.size) }
                 .map(charPool::get)
                 .joinToString("")
-            val amountWagered = Random.nextDouble(from = 0.0, until = 99999999.99)
+            val amountWagered = Random.nextDouble(from = 0.0, until = 99999999.99).roundToInt()
+            println("AmountWagered: $amountWagered")
             var betSide = ""
             val randomNum = Random.nextInt(from = 1, until = 100)
             val betPercent: Double
@@ -102,7 +104,7 @@ class MainViewModel : ViewModel() {
             orderBookHolder.orderBook.add(
                 OrderBookEntry(
                     userName = userName,
-                    amountWagered = amountWagered,
+                    amountWagered = amountWagered.toDouble(),
                     betSide = betSide,
                     betPercent = betPercent,
                     time = time

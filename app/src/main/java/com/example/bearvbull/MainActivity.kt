@@ -1,11 +1,13 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.example.bearvbull
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -89,7 +91,7 @@ fun OrderBook(liveOrderBook: OrderBook) {
     Column(
         modifier = Modifier
             .height((LocalConfiguration.current.screenHeightDp / 2.5).dp)
-            .padding(4.dp)
+            .padding(horizontal = 12.dp)
     ) {
         Row {
             Text(
@@ -102,9 +104,16 @@ fun OrderBook(liveOrderBook: OrderBook) {
         }
         Column(modifier = Modifier.fillMaxWidth()) {
             OrderBookLabelRow()
-            LazyColumn() {
+            LazyColumn(
+                contentPadding = PaddingValues(vertical = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
                 items(items = liveOrderBook.orderBook.reversed()) { order ->
-                    OrderBookEntryRow(orderBookEntry = order)
+                    OrderBookEntryRow(orderBookEntry = order, modifier = Modifier.animateItemPlacement(
+                        animationSpec = tween(
+                            durationMillis = 200
+                        )
+                    ))
                 }
             }
         }

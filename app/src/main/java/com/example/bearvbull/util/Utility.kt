@@ -1,9 +1,10 @@
 package com.example.bearvbull.util
 
+import android.annotation.SuppressLint
 import com.example.bearvbull.R
-import com.example.bearvbull.ui.theme.BearVBullTheme
-import com.example.bearvbull.viewmodel.MainViewModel
-import timber.log.Timber
+import java.math.RoundingMode
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 import kotlin.math.ln
 import kotlin.math.pow
@@ -13,6 +14,11 @@ object Utility {
     //time to countdown - 1hr - 60secs
     const val TIME_COUNTDOWN: Long = 60000L
     private const val TIME_FORMAT = "%02d:%02d"
+    private const val ORDER_BOOK_ENTRY_TIME_FORMAT = "HH:mm:ss.SS"
+    @SuppressLint("SimpleDateFormat")
+    val simpleDateFormat: SimpleDateFormat = SimpleDateFormat(ORDER_BOOK_ENTRY_TIME_FORMAT)
+    val UP_ARROW = R.drawable.arrow_up
+    val DOWN_ARROW = R.drawable.arrow_down
 
 
     //convert time to milli seconds
@@ -65,8 +71,11 @@ fun Double.formatBigNumberWithCommas(): String {
         .plus(postDecimalDigits)
 }
 
-fun Double.round(decimals: Int): Double {
-    var multiplier = 1.0
-    repeat(decimals) { multiplier *= 10 }
-    return kotlin.math.round(this * multiplier) / multiplier
+
+
+fun Double.round(): Double {
+    val df = DecimalFormat("#.##")
+    df.roundingMode = RoundingMode.DOWN
+
+    return df.format(this).toDouble()
 }

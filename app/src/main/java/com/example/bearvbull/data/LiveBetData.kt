@@ -18,15 +18,15 @@ data class LiveBetData(
         val totalWagered = grandTotal
         val bearPercent = (bearTotal / totalWagered) * 100
         val bullPercent = (bullTotal / totalWagered) * 100
-        return Pair(bearPercent.round(2), bullPercent.round(2))
+        return Pair(bearPercent.round(), bullPercent.round())
     }
 
     private fun getReturnRatio(betSide: BetSide): String {
         return buildString {
             val bearAndBullPercentages = getBearAndBullPercentages()
             when (betSide.bearOrBull) {
-                BEAR -> append("$ONE$COLON").append((100 / bearAndBullPercentages.first).round(2))
-                BULL -> append("$ONE$COLON").append((100 / bearAndBullPercentages.second).round(2))
+                BEAR -> append("$ONE$COLON").append((100 / bearAndBullPercentages.first).round())
+                BULL -> append("$ONE$COLON").append((100 / bearAndBullPercentages.second).round())
                 else -> Timber.e("get_bet_ratio_error")
             }
         }
