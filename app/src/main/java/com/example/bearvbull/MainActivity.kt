@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.bearvbull.data.LiveBetData
 import com.example.bearvbull.ui.components.BetInfoImage
 import com.example.bearvbull.ui.components.BetInfoLabel
 import com.example.bearvbull.ui.components.TopBarIcon
@@ -41,6 +41,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             BearVBullTheme {
                 val mainViewModel = viewModel<MainViewModel>()
+                val countDownTime by mainViewModel.countDownTime.collectAsState()
+                val liveBetData by mainViewModel.liveBetDataFlow.collectAsState()
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -52,7 +54,9 @@ class MainActivity : ComponentActivity() {
                         TopBar()
                         BetWindow(
                             modifier = Modifier.align(Alignment.Center),
-                            viewModel = mainViewModel
+                            viewModel = mainViewModel,
+                            countDownTime = countDownTime,
+                            liveBetData = liveBetData
                         )
                     }
                 }
@@ -62,38 +66,43 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BetWindow(modifier: Modifier, viewModel: MainViewModel) {
+fun BetWindow(
+    modifier: Modifier,
+    viewModel: MainViewModel,
+    countDownTime: String,
+    liveBetData: LiveBetData
+) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        MainBetPromptTitle(viewModel = viewModel)
+        MainBetPromptTitle(countDownTime_ = countDownTime)
         Spacer(modifier = Modifier.height(16.dp))
-        BetButtonRow(viewModel = viewModel)
+        BetButtonRow(liveBetData = liveBetData)
     }
 }
 
 @Composable
-fun BetButtonRow(viewModel: MainViewModel) {
+fun BetButtonRow(liveBetData: LiveBetData) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         BetButtonContainer(
-            percentage = viewModel.liveBetInformationTestData.getBearAndBullPercentages().first,
+            percentage = liveBetData.getBearAndBullPercentages().first,
             icon = R.drawable.arrow_down,
             backgroundColor = BetRed,
             description = "Down arrow",
-            viewModel = viewModel,
-            betSide = BetSide.BEAR
+            betSide = BetSide.BEAR,
+            liveBetData = liveBetData
         )
         Spacer(modifier = Modifier.width(16.dp))
         BetButtonContainer(
-            percentage = viewModel.liveBetInformationTestData.getBearAndBullPercentages().second,
+            percentage = liveBetData.getBearAndBullPercentages().second,
             icon = R.drawable.arrow_up,
             backgroundColor = BetGreen,
             description = "Up arrow",
-            viewModel = viewModel,
-            betSide = BetSide.BULL
+            betSide = BetSide.BULL,
+            liveBetData = liveBetData
         )
     }
 }
@@ -105,7 +114,7 @@ fun BetButtonContainer(
     backgroundColor: Color = BetGreen,
     betSide: BetSide,
     description: String = "blah",
-    viewModel: MainViewModel
+    liveBetData: LiveBetData
 ) {
     Surface(
         modifier = Modifier.width(150.dp),
@@ -121,8 +130,7 @@ fun BetButtonContainer(
                 percentage = percentage,
                 icon = icon,
                 backgroundColor = backgroundColor,
-                description = description,
-                viewModel = viewModel
+                description = description
             )
             Column(
                 modifier = Modifier
@@ -130,7 +138,11 @@ fun BetButtonContainer(
                     .padding(4.dp)
             ) {
                 for (infoType in betInfoTypeList) {
-                    BetInformationRow(infoType = infoType, betSide = betSide, viewModel = viewModel)
+                    BetInformationRow(
+                        infoType = infoType,
+                        betSide = betSide,
+                        liveBetData = liveBetData
+                    )
                 }
             }
         }
@@ -138,11 +150,15 @@ fun BetButtonContainer(
 }
 
 @Composable
-fun BetInformationRow(infoType: BetInfoType, betSide: BetSide, viewModel: MainViewModel) {
+fun BetInformationRow(
+    infoType: BetInfoType,
+    betSide: BetSide,
+    liveBetData: LiveBetData
+) {
     Row {
         BetInfoImage(infoType = infoType)
         Spacer(modifier = Modifier.weight(1.0f))
-        BetInfoLabel(infoType = infoType, betSide = betSide, viewModel = viewModel)
+        BetInfoLabel(infoType = infoType, betSide = betSide, liveBetData = liveBetData)
     }
 }
 
@@ -151,8 +167,7 @@ fun BetButton(
     percentage: Double,
     icon: Int = R.drawable.arrow_up,
     backgroundColor: Color = BetGreen,
-    description: String = "blah",
-    viewModel: MainViewModel
+    description: String = "blah"
 ) {
     Button(
         onClick = { },
@@ -220,7 +235,7 @@ fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel
     Row(
         modifier = Modifier
             .wrapContentWidth()
-            .padding(8.dp),
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         TopBarIcon(icon = R.drawable.profile_icon)
@@ -230,7 +245,8 @@ fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel
             fontFamily = poppinsFontFamily,
             color = Color.White,
             fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
+            fontSize = 22.sp,
+            modifier = Modifier.padding(1.dp)
         )
         Spacer(modifier = Modifier.weight(1.0f))
         TopBarIcon(icon = R.drawable.resume_icon)
@@ -242,10 +258,9 @@ fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel
 fun MainBetPromptTitle(
     title: String = "Betting is ",
     ticker: String = "SPY",
-    viewModel: MainViewModel
+    countDownTime_: String = ""
 ) {
     val betPrompt = "Will $$ticker open red or green tomorrow?"
-    val countDownTime by viewModel.countDownTime.collectAsState()
     Box(
         modifier = Modifier
             .wrapContentWidth()
@@ -254,7 +269,8 @@ fun MainBetPromptTitle(
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(16.dp),
+                .padding(16.dp)
+                .wrapContentWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
@@ -265,12 +281,24 @@ fun MainBetPromptTitle(
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Bets close in $countDownTime",
-                textAlign = TextAlign.Center,
-                fontFamily = poppinsFontFamily,
-                color = Color.LightGray
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Spacer(modifier = Modifier.weight(1.0f))
+                Text(
+                    text = "Bets close in ",
+                    textAlign = TextAlign.Center,
+                    fontFamily = poppinsFontFamily,
+                    color = Color.LightGray
+                )
+                Text(
+                    text = countDownTime_,
+                    textAlign = TextAlign.Center,
+                    fontFamily = poppinsFontFamily,
+                    color = Color.LightGray
+                )
+                Spacer(modifier = Modifier.weight(1.0f))
+            }
         }
     }
 }

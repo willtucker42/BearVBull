@@ -3,7 +3,7 @@ package com.example.bearvbull.viewmodel
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bearvbull.data.LiveBetInformation
+import com.example.bearvbull.data.LiveBetData
 import com.example.bearvbull.data.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
     private var countDownTimer: CountDownTimer? = null
@@ -20,8 +21,24 @@ class MainViewModel : ViewModel() {
     private var _countDownTime = MutableStateFlow("")
     val countDownTime: StateFlow<String> = _countDownTime
 
+    private var betData = MutableStateFlow(
+        LiveBetData(
+            betId = "abc123",
+            bearTotal = 89763.12,
+            bullTotal = 189699.76,
+            totalBears = 3783,
+            totalBulls = 10075,
+            biggestBearBet = 50000.00,
+            biggestBullBet = 103098.00
+        )
+    )
 
-    val liveBetInformationTestData = LiveBetInformation(
+    /**
+     * MainActivity composables with consume this flow
+     */
+    val liveBetDataFlow: StateFlow<LiveBetData> = betData
+
+    val liveBetDataTestData = LiveBetData(
         betId = "abc123",
         bearTotal = 89763.12,
         bullTotal = 189699.76,
@@ -30,6 +47,34 @@ class MainViewModel : ViewModel() {
         biggestBearBet = 50000.00,
         biggestBullBet = 103098.00
     )
+
+    init {
+        startTimer()
+        viewModelScope.launch {
+            generateAndUpdateLiveBetDataData()
+        }
+    }
+
+    private suspend fun generateAndUpdateLiveBetDataData() {
+        while (true) {
+            delay(1000L)
+            val bearTotal = Random.nextDouble(from = 0.0, until = 9999999999.99)
+            val bullTotal = Random.nextDouble(from = 0.0, until = 9999999999.99)
+            val totalBears = Random.nextInt(from = 0, until = 9999999)
+            val totalBulls = Random.nextInt(from = 0, until = 9999999)
+            val biggestBearBet = Random.nextDouble(from = 0.0, until = bearTotal)
+            val biggestBullBet = Random.nextDouble(from = 0.0, until = bullTotal)
+            betData.value = LiveBetData(
+                betId = "123",
+                bearTotal = bearTotal,
+                bullTotal = bullTotal,
+                totalBears = totalBears,
+                totalBulls = totalBulls,
+                biggestBearBet = biggestBearBet,
+                biggestBullBet = biggestBullBet,
+            )
+        }
+    }
 
     val liveUserAccountInformation = UserAccountInformation(
         userId = "123",
@@ -47,26 +92,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    init {
-        startTimer()
-//        collectTimerFlow()
-    }
-
-//    private fun collectTimerFlow() {
-//        viewModelScope.launch {
-//            countDownTime.collectLatest {
-////                println(it)
-//            }
-//        }
-//    }
-
-//    fun handleCountDownTimer() {
-//        if (isPlaying.value == true) {
-//            _celebrate.postValue(false)
-//        } else {
-//            startTimer()
-//        }
-//    }
 
     private fun startTimer() {
         countDownTimer = object : CountDownTimer(Utility.TIME_COUNTDOWN, 1) {
@@ -76,39 +101,11 @@ class MainViewModel : ViewModel() {
             }
 
             override fun onFinish() {
-                _countDownTime.value = 0.toString()
+                _countDownTime.value = "00:00:00"
             }
         }.start()
     }
 
-    private fun getTotalWageredForBetSide(betSide: BetSide): Double {
-        return when (betSide) {
-            BetSide.BEAR -> liveBetInformationTestData.bearTotal
-            BetSide.BULL -> liveBetInformationTestData.bullTotal
-        }
-    }
 
-    private fun getTotalUsersWageringOnBet(betSide: BetSide): Int {
-        return when (betSide) {
-            BetSide.BEAR -> liveBetInformationTestData.totalBears
-            BetSide.BULL -> liveBetInformationTestData.totalBulls
-        }
-    }
-
-    private fun getBiggestBet(betSide: BetSide): Double {
-        return when (betSide) {
-            BetSide.BEAR -> liveBetInformationTestData.biggestBearBet
-            BetSide.BULL -> liveBetInformationTestData.biggestBullBet
-        }
-    }
-
-    fun createBetInfoLabel(betInfoType: BetInfoType, betSide: BetSide): String {
-        return when (betInfoType) {
-            BetInfoType.TOTAL_WAGERED -> getTotalWageredForBetSide(betSide).getFormattedNumber()
-            BetInfoType.RETURN_RATIO -> liveBetInformationTestData.getReturnRatio(betSide)
-            BetInfoType.TOTAL_USERS -> "%,d".format(getTotalUsersWageringOnBet(betSide))
-            BetInfoType.BIGGEST_BET -> getBiggestBet(betSide).getFormattedNumber()
-        }
-    }
 
 }

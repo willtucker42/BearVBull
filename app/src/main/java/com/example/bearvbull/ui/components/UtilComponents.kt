@@ -2,14 +2,8 @@ package com.example.bearvbull.ui.components
 
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,7 +12,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bearvbull.ui.theme.DeepPurple
+import com.example.bearvbull.data.LiveBetData
 import com.example.bearvbull.ui.theme.interFontFamily
 import com.example.bearvbull.util.BetInfoType
 import com.example.bearvbull.util.BetSide
@@ -37,9 +31,9 @@ fun BetInfoImage(infoType: BetInfoType) {
 }
 
 @Composable
-fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, viewModel: MainViewModel) {
+fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, liveBetData: LiveBetData) {
     Text(
-        text = viewModel.createBetInfoLabel(infoType, betSide),
+        text = liveBetData.createBetInfoLabel(infoType, betSide),
         fontFamily = interFontFamily,
         fontSize = 12.sp
     )
@@ -51,6 +45,6 @@ fun TopBarIcon(icon: Int) {
     Image(
         painter = painterResource(id = icon),
         contentDescription = "Profile",
-        modifier = Modifier.size(28.dp).clickable {  }
+        modifier = Modifier.size(24.dp).clickable {  }
     )
 }
