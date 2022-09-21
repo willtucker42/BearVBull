@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -27,9 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bearvbull.data.LiveBetData
 import com.example.bearvbull.data.OrderBook
-import com.example.bearvbull.ui.components.BetInfoImage
-import com.example.bearvbull.ui.components.BetInfoLabel
-import com.example.bearvbull.ui.components.TopBarIcon
+import com.example.bearvbull.ui.components.*
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.BetInfoType
 import com.example.bearvbull.util.BetSide
@@ -60,6 +60,7 @@ class MainActivity : ComponentActivity() {
                                 countDownTime = countDownTime,
                                 liveBetData = liveBetData
                             )
+                            Spacer(Modifier.height(12.dp))
                             OrderBook(liveOrderBook = liveOrderBookData)
                         }
                     }
@@ -85,7 +86,11 @@ fun BetWindow(
 
 @Composable
 fun OrderBook(liveOrderBook: OrderBook) {
-    Column() {
+    Column(
+        modifier = Modifier
+            .height((LocalConfiguration.current.screenHeightDp / 2.5).dp)
+            .padding(4.dp)
+    ) {
         Row {
             Text(
                 text = "Order Book",
@@ -96,7 +101,12 @@ fun OrderBook(liveOrderBook: OrderBook) {
             Spacer(modifier = Modifier.weight(1.0F))
         }
         Column(modifier = Modifier.fillMaxWidth()) {
-            LazyColumn(content = )
+            OrderBookLabelRow()
+            LazyColumn() {
+                items(items = liveOrderBook.orderBook.reversed()) { order ->
+                    OrderBookEntryRow(orderBookEntry = order)
+                }
+            }
         }
     }
 }

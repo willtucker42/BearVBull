@@ -26,7 +26,7 @@ class MainViewModel : ViewModel() {
     private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
     // OrderBook
-    private lateinit var orderBookHolder: MutableList<OrderBookEntry>
+    private lateinit var orderBookHolder: OrderBook
     private var _orderBookMutableStateFlow = MutableStateFlow(
         OrderBook(
             orderBook = mutableListOf(
@@ -62,39 +62,54 @@ class MainViewModel : ViewModel() {
     val liveBetDataFlow: StateFlow<LiveBetData> = betData
 
     init {
+        orderBookHolder = OrderBook(
+            mutableListOf(
+                OrderBookEntry(
+                    userName = "User01",
+                    amountWagered = 0.00,
+                    betSide = "Bear",
+                    time = Date(),
+                    betPercent = 0.00
+                )
+            )
+        )
         startTimer()
         viewModelScope.launch {
+            generateOrderBookEntries()
             generateAndUpdateLiveBetDataData()
         }
     }
 
-    private fun generateOrderBookEntries() {
-        val userName = (1..6)
-            .map { _ -> kotlin.random.Random.nextInt(0, charPool.size) }
-            .map(charPool::get)
-            .joinToString("")
-        val amountWagered = Random.nextDouble(from = 0.0, until = 99999999.99)
-        var betSide = ""
-        val randomNum = Random.nextInt(from = 1, until = 100)
-        val betPercent: Double
-        betSide = if (randomNum % 2 == 0) {
-            betPercent = betData.value.getBearAndBullPercentages().first
-            "Bear"
-        } else {
-            betPercent = betData.value.getBearAndBullPercentages().second
-            "Bull"
-        }
-        val time = Date()
-        orderBookHolder.add(
-            OrderBookEntry(
-                userName = userName,
-                amountWagered = amountWagered,
-                betSide = betSide,
-                betPercent = betPercent,
-                time = time
+    private suspend fun generateOrderBookEntries() {
+        while (true) {
+            delay(Random.nextLong(100, 2000))
+            val userName = (1..6)
+                .map { _ -> Random.nextInt(0, charPool.size) }
+                .map(charPool::get)
+                .joinToString("")
+            val amountWagered = Random.nextDouble(from = 0.0, until = 99999999.99)
+            var betSide = ""
+            val randomNum = Random.nextInt(from = 1, until = 100)
+            val betPercent: Double
+            betSide = if (randomNum % 2 == 0) {
+                betPercent = betData.value.getBearAndBullPercentages().first
+                "Bear"
+            } else {
+                betPercent = betData.value.getBearAndBullPercentages().second
+                "Bull"
+            }
+            val time = Date()
+            orderBookHolder.orderBook.add(
+                OrderBookEntry(
+                    userName = userName,
+                    amountWagered = amountWagered,
+                    betSide = betSide,
+                    betPercent = betPercent,
+                    time = time
+                )
             )
-        )
-        _orderBookMutableStateFlow.value = orderBookHolder
+            _orderBookMutableStateFlow.value = orderBookHolder
+        }
     }
 
     private suspend fun generateAndUpdateLiveBetDataData() {
