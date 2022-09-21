@@ -27,7 +27,7 @@ class MainViewModel : ViewModel() {
     private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
     // OrderBook
-    private lateinit var orderBookHolder: OrderBook
+    private var orderBookHolder: OrderBook
     private var _orderBookMutableStateFlow = MutableStateFlow(
         OrderBook(
             orderBook = mutableListOf(
@@ -45,6 +45,7 @@ class MainViewModel : ViewModel() {
     // End OrderBook
 
 
+    // BetData
     private var betData = MutableStateFlow(
         LiveBetData(
             betId = "abc123",
@@ -56,11 +57,9 @@ class MainViewModel : ViewModel() {
             biggestBullBet = 103098.00
         )
     )
-
-    /**
-     * MainActivity composables with consume this flow
-     */
     val liveBetDataFlow: StateFlow<LiveBetData> = betData
+    // End bet data
+
 
     init {
         orderBookHolder = OrderBook(
@@ -77,6 +76,8 @@ class MainViewModel : ViewModel() {
         startTimer()
         viewModelScope.launch {
             generateOrderBookEntries()
+        }
+        viewModelScope.launch {
             generateAndUpdateLiveBetDataData()
         }
     }
@@ -132,6 +133,7 @@ class MainViewModel : ViewModel() {
                 biggestBearBet = biggestBearBet,
                 biggestBullBet = biggestBullBet,
             )
+            println(randomData)
             betData.value = randomData
         }
     }

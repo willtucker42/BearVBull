@@ -58,7 +58,8 @@ fun TopBarIcon(icon: Int) {
         contentDescription = "Profile",
         modifier = Modifier
             .size(24.dp)
-            .clickable { }
+            .clickable { },
+        colorFilter = ColorFilter.tint(color = Color.White)
     )
 }
 
@@ -81,7 +82,7 @@ fun OrderBookLabelRow() {
                 .weight(1F)
         )
         OrderBookLabel(
-            text = PERCENT_SIGN, modifier = Modifier
+            text = "Side", modifier = Modifier
                 .fillMaxWidth()
                 .weight(1F)
         ) // Betside and percent are combined here

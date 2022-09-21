@@ -5,7 +5,6 @@ package com.example.bearvbull
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -56,8 +55,10 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .background(DeepPurple),
                     ) {
-                        TopBar()
-                        Column(modifier = Modifier.align(Alignment.Center)) {
+                        Column(
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        ) {
+                            TopBar()
                             BetWindow(
                                 countDownTime = countDownTime,
                                 liveBetData = liveBetData
@@ -283,11 +284,10 @@ fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel
             fontFamily = poppinsFontFamily,
             color = Color.White,
             fontWeight = FontWeight.Bold,
-            fontSize = 22.sp,
-            modifier = Modifier.padding(1.dp)
+            fontSize = 22.sp
         )
         Spacer(modifier = Modifier.weight(1.0f))
-        TopBarIcon(icon = R.drawable.resume_icon)
+        TopBarIcon(icon = R.drawable.money_bag_icon)
     }
 }
 
