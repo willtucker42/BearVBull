@@ -45,6 +45,13 @@ fun TopBarIcon(icon: Int) {
     Image(
         painter = painterResource(id = icon),
         contentDescription = "Profile",
-        modifier = Modifier.size(24.dp).clickable {  }
+        modifier = Modifier
+            .size(24.dp)
+            .clickable { }
     )
+}
+
+@Composable
+fun OrderBookRow() {
+
 }

@@ -4,13 +4,14 @@ import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bearvbull.data.LiveBetData
+import com.example.bearvbull.data.OrderBook
+import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.data.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -20,6 +21,21 @@ class MainViewModel : ViewModel() {
 
     private var _countDownTime = MutableStateFlow("")
     val countDownTime: StateFlow<String> = _countDownTime
+
+    var orderBookList = OrderBook()
+
+    private var _orderBookMutableStateFlow = MutableStateFlow(
+        OrderBook(
+            orderBook = mutableListOf(
+                OrderBookEntry(
+                    userName = "User01",
+
+                )
+            )
+        )
+    )
+
+    val liveOrderBook: StateFlow<OrderBook> = _orderBookMutableStateFlow
 
     private var betData = MutableStateFlow(
         LiveBetData(
@@ -64,7 +80,7 @@ class MainViewModel : ViewModel() {
             val totalBulls = Random.nextInt(from = 0, until = 9999999)
             val biggestBearBet = Random.nextDouble(from = 0.0, until = bearTotal)
             val biggestBullBet = Random.nextDouble(from = 0.0, until = bullTotal)
-            betData.value = LiveBetData(
+            val randomData = LiveBetData(
                 betId = "123",
                 bearTotal = bearTotal,
                 bullTotal = bullTotal,
@@ -73,6 +89,9 @@ class MainViewModel : ViewModel() {
                 biggestBearBet = biggestBearBet,
                 biggestBullBet = biggestBullBet,
             )
+            betData.value = randomData
+            orderBookList.orderBook.add(randomData)
+            _orderBookMutableStateFlow.value = orderBookList
         }
     }
 
@@ -105,7 +124,6 @@ class MainViewModel : ViewModel() {
             }
         }.start()
     }
-
 
 
 }

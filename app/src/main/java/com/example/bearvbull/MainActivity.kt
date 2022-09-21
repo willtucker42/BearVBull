@@ -7,6 +7,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bearvbull.data.LiveBetData
+import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.components.BetInfoImage
 import com.example.bearvbull.ui.components.BetInfoLabel
 import com.example.bearvbull.ui.components.TopBarIcon
@@ -43,6 +45,7 @@ class MainActivity : ComponentActivity() {
                 val mainViewModel = viewModel<MainViewModel>()
                 val countDownTime by mainViewModel.countDownTime.collectAsState()
                 val liveBetData by mainViewModel.liveBetDataFlow.collectAsState()
+                val liveOrderBookData by mainViewModel.liveOrderBook.collectAsState()
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -52,12 +55,13 @@ class MainActivity : ComponentActivity() {
                             .background(DeepPurple),
                     ) {
                         TopBar()
-                        BetWindow(
-                            modifier = Modifier.align(Alignment.Center),
-                            viewModel = mainViewModel,
-                            countDownTime = countDownTime,
-                            liveBetData = liveBetData
-                        )
+                        Column(modifier = Modifier.align(Alignment.Center)) {
+                            BetWindow(
+                                countDownTime = countDownTime,
+                                liveBetData = liveBetData
+                            )
+                            OrderBook(liveOrderBook = liveOrderBookData)
+                        }
                     }
                 }
             }
@@ -67,18 +71,33 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun BetWindow(
-    modifier: Modifier,
-    viewModel: MainViewModel,
     countDownTime: String,
     liveBetData: LiveBetData
 ) {
     Column(
-        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MainBetPromptTitle(countDownTime_ = countDownTime)
         Spacer(modifier = Modifier.height(16.dp))
         BetButtonRow(liveBetData = liveBetData)
+    }
+}
+
+@Composable
+fun OrderBook(liveOrderBook: OrderBook) {
+    Column() {
+        Row {
+            Text(
+                text = "Order Book",
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 24.sp
+            )
+            Spacer(modifier = Modifier.weight(1.0F))
+        }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            LazyColumn(content = )
+        }
     }
 }
 
