@@ -22,12 +22,9 @@ import com.example.bearvbull.ui.theme.interFontFamily
 import com.example.bearvbull.ui.theme.poppinsFontFamily
 import com.example.bearvbull.util.BetInfoType
 import com.example.bearvbull.util.BetSide
-import com.example.bearvbull.util.PERCENT_SIGN
 import com.example.bearvbull.util.Utility.DOWN_ARROW
 import com.example.bearvbull.util.Utility.UP_ARROW
 import com.example.bearvbull.util.Utility.simpleDateFormat
-import com.example.bearvbull.util.round
-import com.example.bearvbull.viewmodel.MainViewModel
 
 @Composable
 fun BetInfoImage(infoType: BetInfoType) {
@@ -164,15 +161,20 @@ fun OrderBookEntryRow(orderBookEntry: OrderBookEntry, modifier: Modifier) {
 
 
 @Composable
-fun BottomNavBarItem(icon: Int, title: String) {
-    Column() {
+fun BottomNavBarItem(icon: Int, title: String, selected: Boolean, modifier: Modifier) {
+    Column(
+        modifier = modifier
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Image(
             painter = painterResource(id = icon),
             contentDescription = title,
             colorFilter = ColorFilter.tint(
-                Color.White
-            )
+                if (selected) Color.White else Color.Gray
+            ),
+            modifier = Modifier.size(20.dp)
         )
-        Text(title, fontSize = 12.sp)
+        Text(title, fontSize = 12.sp, color = if (selected) Color.White else Color.Gray)
     }
 }

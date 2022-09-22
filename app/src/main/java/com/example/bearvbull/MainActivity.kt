@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
                 val countDownTime by mainViewModel.countDownTime.collectAsState()
                 val liveBetData by mainViewModel.liveBetDataFlow.collectAsState()
                 val liveOrderBookData by mainViewModel.liveOrderBook.collectAsState()
+                val selectedScreen by mainViewModel.selectedNavItem
                 var betScreenBool by remember {
                     mutableStateOf(false)
                 }
@@ -56,7 +57,8 @@ class MainActivity : ComponentActivity() {
                     Column(
                         Modifier
                             .fillMaxSize()
-                            .align(Alignment.TopCenter)) {
+                            .align(Alignment.TopCenter)
+                    ) {
                         if (betScreenBool) {
                             BetScreen(
                                 countDownTime = countDownTime,
@@ -78,14 +80,23 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun BottomNavBar(modifier: Modifier) {
+    val selected by remember {
+        mutableStateOf(NavBarItems.BET_SCREEN)
+    }
     Row(
         modifier = modifier
-            .height(25.dp)
-            .background(ButtonOutline),
+            .height(64.dp)
+            .background(ButtonOutline)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         for (navItem in navBarItemList) {
-            BottomNavBarItem(icon = navItem.icon, title = navItem.title)
+            BottomNavBarItem(
+                icon = navItem.icon,
+                title = navItem.title,
+                selected.title == navItem.title,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }

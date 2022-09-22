@@ -20,6 +20,12 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
+
+    // NavBar
+    private var _selectedNavItem = MutableStateFlow(NavBarItems.BET_SCREEN)
+    val selectedNavItem : StateFlow<NavBarItems> = _selectedNavItem
+    // End nav bar
+
     private var countDownTimer: CountDownTimer? = null
 
     private var _countDownTime = MutableStateFlow("")
@@ -84,9 +90,9 @@ class MainViewModel : ViewModel() {
 
     private suspend fun generateOrderBookEntries() {
         while (true) {
-            delay(Random.nextLong(1111, 2222))
+            delay(Random.nextLong(300, 1000))
             val userName = (1..10)
-                .map { _ -> Random.nextInt(0, charPool.size) }
+                .map { Random.nextInt(0, charPool.size) }
                 .map(charPool::get)
                 .joinToString("")
             val amountWagered = Random.nextDouble(from = 0.0, until = 99999999.99).roundToInt()
