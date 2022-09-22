@@ -52,7 +52,6 @@ fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, liveBetData: LiveBetDa
 
 @Composable
 fun TopBarIcon(icon: Int) {
-    // 0 = Left icon 1 = Right icon
     Image(
         painter = painterResource(id = icon),
         contentDescription = "Profile",

@@ -24,7 +24,7 @@ fun RankingsScreen() {
         Column(
             modifier = Modifier.align(Alignment.TopCenter)
         ) {
-
+            ScreenTopBar()
         }
     }
 }

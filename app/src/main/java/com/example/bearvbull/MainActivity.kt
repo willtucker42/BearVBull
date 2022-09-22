@@ -2,6 +2,7 @@
 
 package com.example.bearvbull
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,13 +13,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -32,6 +32,7 @@ import com.example.bearvbull.data.LiveBetData
 import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.components.*
 import com.example.bearvbull.ui.theme.*
+import com.example.bearvbull.ui.views.BetScreen
 import com.example.bearvbull.util.BetInfoType
 import com.example.bearvbull.util.BetSide
 import com.example.bearvbull.util.PERCENT_SIGN
@@ -39,6 +40,7 @@ import com.example.bearvbull.util.betInfoTypeList
 import com.example.bearvbull.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -47,29 +49,51 @@ class MainActivity : ComponentActivity() {
                 val countDownTime by mainViewModel.countDownTime.collectAsState()
                 val liveBetData by mainViewModel.liveBetDataFlow.collectAsState()
                 val liveOrderBookData by mainViewModel.liveOrderBook.collectAsState()
-                Surface(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(DeepPurple),
-                    ) {
-                        Column(
-                            modifier = Modifier.align(Alignment.TopCenter)
-                        ) {
-                            TopBar()
-                            BetWindow(
-                                countDownTime = countDownTime,
-                                liveBetData = liveBetData
-                            )
-                            Spacer(Modifier.height(12.dp))
-                            OrderBook(liveOrderBook = liveOrderBookData)
+                var betScreenBool by remember {
+                    mutableStateOf(false)
+                }
+                Column(Modifier.fillMaxSize()) {
+                    if (betScreenBool) {
+                        BetScreen(
+                            countDownTime = countDownTime,
+                            liveBetData = liveBetData,
+                            liveOrderBookData = liveOrderBookData
+                        )
+                    } else {
+                        Button(onClick = { betScreenBool = true }) {
+                            Text("Not bet screen")
                         }
                     }
+                    Spacer(Modifier.weight(1f))
+                    BottomNavBar()
                 }
             }
         }
+    }
+}
+
+@Composable
+fun BottomNavBar() {
+    Row(
+        modifier = Modifier
+            .height(25.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.bet_chips_icon),
+            contentDescription = "Navigate to Bet Screen",
+            colorFilter = ColorFilter.tint(Color.White)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.trophy_icon_2),
+            contentDescription = "Navigate to Rankings Screen",
+            colorFilter = ColorFilter.tint(Color.White)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.user_icon_filled),
+            contentDescription = "Navigate to Profile Screen",
+            colorFilter = ColorFilter.tint(Color.White)
+        )
     }
 }
 
@@ -110,11 +134,13 @@ fun OrderBook(liveOrderBook: OrderBook) {
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 items(items = liveOrderBook.orderBook.reversed()) { order ->
-                    OrderBookEntryRow(orderBookEntry = order, modifier = Modifier.animateItemPlacement(
-                        animationSpec = tween(
-                            durationMillis = 200
+                    OrderBookEntryRow(
+                        orderBookEntry = order, modifier = Modifier.animateItemPlacement(
+                            animationSpec = tween(
+                                durationMillis = 200
+                            )
                         )
-                    ))
+                    )
                 }
             }
         }
