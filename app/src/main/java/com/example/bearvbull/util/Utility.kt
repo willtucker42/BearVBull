@@ -49,6 +49,17 @@ val betInfoTypeList = listOf(
     BetInfoType.BIGGEST_BET,
 )
 
+enum class NavBarItems(val icon: Int, val title: String) {
+    BET_SCREEN(R.drawable.bet_chips_icon, "Home"),
+    RANKINGS_SCREEN(R.drawable.trophy_icon_2, "Rankings"),
+    PROFILE_SCREEN(R.drawable.profile_icon, "Profile")
+}
+
+val navBarItemList = listOf(
+    NavBarItems.BET_SCREEN,
+    NavBarItems.RANKINGS_SCREEN,
+    NavBarItems.PROFILE_SCREEN
+)
 
 fun Double.getFormattedNumber(): String {
     if (this < 1000) return "" + this

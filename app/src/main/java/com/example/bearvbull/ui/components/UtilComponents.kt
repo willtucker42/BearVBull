@@ -161,3 +161,18 @@ fun OrderBookEntryRow(orderBookEntry: OrderBookEntry, modifier: Modifier) {
         )
     }
 }
+
+
+@Composable
+fun BottomNavBarItem(icon: Int, title: String) {
+    Column() {
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = title,
+            colorFilter = ColorFilter.tint(
+                Color.White
+            )
+        )
+        Text(title, fontSize = 12.sp)
+    }
+}

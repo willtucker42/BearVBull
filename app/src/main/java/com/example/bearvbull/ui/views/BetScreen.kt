@@ -19,10 +19,10 @@ fun BetScreen(countDownTime: String, liveBetData: LiveBetData, liveOrderBookData
     Surface{
         Box(
             modifier = Modifier
-                .background(DeepPurple),
+                .background(DeepPurple)
         ) {
             Column(
-                modifier = Modifier.align(Alignment.TopCenter)
+//                modifier = Modifier.align(Alignment.TopCenter)
             ) {
                 TopBar()
                 BetWindow(

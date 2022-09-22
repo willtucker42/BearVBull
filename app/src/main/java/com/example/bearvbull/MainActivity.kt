@@ -33,10 +33,7 @@ import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.components.*
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.ui.views.BetScreen
-import com.example.bearvbull.util.BetInfoType
-import com.example.bearvbull.util.BetSide
-import com.example.bearvbull.util.PERCENT_SIGN
-import com.example.bearvbull.util.betInfoTypeList
+import com.example.bearvbull.util.*
 import com.example.bearvbull.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
@@ -52,20 +49,27 @@ class MainActivity : ComponentActivity() {
                 var betScreenBool by remember {
                     mutableStateOf(false)
                 }
-                Column(Modifier.fillMaxSize()) {
-                    if (betScreenBool) {
-                        BetScreen(
-                            countDownTime = countDownTime,
-                            liveBetData = liveBetData,
-                            liveOrderBookData = liveOrderBookData
-                        )
-                    } else {
-                        Button(onClick = { betScreenBool = true }) {
-                            Text("Not bet screen")
+                Box(
+                    modifier = Modifier
+                        .background(DeepPurple)
+                ) {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .align(Alignment.TopCenter)) {
+                        if (betScreenBool) {
+                            BetScreen(
+                                countDownTime = countDownTime,
+                                liveBetData = liveBetData,
+                                liveOrderBookData = liveOrderBookData
+                            )
+                        } else {
+                            Button(onClick = { betScreenBool = true }) {
+                                Text("Not bet screen")
+                            }
                         }
                     }
-                    Spacer(Modifier.weight(1f))
-                    BottomNavBar()
+                    BottomNavBar(modifier = Modifier.align(Alignment.BottomCenter))
                 }
             }
         }
@@ -73,27 +77,16 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BottomNavBar() {
+fun BottomNavBar(modifier: Modifier) {
     Row(
-        modifier = Modifier
-            .height(25.dp),
+        modifier = modifier
+            .height(25.dp)
+            .background(ButtonOutline),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.bet_chips_icon),
-            contentDescription = "Navigate to Bet Screen",
-            colorFilter = ColorFilter.tint(Color.White)
-        )
-        Image(
-            painter = painterResource(id = R.drawable.trophy_icon_2),
-            contentDescription = "Navigate to Rankings Screen",
-            colorFilter = ColorFilter.tint(Color.White)
-        )
-        Image(
-            painter = painterResource(id = R.drawable.user_icon_filled),
-            contentDescription = "Navigate to Profile Screen",
-            colorFilter = ColorFilter.tint(Color.White)
-        )
+        for (navItem in navBarItemList) {
+            BottomNavBarItem(icon = navItem.icon, title = navItem.title)
+        }
     }
 }
 
@@ -111,6 +104,7 @@ fun BetWindow(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OrderBook(liveOrderBook: OrderBook) {
     Column(
