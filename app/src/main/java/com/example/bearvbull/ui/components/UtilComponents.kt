@@ -1,11 +1,12 @@
 package com.example.bearvbull.ui.components
 
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,9 +23,11 @@ import com.example.bearvbull.ui.theme.interFontFamily
 import com.example.bearvbull.ui.theme.poppinsFontFamily
 import com.example.bearvbull.util.BetInfoType
 import com.example.bearvbull.util.BetSide
+import com.example.bearvbull.util.NavBarItems
 import com.example.bearvbull.util.Utility.DOWN_ARROW
 import com.example.bearvbull.util.Utility.UP_ARROW
 import com.example.bearvbull.util.Utility.simpleDateFormat
+import com.example.bearvbull.viewmodel.MainViewModel
 
 @Composable
 fun BetInfoImage(infoType: BetInfoType) {
@@ -160,21 +163,25 @@ fun OrderBookEntryRow(orderBookEntry: OrderBookEntry, modifier: Modifier) {
 }
 
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun BottomNavBarItem(icon: Int, title: String, selected: Boolean, modifier: Modifier) {
+fun BottomNavBarItem(navBarItem: NavBarItems, viewModel: MainViewModel, modifier: Modifier, selectedScreen: NavBarItems) {
     Column(
         modifier = modifier
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable {
+                viewModel.navToDiffScreen(navBarItem)
+            },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = icon),
-            contentDescription = title,
+            painter = painterResource(id = navBarItem.icon),
+            contentDescription = navBarItem.title,
             colorFilter = ColorFilter.tint(
-                if (selected) Color.White else Color.Gray
+                if (selectedScreen == navBarItem) Color.White else Color.Gray
             ),
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(if (selectedScreen == navBarItem) 20.dp else 15.dp)
         )
-        Text(title, fontSize = 12.sp, color = if (selected) Color.White else Color.Gray)
+        Text(navBarItem.title, fontSize = 12.sp, color = if (selectedScreen == navBarItem) Color.White else Color.Gray)
     }
 }

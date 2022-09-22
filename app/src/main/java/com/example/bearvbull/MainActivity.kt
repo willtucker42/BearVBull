@@ -33,6 +33,7 @@ import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.components.*
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.ui.views.BetScreen
+import com.example.bearvbull.ui.views.RankingsScreen
 import com.example.bearvbull.util.*
 import com.example.bearvbull.viewmodel.MainViewModel
 
@@ -46,7 +47,8 @@ class MainActivity : ComponentActivity() {
                 val countDownTime by mainViewModel.countDownTime.collectAsState()
                 val liveBetData by mainViewModel.liveBetDataFlow.collectAsState()
                 val liveOrderBookData by mainViewModel.liveOrderBook.collectAsState()
-                val selectedScreen by mainViewModel.selectedNavItem
+                val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
+
                 var betScreenBool by remember {
                     mutableStateOf(false)
                 }
@@ -59,19 +61,24 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .align(Alignment.TopCenter)
                     ) {
-                        if (betScreenBool) {
-                            BetScreen(
-                                countDownTime = countDownTime,
-                                liveBetData = liveBetData,
-                                liveOrderBookData = liveOrderBookData
-                            )
-                        } else {
-                            Button(onClick = { betScreenBool = true }) {
+                        when (selectedScreen) {
+                            NavBarItems.BET_SCREEN ->
+                                BetScreen(
+                                    countDownTime = countDownTime,
+                                    liveBetData = liveBetData,
+                                    liveOrderBookData = liveOrderBookData
+                                )
+                            NavBarItems.RANKINGS_SCREEN -> RankingsScreen()
+                            else -> Button(onClick = { mainViewModel.navToDiffScreen(NavBarItems.BET_SCREEN) }) {
                                 Text("Not bet screen")
                             }
                         }
                     }
-                    BottomNavBar(modifier = Modifier.align(Alignment.BottomCenter))
+                    BottomNavBar(
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        viewModel = mainViewModel,
+                        selectedScreen = selectedScreen
+                    )
                 }
             }
         }
@@ -79,10 +86,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BottomNavBar(modifier: Modifier) {
-    val selected by remember {
-        mutableStateOf(NavBarItems.BET_SCREEN)
-    }
+fun BottomNavBar(modifier: Modifier, viewModel: MainViewModel, selectedScreen: NavBarItems) {
     Row(
         modifier = modifier
             .height(64.dp)
@@ -92,10 +96,10 @@ fun BottomNavBar(modifier: Modifier) {
     ) {
         for (navItem in navBarItemList) {
             BottomNavBarItem(
-                icon = navItem.icon,
-                title = navItem.title,
-                selected.title == navItem.title,
-                modifier = Modifier.weight(1f)
+                navItem,
+                viewModel = viewModel,
+                modifier = Modifier.weight(1f),
+                selectedScreen = selectedScreen
             )
         }
     }

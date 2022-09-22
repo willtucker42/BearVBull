@@ -22,8 +22,8 @@ import kotlin.random.Random
 class MainViewModel : ViewModel() {
 
     // NavBar
-    private var _selectedNavItem = MutableStateFlow(NavBarItems.BET_SCREEN)
-    val selectedNavItem : StateFlow<NavBarItems> = _selectedNavItem
+    private var _selectedNavItem = MutableStateFlow(NavBarItems.PROFILE_SCREEN)
+    val selectedNavItem: StateFlow<NavBarItems> = _selectedNavItem
     // End nav bar
 
     private var countDownTimer: CountDownTimer? = null
@@ -174,5 +174,8 @@ class MainViewModel : ViewModel() {
         }.start()
     }
 
+    fun navToDiffScreen(screen: NavBarItems) {
+        _selectedNavItem.value = screen
+    }
 
 }
