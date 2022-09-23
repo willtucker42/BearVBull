@@ -24,9 +24,12 @@ fun RankingsScreen() {
             .background(DeepPurple),
     ) {
         Column(
-            modifier = Modifier.align(Alignment.TopCenter)
+            modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
             ScreenTopBar()
+            Spacer(Modifier.height(12.dp))
             PodiumRow()
         }
     }

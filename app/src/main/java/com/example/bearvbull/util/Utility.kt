@@ -74,7 +74,7 @@ val navBarItemList = listOf(
 
 val testProfilePics = listOf(
     R.drawable.chadjack,
-    R.drawable.pic_of_me,
+    R.drawable.green_wojak,
     R.drawable.ben_shapiro
 )
 

@@ -22,7 +22,7 @@ import kotlin.random.Random
 class MainViewModel : ViewModel() {
 
     // NavBar
-    private var _selectedNavItem = MutableStateFlow(NavBarItems.PROFILE_SCREEN)
+    private var _selectedNavItem = MutableStateFlow(NavBarItems.RANKINGS_SCREEN)
     val selectedNavItem: StateFlow<NavBarItems> = _selectedNavItem
     // End nav bar
 
