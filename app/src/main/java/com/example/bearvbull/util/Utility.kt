@@ -1,7 +1,11 @@
 package com.example.bearvbull.util
 
 import android.annotation.SuppressLint
+import androidx.compose.ui.graphics.Color
 import com.example.bearvbull.R
+import com.example.bearvbull.ui.theme.PodiumBronze
+import com.example.bearvbull.ui.theme.PodiumGold
+import com.example.bearvbull.ui.theme.PodiumSilver
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -15,6 +19,7 @@ object Utility {
     const val TIME_COUNTDOWN: Long = 60000L
     private const val TIME_FORMAT = "%02d:%02d"
     private const val ORDER_BOOK_ENTRY_TIME_FORMAT = "HH:mm:ss.SS"
+
     @SuppressLint("SimpleDateFormat")
     val simpleDateFormat: SimpleDateFormat = SimpleDateFormat(ORDER_BOOK_ENTRY_TIME_FORMAT)
     val UP_ARROW = R.drawable.arrow_up
@@ -55,10 +60,10 @@ enum class NavBarItems(val icon: Int, val title: String) {
     PROFILE_SCREEN(R.drawable.profile_icon, "Profile")
 }
 
-enum class PodiumRanks(rank: String) {
-    SECOND("Second"),
-    FIRST("First"),
-    THIRD("Third")
+enum class PodiumRanks(rank: String, color: Color) {
+    SECOND("Second", PodiumSilver),
+    FIRST("First", PodiumGold),
+    THIRD("Third", PodiumBronze)
 }
 
 val navBarItemList = listOf(
@@ -87,7 +92,6 @@ fun Double.formatBigNumberWithCommas(): String {
         .reversed()
         .plus(postDecimalDigits)
 }
-
 
 
 fun Double.round(): Double {
