@@ -60,7 +60,7 @@ enum class NavBarItems(val icon: Int, val title: String) {
     PROFILE_SCREEN(R.drawable.profile_icon, "Profile")
 }
 
-enum class PodiumRanks(rank: String, color: Color) {
+enum class PodiumRanks(val rank: String, val color: Color) {
     SECOND("Second", PodiumSilver),
     FIRST("First", PodiumGold),
     THIRD("Third", PodiumBronze)
@@ -70,6 +70,12 @@ val navBarItemList = listOf(
     NavBarItems.BET_SCREEN,
     NavBarItems.RANKINGS_SCREEN,
     NavBarItems.PROFILE_SCREEN
+)
+
+val testProfilePics = listOf(
+    R.drawable.chadjack,
+    R.drawable.pic_of_me,
+    R.drawable.ben_shapiro
 )
 
 fun Double.getFormattedNumber(): String {

@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bearvbull.ui.components.PodiumRow
 import com.example.bearvbull.ui.theme.DeepPurple
 import com.example.bearvbull.ui.theme.poppinsFontFamily
 
@@ -26,6 +27,7 @@ fun RankingsScreen() {
             modifier = Modifier.align(Alignment.TopCenter)
         ) {
             ScreenTopBar()
+            PodiumRow()
         }
     }
 }
