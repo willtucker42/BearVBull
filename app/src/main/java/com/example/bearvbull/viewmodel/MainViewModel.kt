@@ -97,7 +97,7 @@ class MainViewModel : ViewModel() {
                 .joinToString("")
             val amountWagered = Random.nextDouble(from = 0.0, until = 99999999.99).roundToInt()
             println("AmountWagered: $amountWagered")
-            var betSide = ""
+            var betSide: String
             val randomNum = Random.nextInt(from = 1, until = 100)
             val betPercent: Double
             betSide = if (randomNum % 2 == 0) {
