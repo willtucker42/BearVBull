@@ -165,7 +165,12 @@ fun OrderBookEntryRow(orderBookEntry: OrderBookEntry, modifier: Modifier) {
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun BottomNavBarItem(navBarItem: NavBarItems, viewModel: MainViewModel, modifier: Modifier, selectedScreen: NavBarItems) {
+fun BottomNavBarItem(
+    navBarItem: NavBarItems,
+    viewModel: MainViewModel,
+    modifier: Modifier,
+    selectedScreen: NavBarItems
+) {
     Column(
         modifier = modifier
             .padding(8.dp)
@@ -182,6 +187,11 @@ fun BottomNavBarItem(navBarItem: NavBarItems, viewModel: MainViewModel, modifier
             ),
             modifier = Modifier.size(if (selectedScreen == navBarItem) 20.dp else 15.dp)
         )
-        Text(navBarItem.title, fontSize = 12.sp, color = if (selectedScreen == navBarItem) Color.White else Color.Gray)
+        Text(
+            navBarItem.title,
+            fontFamily = poppinsFontFamily,
+            fontSize = 12.sp,
+            color = if (selectedScreen == navBarItem) Color.White else Color.Gray
+        )
     }
 }
