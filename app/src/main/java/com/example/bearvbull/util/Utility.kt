@@ -55,6 +55,12 @@ enum class NavBarItems(val icon: Int, val title: String) {
     PROFILE_SCREEN(R.drawable.profile_icon, "Profile")
 }
 
+enum class PodiumRanks(rank: String) {
+    SECOND("Second"),
+    FIRST("First"),
+    THIRD("Third")
+}
+
 val navBarItemList = listOf(
     NavBarItems.BET_SCREEN,
     NavBarItems.RANKINGS_SCREEN,
