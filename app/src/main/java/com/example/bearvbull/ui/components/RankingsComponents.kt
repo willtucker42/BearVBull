@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -52,9 +53,11 @@ fun PodiumRow(podiumUsers: List<UserAccountInformation>) {
 @Composable
 fun RankingsUserList(userList: List<UserAccountInformation>) {
     Box(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
     ) {
-        LazyColumn() {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             items(items = userList) { user ->
                 RankingsUserRow(user = user)
             }
@@ -64,43 +67,57 @@ fun RankingsUserList(userList: List<UserAccountInformation>) {
 
 @Composable
 fun RankingsUserRow(user: UserAccountInformation) {
-    Row(verticalAlignment = CenterVertically) {
-        Row(verticalAlignment = CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
-            Text(
-                text = user.rank.toString(),
-                fontFamily = poppinsFontFamily,
-                fontSize = 18.sp,
-                color = Color.White
-            )
-            Image(
-                painter = painterResource(user.profileImage),
-                contentDescription = "${user.userName}, rank: ${user.rank}",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(Purple200)
-            )
-            Text(
-                text = user.userName,
-                fontFamily = poppinsFontFamily,
-                fontSize = 14.sp,
-                color = Color.White
-            )
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        Row() {
+    Box(
+        Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(ButtonOutline)
+            .padding(12.dp)
+    ) {
+        Row(verticalAlignment = CenterVertically) {
             Row(
-                modifier = Modifier.align(CenterVertically),
-                verticalAlignment = CenterVertically
+                verticalAlignment = CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Image(
-                    painter = painterResource(id = drawable.cash_icon),
-                    contentDescription = "Amount of cash",
-                    Modifier
-                        .size(12.dp)
-                        .padding(end = 2.dp)
+                Text(
+                    text = (user.rank + 1).toString(),
+                    fontFamily = poppinsFontFamily,
+                    fontSize = 18.sp,
+                    color = Color.White
                 )
-                Text(text = user.userBalance.formatBigLong(), color = Color.White, fontSize = 12.sp)
+                Image(
+                    painter = painterResource(user.profileImage),
+                    contentDescription = "${user.userName}, rank: ${user.rank}",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Purple200)
+                )
+                Text(
+                    text = user.userName,
+                    fontFamily = poppinsFontFamily,
+                    fontSize = 14.sp,
+                    color = Color.White
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Row() {
+                Row(
+                    modifier = Modifier.align(CenterVertically),
+                    verticalAlignment = CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = drawable.cash_icon),
+                        contentDescription = "Amount of cash",
+                        Modifier
+                            .size(12.dp)
+                            .padding(end = 2.dp)
+                    )
+                    Text(
+                        text = user.userBalance.formatBigLong(),
+                        color = Color.White,
+                        fontSize = 12.sp
+                    )
+                }
             }
         }
     }
