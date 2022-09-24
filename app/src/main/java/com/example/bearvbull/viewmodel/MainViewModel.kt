@@ -3,9 +3,11 @@ package com.example.bearvbull.viewmodel
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bearvbull.R
 import com.example.bearvbull.data.LiveBetData
 import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.data.OrderBookEntry
+import com.example.bearvbull.data.users.RankingsUserList
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
@@ -65,6 +67,8 @@ class MainViewModel : ViewModel() {
     val liveBetDataFlow: StateFlow<LiveBetData> = betData
     // End bet data
 
+//    lateinit var fakeAccountInformation: RankingsUserList
+    val fakeRankingsUserList = mutableListOf<UserAccountInformation>()
 
     init {
         orderBookHolder = OrderBook(
@@ -78,6 +82,7 @@ class MainViewModel : ViewModel() {
                 )
             )
         )
+        generateRankingsUserList()
         startTimer()
         viewModelScope.launch {
             generateOrderBookEntries()
@@ -120,6 +125,24 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    private fun generateRankingsUserList() {
+        for (i in 0..200) {
+            fakeRankingsUserList.add(UserAccountInformation(
+                userId = (1..10)
+                    .map { Random.nextInt(0, charPool.size) }
+                    .map(charPool::get)
+                    .joinToString(""),
+                userName = (1..10)
+                    .map { Random.nextInt(0, charPool.size) }
+                    .map(charPool::get)
+                    .joinToString(""),
+                rank = i,
+                userBalance = Random.nextLong(from = 11111, until = 111111111),
+                profileImage = R.drawable.green_wojak
+            ))
+        }
+    }
+
     private suspend fun generateAndUpdateLiveBetDataData() {
         while (true) {
             delay(1000L)
@@ -143,10 +166,10 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    val liveUserAccountInformation = UserAccountInformation(
-        userId = "123",
-        userBalance = 1092832.99
-    )
+//    val liveUserAccountInformation = UserAccountInformation(
+//        userId = "123",
+//        userBalance = 1111111
+//    )
 
     val countDownFlow = flow {
         val startingValue = 10

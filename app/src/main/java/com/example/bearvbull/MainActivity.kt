@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
                                     liveBetData = liveBetData,
                                     liveOrderBookData = liveOrderBookData
                                 )
-                            NavBarItems.RANKINGS_SCREEN -> RankingsScreen()
+                            NavBarItems.RANKINGS_SCREEN -> RankingsScreen(mainViewModel)
                             else -> Button(onClick = { mainViewModel.navToDiffScreen(NavBarItems.BET_SCREEN) }) {
                                 Text("Not bet screen")
                             }

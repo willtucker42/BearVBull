@@ -9,6 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.bearvbull.R
 import androidx.compose.ui.unit.sp
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.theme.Purple200
@@ -29,7 +31,7 @@ import com.example.bearvbull.util.testProfilePics
 
 @Preview
 @Composable
-fun PodiumRow() {
+fun PodiumRow(podiumUsers : ) {
     Row(
         modifier = Modifier
             .height(200.dp)
@@ -43,13 +45,38 @@ fun PodiumRow() {
 }
 
 @Composable
+fun RankingsList(users: List<UserAccountInformation>) {
+
+}
+
+@Composable
 fun UserRowRankingsRow(user: UserAccountInformation) {
     Row() {
         Row() {
-
+            Text(text = user.rank.toString(), fontFamily = poppinsFontFamily, fontSize = 18.sp)
+            Image(
+                painter = painterResource(user.profileImage),
+                contentDescription = "${user.userName}, rank: ${user.rank}",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Purple200)
+            )
+            Text(text = user.userName, fontFamily = poppinsFontFamily, fontSize = 14.sp)
         }
         Row() {
-
+            Row(
+                modifier = Modifier.align(CenterVertically),
+                verticalAlignment = CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.cash_icon),
+                    contentDescription = "Amount of cash",
+                    Modifier
+                        .size(12.dp)
+                        .padding(end = 2.dp)
+                )
+                Text(text = user.userBalance.formatBigLong(), color = Color.White, fontSize = 14.sp)
         }
     }
 }
@@ -66,7 +93,7 @@ fun RankingsPodiumBox(
     ) {
         Column(modifier = Modifier.align(if (rank.rank == "First") Alignment.TopCenter else Alignment.Center)) {
             Image(
-                painter = painterResource(id = com.example.bearvbull.R.drawable.gold_crown_icon),
+                painter = painterResource(id = R.drawable.gold_crown_icon),
                 contentDescription = "Leader",
                 Modifier
                     .size(28.dp)
@@ -95,10 +122,10 @@ fun RankingsPodiumBox(
             )
             Row(
                 modifier = Modifier.align(CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = com.example.bearvbull.R.drawable.cash_icon),
+                    painter = painterResource(id = R.drawable.cash_icon),
                     contentDescription = "Amount of cash",
                     Modifier
                         .size(12.dp)

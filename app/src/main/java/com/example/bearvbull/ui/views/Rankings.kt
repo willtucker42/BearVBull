@@ -12,25 +12,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bearvbull.ui.components.PodiumRow
+import com.example.bearvbull.ui.components.RankingsList
 import com.example.bearvbull.ui.theme.DeepPurple
 import com.example.bearvbull.ui.theme.poppinsFontFamily
+import com.example.bearvbull.viewmodel.MainViewModel
 
-@Preview
+
 @Composable
-fun RankingsScreen() {
+fun RankingsScreen(viewModel: MainViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(DeepPurple),
     ) {
         Column(
-            modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             ScreenTopBar()
             Spacer(Modifier.height(12.dp))
             PodiumRow()
+            RankingsList(users = viewModel.fakeRankingsUserList)
         }
     }
 }
