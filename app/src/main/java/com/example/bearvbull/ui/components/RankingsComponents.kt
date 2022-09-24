@@ -54,11 +54,15 @@ fun PodiumRow(podiumUsers: List<UserAccountInformation>) {
 fun RankingsUserList(userList: List<UserAccountInformation>) {
     Box(
         modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
             .background(NotSoDeepPurple)
     ) {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 20.dp),
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
             items(items = userList) { user ->
                 RankingsUserRow(user = user)
             }
@@ -77,7 +81,7 @@ fun RankingsUserRow(user: UserAccountInformation) {
         Row(verticalAlignment = CenterVertically) {
             Row(
                 verticalAlignment = CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
                     text = (user.rank + 1).toString(),
@@ -95,8 +99,8 @@ fun RankingsUserRow(user: UserAccountInformation) {
                 )
                 Text(
                     text = user.userName,
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 14.sp,
+                    fontFamily = poppinsFontFamily, fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
                     color = Color.White
                 )
             }
@@ -116,7 +120,7 @@ fun RankingsUserRow(user: UserAccountInformation) {
                     Text(
                         text = user.userBalance.formatBigLong(),
                         color = Color.White,
-                        fontSize = 12.sp
+                        fontSize = 16.sp
                     )
                 }
             }
