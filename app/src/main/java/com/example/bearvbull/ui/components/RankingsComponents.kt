@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.theme.Purple200
 import com.example.bearvbull.ui.theme.poppinsFontFamily
 import com.example.bearvbull.util.PodiumRanks
@@ -42,8 +43,15 @@ fun PodiumRow() {
 }
 
 @Composable
-fun UserRowRankingsRow(profileImage: Int) {
+fun UserRowRankingsRow(user: UserAccountInformation) {
+    Row() {
+        Row() {
 
+        }
+        Row() {
+
+        }
+    }
 }
 
 @Composable
