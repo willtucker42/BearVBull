@@ -105,16 +105,14 @@ fun RankingsUserRow(user: UserAccountInformation) {
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            Row() {
                 Row(
-                    modifier = Modifier.align(CenterVertically),
                     verticalAlignment = CenterVertically
                 ) {
                     Image(
                         painter = painterResource(id = drawable.cash_icon),
                         contentDescription = "Amount of cash",
                         Modifier
-                            .size(12.dp)
+                            .size(16.dp)
                             .padding(end = 2.dp)
                     )
                     Text(
@@ -123,7 +121,6 @@ fun RankingsUserRow(user: UserAccountInformation) {
                         fontSize = 16.sp
                     )
                 }
-            }
         }
     }
 }

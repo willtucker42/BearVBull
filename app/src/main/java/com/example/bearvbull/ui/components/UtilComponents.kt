@@ -185,7 +185,7 @@ fun BottomNavBarItem(
             colorFilter = ColorFilter.tint(
                 if (selectedScreen == navBarItem) Color.White else Color.Gray
             ),
-            modifier = Modifier.size(if (selectedScreen == navBarItem) 20.dp else 15.dp)
+            modifier = Modifier.size(if (selectedScreen == navBarItem) 24.dp else 18.dp)
         )
         Text(
             navBarItem.title,
