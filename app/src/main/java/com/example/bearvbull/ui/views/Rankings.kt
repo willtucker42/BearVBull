@@ -11,8 +11,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bearvbull.data.users.PodiumUsers
+import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.components.PodiumRow
-import com.example.bearvbull.ui.components.RankingsList
+import com.example.bearvbull.ui.components.RankingsUserList
 import com.example.bearvbull.ui.theme.DeepPurple
 import com.example.bearvbull.ui.theme.poppinsFontFamily
 import com.example.bearvbull.viewmodel.MainViewModel
@@ -20,6 +22,16 @@ import com.example.bearvbull.viewmodel.MainViewModel
 
 @Composable
 fun RankingsScreen(viewModel: MainViewModel) {
+    // Get the first 3 users from the list of RankingsUsers, transform to a Triple for PodiumUsers.kt
+    val podiumUsers: PodiumUsers =
+        viewModel.fakeRankingsUserList.subList(fromIndex = 0, toIndex = 3).let {
+            val list = mutableListOf<UserAccountInformation>()
+            it.forEach { i ->
+                list.add(i)
+            }
+            PodiumUsers(list)
+        }
+    viewModel.fakeRankingsUserList.subList(fromIndex = 0, toIndex = 3).clear()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -34,8 +46,8 @@ fun RankingsScreen(viewModel: MainViewModel) {
         ) {
             ScreenTopBar()
             Spacer(Modifier.height(12.dp))
-            PodiumRow()
-            RankingsList(users = viewModel.fakeRankingsUserList)
+            PodiumRow(podiumUsers.users)
+            RankingsUserList(viewModel.fakeRankingsUserList)
         }
     }
 }
