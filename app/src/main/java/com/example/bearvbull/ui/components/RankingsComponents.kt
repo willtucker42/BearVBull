@@ -56,6 +56,7 @@ fun RankingsUserList(userList: List<UserAccountInformation>) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
+            .background(NotSoDeepPurple)
     ) {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             items(items = userList) { user ->
