@@ -81,7 +81,7 @@ fun RankingsPodiumBox(
                 fontWeight = FontWeight.SemiBold,
                 fontStyle = FontStyle.Italic,
                 fontSize = 12.sp,
-                color = Color.White,
+                color = rank.color,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(2.dp)
             )
