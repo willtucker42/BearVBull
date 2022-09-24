@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.bearvbull.data.LiveBetData
 import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.data.OrderBookEntry
-import com.example.bearvbull.data.UserAccountInformation
+import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
 import kotlinx.coroutines.delay
@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 import java.util.*
 import kotlin.math.roundToInt
 import kotlin.random.Random

@@ -98,7 +98,12 @@ fun Double.formatBigNumberWithCommas(): String {
         .reversed()
         .plus(postDecimalDigits)
 }
-
+ fun Long.formatBigLong(): String {
+     return this.toString().reversed()
+         .chunked(3)
+         .joinToString(COMMA)
+         .reversed()
+ }
 
 fun Double.round(): Double {
     val df = DecimalFormat("#.##")
