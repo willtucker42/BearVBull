@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -18,13 +19,15 @@ import com.example.bearvbull.ui.theme.poppinsFontFamily
 
 @Composable
 fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
-    Column() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Image(
             painter = painterResource(id = R.drawable.green_wojak),
             contentDescription = "User profile picture",
             Modifier
                 .clip(CircleShape)
-                .size(22.dp)
+                .size(80.dp)
         )
         Text(
             text = userAccountInformation.userName,
@@ -52,8 +55,9 @@ fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
 fun ProfileTopBar() {
     Row(
         Modifier
-            .height(12.dp)
-            .wrapContentWidth()) {
+            .wrapContentWidth()
+            .padding(12.dp)
+    ) {
         Spacer(modifier = Modifier.weight(1f))
         TopBarIcon(icon = R.drawable.settings_gear_icon, contentDesc = "Settings")
     }
