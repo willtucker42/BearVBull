@@ -67,8 +67,15 @@ class MainViewModel : ViewModel() {
     val liveBetDataFlow: StateFlow<LiveBetData> = betData
     // End bet data
 
-//    lateinit var fakeAccountInformation: RankingsUserList
+    //    lateinit var fakeAccountInformation: RankingsUserList
     val fakeRankingsUserList = mutableListOf<UserAccountInformation>()
+    val fakeUser = UserAccountInformation(
+        userId = "123",
+        userName = "willTucker42",
+        70198817,
+        R.drawable.green_wojak,
+        1
+    )
 
     init {
         orderBookHolder = OrderBook(
