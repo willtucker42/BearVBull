@@ -50,7 +50,10 @@ fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
 
 @Composable
 fun ProfileTopBar() {
-    Row(Modifier.height(12.dp)) {
+    Row(
+        Modifier
+            .height(12.dp)
+            .wrapContentWidth()) {
         Spacer(modifier = Modifier.weight(1f))
         TopBarIcon(icon = R.drawable.settings_gear_icon, contentDesc = "Settings")
     }
