@@ -1,14 +1,49 @@
 package com.example.bearvbull.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.bearvbull.R
+import com.example.bearvbull.data.users.UserAccountInformation
+import com.example.bearvbull.ui.theme.poppinsFontFamily
+
+
+@Composable
+fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
+    Column() {
+        Image(
+            painter = painterResource(id = R.drawable.green_wojak),
+            contentDescription = "User profile picture",
+            Modifier
+                .clip(CircleShape)
+                .size(22.dp)
+        )
+        Text(
+            text = userAccountInformation.userName,
+            fontFamily = poppinsFontFamily,
+            fontSize = 14.sp
+        )
+        Row() {
+            Image(
+                painter = painterResource(id = R.drawable.cash_icon),
+                contentDescription = "Cash",
+                modifier = Modifier.size(12.dp)
+            )
+            Text(
+                text = userAccountInformation.userBalance.toString(),
+                fontFamily = poppinsFontFamily,
+                fontSize = 12.sp
+            )
+        }
+    }
+}
 
 @Composable
 fun ProfileTopBar() {
