@@ -52,9 +52,6 @@ fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
 fun ProfileTopBar() {
     Row(Modifier.height(12.dp)) {
         Spacer(modifier = Modifier.weight(1f))
-        Image(
-            painter = painterResource(id = R.drawable.settings_gear_icon),
-            contentDescription = "Settings"
-        )
+        TopBarIcon(icon = R.drawable.settings_gear_icon, contentDesc = "Settings")
     }
 }
