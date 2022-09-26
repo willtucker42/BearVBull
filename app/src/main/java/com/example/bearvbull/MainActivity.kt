@@ -33,6 +33,7 @@ import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.components.*
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.ui.views.BetScreen
+import com.example.bearvbull.ui.views.ProfileScreen
 import com.example.bearvbull.ui.views.RankingsScreen
 import com.example.bearvbull.util.*
 import com.example.bearvbull.viewmodel.MainViewModel
@@ -69,9 +70,7 @@ class MainActivity : ComponentActivity() {
                                     liveOrderBookData = liveOrderBookData
                                 )
                             NavBarItems.RANKINGS_SCREEN -> RankingsScreen(mainViewModel)
-                            else -> Button(onClick = { mainViewModel.navToDiffScreen(NavBarItems.BET_SCREEN) }) {
-                                Text("Not bet screen")
-                            }
+                            NavBarItems.PROFILE_SCREEN -> ProfileScreen(viewModel = mainViewModel)
                         }
                     }
                     BottomNavBar(
