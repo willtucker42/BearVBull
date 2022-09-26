@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.bearvbull.ui.components.ProfilePictureAndInfo
 import com.example.bearvbull.ui.components.ProfileTopBar
@@ -18,7 +20,12 @@ fun ProfileScreen(viewModel: MainViewModel) {
             .fillMaxSize()
             .background(DeepPurple),
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             ProfileTopBar()
             ProfilePictureAndInfo(userAccountInformation = viewModel.fakeUser)
         }
