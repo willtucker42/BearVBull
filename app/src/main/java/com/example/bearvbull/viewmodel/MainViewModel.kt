@@ -107,7 +107,7 @@ class MainViewModel : ViewModel() {
     private fun generateBetHistory() {
         val df = DecimalFormat("0.00")
         for (i in 0..200) {
-            val initialBetAmount = Random.nextLong(0, 199999999999)
+            val initialBetAmount = Random.nextLong(0, 199999999)
             val betSide = if (Random.nextInt(0, 2) == 0) {
                 "Bull"
             } else {

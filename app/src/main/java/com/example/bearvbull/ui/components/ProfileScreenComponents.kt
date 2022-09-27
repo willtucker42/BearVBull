@@ -81,7 +81,7 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "${betInformation.initialBetAmount} @${betInformation.odds}",
+                    text = "${betInformation.initialBetAmount.formatBigLong()} @${betInformation.odds}",
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal,
                     color = Color.White
