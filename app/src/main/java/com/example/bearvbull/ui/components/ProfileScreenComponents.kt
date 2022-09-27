@@ -1,10 +1,12 @@
 package com.example.bearvbull.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bearvbull.R
 import com.example.bearvbull.data.users.UserAccountInformation
+import com.example.bearvbull.ui.theme.NotSoDeepPurple
 import com.example.bearvbull.ui.theme.poppinsFontFamily
 import com.example.bearvbull.util.formatBigLong
 import com.example.bearvbull.viewmodel.MainViewModel
@@ -30,13 +33,22 @@ fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
             Text("Bet History")
             Spacer(modifier = Modifier.weight(1f))
         }
-        LazyColumn(content = )
+//        LazyColumn(content = )
     }
 }
 
 @Composable
 fun ProfileBetHistoryRow() {
-    
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .fillMaxWidth()
+            .background(NotSoDeepPurple)
+    ) {
+        Row() {
+
+        }
+    }
 }
 
 @Composable
