@@ -18,35 +18,39 @@ import androidx.compose.ui.unit.sp
 import com.example.bearvbull.R
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.theme.poppinsFontFamily
+import com.example.bearvbull.util.formatBigLong
 
 
 @Composable
 fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = painterResource(id = R.drawable.green_wojak),
             contentDescription = "User profile picture",
             Modifier
                 .clip(CircleShape)
-                .size(80.dp)
+                .size(92.dp)
         )
+        Spacer(Modifier.height(8.dp))
         Text(
             text = userAccountInformation.userName,
             fontFamily = poppinsFontFamily,
-            fontSize = 14.sp,
+            fontSize = 18.sp,
             color = Color.White
         )
-        Row() {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.cash_icon),
                 contentDescription = "Cash",
                 modifier = Modifier.size(12.dp)
             )
             Text(
-                text = userAccountInformation.userBalance.toString(),
+                text = userAccountInformation.userBalance.formatBigLong(),
                 fontFamily = poppinsFontFamily,
                 fontSize = 12.sp,
                 color = Color.White
