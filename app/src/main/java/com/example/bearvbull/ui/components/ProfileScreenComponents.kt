@@ -3,6 +3,7 @@ package com.example.bearvbull.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,7 +20,24 @@ import com.example.bearvbull.R
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.theme.poppinsFontFamily
 import com.example.bearvbull.util.formatBigLong
+import com.example.bearvbull.viewmodel.MainViewModel
 
+
+@Composable
+fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
+    Column() {
+        Row() {
+            Text("Bet History")
+            Spacer(modifier = Modifier.weight(1f))
+        }
+        LazyColumn(content = )
+    }
+}
+
+@Composable
+fun ProfileBetHistoryRow() {
+    
+}
 
 @Composable
 fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
