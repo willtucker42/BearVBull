@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bearvbull.R
 import com.example.bearvbull.data.LiveBetData
 import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.ui.theme.BetGreen
@@ -27,6 +28,7 @@ import com.example.bearvbull.util.NavBarItems
 import com.example.bearvbull.util.Utility.DOWN_ARROW
 import com.example.bearvbull.util.Utility.UP_ARROW
 import com.example.bearvbull.util.Utility.simpleDateFormat
+import com.example.bearvbull.util.formatBigLong
 import com.example.bearvbull.viewmodel.MainViewModel
 
 @Composable
@@ -192,6 +194,30 @@ fun BottomNavBarItem(
             fontFamily = poppinsFontFamily,
             fontSize = 12.sp,
             color = if (selectedScreen == navBarItem) Color.White else Color.Gray
+        )
+    }
+}
+
+@Composable
+fun CashAmountAndIcon(
+    color: Color,
+    textSize: Int,
+    imageSize: Int,
+    cashAmount: Long
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            painter = painterResource(id = R.drawable.cash_icon),
+            contentDescription = "Cash",
+            colorFilter = ColorFilter.tint(color),
+            modifier = Modifier.size(imageSize.dp)
+        )
+        Text(
+            text = cashAmount.formatBigLong(),
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = textSize.sp,
+            color = color
         )
     }
 }

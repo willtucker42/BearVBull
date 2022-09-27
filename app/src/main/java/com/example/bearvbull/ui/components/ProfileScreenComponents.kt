@@ -14,14 +14,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bearvbull.R
+import com.example.bearvbull.data.BetInformation
 import com.example.bearvbull.data.users.UserAccountInformation
+import com.example.bearvbull.ui.theme.BetGreen
+import com.example.bearvbull.ui.theme.BetRed
 import com.example.bearvbull.ui.theme.NotSoDeepPurple
 import com.example.bearvbull.ui.theme.poppinsFontFamily
+import com.example.bearvbull.util.Utility
 import com.example.bearvbull.util.formatBigLong
 import com.example.bearvbull.viewmodel.MainViewModel
 
@@ -30,7 +35,7 @@ import com.example.bearvbull.viewmodel.MainViewModel
 fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
     Column() {
         Row() {
-            Text("Bet History")
+            Text("Bet History", )
             Spacer(modifier = Modifier.weight(1f))
         }
 //        LazyColumn(content = )
@@ -38,15 +43,43 @@ fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
 }
 
 @Composable
-fun ProfileBetHistoryRow() {
+fun ProfileBetHistoryRow(betInformation: BetInformation) {
+    val imageResource = if (betInformation.betSide == "Bear") Utility.DOWN_ARROW else Utility.UP_ARROW
+    val betColor = if (betInformation.betSide == "Bear") BetRed else BetGreen
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .fillMaxWidth()
             .background(NotSoDeepPurple)
     ) {
-        Row() {
-
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "$${betInformation.tickerSymbol}",
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "${betInformation.initialBetAmount} @${betInformation.odds}",
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 18.sp
+                )
+                Spacer(Modifier.width(4.dp))
+                Image(
+                    painter = painterResource(imageResource),
+                    contentDescription = betInformation.betSide,
+                    modifier = Modifier.size(12.dp),
+                    colorFilter = ColorFilter.tint(color = betColor)
+                )
+            }
+            CashAmountAndIcon(
+                color = betColor,
+                textSize = 18,
+                imageSize = 18,
+                cashAmount = betInformation.winnings
+            )
         }
     }
 }

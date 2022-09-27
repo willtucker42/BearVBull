@@ -328,7 +328,6 @@ fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel
 //@Preview
 @Composable
 fun MainBetPromptTitle(
-    title: String = "Betting is ",
     ticker: String = "SPY",
     countDownTime_: String = ""
 ) {
