@@ -7,7 +7,9 @@ data class BetInformation(
     val initialBetAmount: Long = 500000,
     val betSide: String = "Bear",
     val odds: Double = 50.00,
-    val winnings: Long = 1000000
+    val winnings: Long = 1000000,
+    val userId: String = "123",
+    val didWin: Boolean = true
 )
 
 data class UserBetHistory(

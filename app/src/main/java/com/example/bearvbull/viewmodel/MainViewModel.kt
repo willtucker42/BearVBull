@@ -4,6 +4,7 @@ import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bearvbull.R
+import com.example.bearvbull.data.BetInformation
 import com.example.bearvbull.data.LiveBetData
 import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.data.OrderBookEntry
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import java.util.*
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -76,6 +78,8 @@ class MainViewModel : ViewModel() {
         R.drawable.green_wojak,
         1
     )
+    val fakeBetHistory = mutableListOf<BetInformation>()
+    val fakeBetInformation = BetInformation()
 
     init {
         orderBookHolder = OrderBook(
@@ -96,6 +100,33 @@ class MainViewModel : ViewModel() {
         }
         viewModelScope.launch {
             generateAndUpdateLiveBetDataData()
+        }
+    }
+
+    private fun generateBetHistory() {
+        val df = DecimalFormat("0.00")
+        for (i in 0..200) {
+            val initialBetAmount = Random.nextLong(0, 199999999999)
+            val betSide = if (Random.nextInt(0, 2) == 0) {
+                "Bull"
+            } else {
+                "Bear"
+            }
+            val didWin = Random.nextInt(0, 2) == 0
+            val odds = df.format(Random.nextDouble(0.00, 100.00)).toDouble()
+            val winnings = if (didWin) {
+                (initialBetAmount + (initialBetAmount * odds)).toLong()
+            } else {
+                0
+            }
+            fakeBetHistory.add(
+                BetInformation(
+                    initialBetAmount = initialBetAmount,
+                    betSide = betSide,
+                    odds = odds,
+                    winnings = winnings
+                )
+            )
         }
     }
 

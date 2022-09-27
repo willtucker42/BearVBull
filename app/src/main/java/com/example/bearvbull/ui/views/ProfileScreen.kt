@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.bearvbull.ui.components.ProfileBetHistoryContainer
 import com.example.bearvbull.ui.components.ProfilePictureAndInfo
 import com.example.bearvbull.ui.components.ProfileTopBar
 import com.example.bearvbull.ui.theme.DeepPurple
@@ -28,6 +29,7 @@ fun ProfileScreen(viewModel: MainViewModel) {
         ) {
             ProfileTopBar()
             ProfilePictureAndInfo(userAccountInformation = viewModel.fakeUser)
+            ProfileBetHistoryContainer(viewModel = viewModel)
         }
     }
 }

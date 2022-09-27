@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -38,7 +39,13 @@ fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
             Text("Bet History", )
             Spacer(modifier = Modifier.weight(1f))
         }
-//        LazyColumn(content = )
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 20.dp),
+            modifier = Modifier.padding(top = 16.dp)) {
+            items(viewModel.fakeBetHistory) { bet ->
+                ProfileBetHistoryRow(betInformation = bet)
+            }
+        }
     }
 }
 
