@@ -205,7 +205,10 @@ fun CashAmountAndIcon(
     imageSize: Int,
     cashAmount: Long
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
         Image(
             painter = painterResource(id = R.drawable.cash_icon),
             contentDescription = "Cash",

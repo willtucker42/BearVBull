@@ -35,13 +35,20 @@ import com.example.bearvbull.viewmodel.MainViewModel
 @Composable
 fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
     Column() {
-        Row() {
-            Text("Bet History", )
+        Row(Modifier.padding(8.dp)) {
+            Text(
+                "Bet History",
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 24.sp,
+                color = Color.White
+            )
             Spacer(modifier = Modifier.weight(1f))
         }
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(horizontal = 20.dp),
-            modifier = Modifier.padding(top = 16.dp)) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp)
+        ) {
             items(viewModel.fakeBetHistory) { bet ->
                 ProfileBetHistoryRow(betInformation = bet)
             }
@@ -51,36 +58,43 @@ fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
 
 @Composable
 fun ProfileBetHistoryRow(betInformation: BetInformation) {
-    val imageResource = if (betInformation.betSide == "Bear") Utility.DOWN_ARROW else Utility.UP_ARROW
+    val imageResource =
+        if (betInformation.betSide == "Bear") Utility.DOWN_ARROW else Utility.UP_ARROW
     val betColor = if (betInformation.betSide == "Bear") BetRed else BetGreen
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .fillMaxWidth()
             .background(NotSoDeepPurple)
+            .padding(12.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             Text(
                 text = "$${betInformation.tickerSymbol}",
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp
+                fontSize = 16.sp,
+                color = Color.White
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "${betInformation.initialBetAmount} @${betInformation.odds}",
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 18.sp
+                    color = Color.White
                 )
                 Spacer(Modifier.width(4.dp))
                 Image(
                     painter = painterResource(imageResource),
                     contentDescription = betInformation.betSide,
                     modifier = Modifier.size(12.dp),
-                    colorFilter = ColorFilter.tint(color = betColor)
+                    colorFilter = ColorFilter.tint(if (betInformation.didWin) BetGreen else BetRed)
                 )
             }
+            Spacer(Modifier.weight(1f))
             CashAmountAndIcon(
                 color = betColor,
                 textSize = 18,

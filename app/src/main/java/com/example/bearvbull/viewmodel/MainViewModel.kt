@@ -94,6 +94,7 @@ class MainViewModel : ViewModel() {
             )
         )
         generateRankingsUserList()
+        generateBetHistory()
         startTimer()
         viewModelScope.launch {
             generateOrderBookEntries()
