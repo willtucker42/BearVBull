@@ -79,7 +79,6 @@ class MainViewModel : ViewModel() {
         1
     )
     val fakeBetHistory = mutableListOf<BetInformation>()
-    val fakeBetInformation = BetInformation()
 
     init {
         orderBookHolder = OrderBook(
@@ -114,8 +113,9 @@ class MainViewModel : ViewModel() {
                 "Bear"
             }
             val didWin = Random.nextInt(0, 2) == 0
-            val odds = df.format(Random.nextDouble(0.00, 100.00)).toDouble()
+            val odds = (100 / Random.nextDouble(0.00, 100.00))
             val winnings = if (didWin) {
+                println("asdfasdf $initialBetAmount * $odds =  ${initialBetAmount + (initialBetAmount * odds).round()}")
                 (initialBetAmount + (initialBetAmount * odds)).toLong()
             } else {
                 0
@@ -125,7 +125,8 @@ class MainViewModel : ViewModel() {
                     initialBetAmount = initialBetAmount,
                     betSide = betSide,
                     odds = odds,
-                    winnings = winnings
+                    winnings = winnings,
+                    didWin = didWin
                 )
             )
         }
@@ -139,7 +140,7 @@ class MainViewModel : ViewModel() {
                 .map(charPool::get)
                 .joinToString("")
             val amountWagered = Random.nextDouble(from = 0.0, until = 99999999.99).roundToInt()
-            println("AmountWagered: $amountWagered")
+//            println("AmountWagered: $amountWagered")
             var betSide: String
             val randomNum = Random.nextInt(from = 1, until = 100)
             val betPercent: Double
