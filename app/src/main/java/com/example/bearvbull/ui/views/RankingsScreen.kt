@@ -43,7 +43,7 @@ fun RankingsScreen(viewModel: MainViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            ScreenTopBar()
+            RankingsTopBar()
             Spacer(Modifier.height(12.dp))
             PodiumRow(podiumUsers.users)
             RankingsUserList(viewModel.fakeRankingsUserList)
@@ -52,7 +52,7 @@ fun RankingsScreen(viewModel: MainViewModel) {
 }
 
 @Composable
-fun ScreenTopBar() {
+fun RankingsTopBar() {
     Row(modifier = Modifier.padding(12.dp)) {
         Spacer(modifier = Modifier.weight(1.0f))
         Text(
