@@ -84,23 +84,33 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
                     text = "${betInformation.initialBetAmount.formatBigLong()} @${betInformation.odds}",
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White
+                    fontSize = 14.sp,
+                    color = betColor
                 )
                 Spacer(Modifier.width(4.dp))
                 Image(
                     painter = painterResource(imageResource),
                     contentDescription = betInformation.betSide,
-                    modifier = Modifier.size(12.dp),
-                    colorFilter = ColorFilter.tint(if (betInformation.didWin) BetGreen else BetRed)
+                    modifier = Modifier.size(10.dp),
+                    colorFilter = ColorFilter.tint(betColor)
                 )
             }
             Spacer(Modifier.weight(1f))
-            CashAmountAndIcon(
-                color = betColor,
-                textSize = 18,
-                imageSize = 18,
-                cashAmount = betInformation.winnings
-            )
+            if (betInformation.didWin) {
+                CashAmountAndIcon(
+                    color = BetGreen,
+                    textSize = 14,
+                    imageSize = 14,
+                    cashAmount = betInformation.winnings
+                )
+            } else {
+                Text(
+                    text = "Bet lost",
+                    fontFamily = poppinsFontFamily,
+                    color = BetRed,
+                    fontSize = 16.sp
+                )
+            }
         }
     }
 }
