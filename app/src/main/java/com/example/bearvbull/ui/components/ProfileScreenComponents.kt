@@ -85,7 +85,7 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
-                    color = betColor
+                    color = Color.White
                 )
                 Spacer(Modifier.width(4.dp))
                 Image(
