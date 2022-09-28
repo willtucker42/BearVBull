@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bearvbull.R
-import com.example.bearvbull.data.LiveBetData
+import com.example.bearvbull.data.LivePredictionMarketData
 import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.ui.theme.BetGreen
 import com.example.bearvbull.ui.theme.BetRed
@@ -44,7 +44,7 @@ fun BetInfoImage(infoType: BetInfoType) {
 }
 
 @Composable
-fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, liveBetData: LiveBetData) {
+fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, liveBetData: LivePredictionMarketData) {
     Text(
         text = liveBetData.createBetInfoLabel(infoType, betSide),
         fontFamily = interFontFamily,

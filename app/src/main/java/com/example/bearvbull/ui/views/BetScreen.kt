@@ -10,12 +10,12 @@ import androidx.compose.ui.unit.dp
 import com.example.bearvbull.BetWindow
 import com.example.bearvbull.OrderBook
 import com.example.bearvbull.TopBar
-import com.example.bearvbull.data.LiveBetData
+import com.example.bearvbull.data.LivePredictionMarketData
 import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.theme.DeepPurple
 
 @Composable
-fun BetScreen(countDownTime: String, liveBetData: LiveBetData, liveOrderBookData: OrderBook) {
+fun BetScreen(countDownTime: String, liveBetData: LivePredictionMarketData, liveOrderBookData: OrderBook) {
     Surface{
         Box(
             modifier = Modifier

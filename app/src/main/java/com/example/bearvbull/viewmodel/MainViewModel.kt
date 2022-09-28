@@ -5,10 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bearvbull.R
 import com.example.bearvbull.data.BetInformation
-import com.example.bearvbull.data.LiveBetData
+import com.example.bearvbull.data.LivePredictionMarketData
 import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.data.OrderBookEntry
-import com.example.bearvbull.data.users.RankingsUserList
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
@@ -57,7 +56,7 @@ class MainViewModel : ViewModel() {
 
     // BetData
     private var betData = MutableStateFlow(
-        LiveBetData(
+        LivePredictionMarketData(
             betId = "abc123",
             bearTotal = 89763.12,
             bullTotal = 189699.76,
@@ -67,7 +66,7 @@ class MainViewModel : ViewModel() {
             biggestBullBet = 103098.00
         )
     )
-    val liveBetDataFlow: StateFlow<LiveBetData> = betData
+    val liveBetDataFlow: StateFlow<LivePredictionMarketData> = betData
     // End bet data
 
     //    lateinit var fakeAccountInformation: RankingsUserList
@@ -196,7 +195,7 @@ class MainViewModel : ViewModel() {
             val totalBulls = Random.nextInt(from = 0, until = 9999999)
             val biggestBearBet = Random.nextDouble(from = 0.0, until = bearTotal)
             val biggestBullBet = Random.nextDouble(from = 0.0, until = bullTotal)
-            val randomData = LiveBetData(
+            val randomData = LivePredictionMarketData(
                 betId = "123",
                 bearTotal = bearTotal,
                 bullTotal = bullTotal,

@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.bearvbull.util.*
 import timber.log.Timber
 
-data class LiveBetData(
+data class LivePredictionMarketData(
     val betId: String,
     val bearTotal: Double,
     val bullTotal: Double,

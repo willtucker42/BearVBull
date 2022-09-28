@@ -11,14 +11,14 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.bearvbull.data.LiveBetData
+import com.example.bearvbull.data.LivePredictionMarketData
 import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.navigation.BottomBarScreen
 import com.example.bearvbull.ui.navigation.BottomNavGraph
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen(countDownTime: String, liveBetData: LiveBetData, liveOrderBookData: OrderBook) {
+fun MainScreen(countDownTime: String, liveBetData: LivePredictionMarketData, liveOrderBookData: OrderBook) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomBar(navController = navController) }
