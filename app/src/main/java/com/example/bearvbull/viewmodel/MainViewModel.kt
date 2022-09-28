@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import java.util.*
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
@@ -113,10 +114,12 @@ class MainViewModel : ViewModel() {
                 "Bear"
             }
             val didWin = Random.nextInt(0, 2) == 0
-            val odds = (100 / Random.nextDouble(0.00, 100.00))
+            val odds = Random.nextDouble(0.00, 100.00).round()
+
+            println("asdfasdf $initialBetAmount * $odds =  ${(initialBetAmount * odds).roundToLong()}")
+            val winningsMultiplier = (100 / odds)
             val winnings = if (didWin) {
-                println("asdfasdf $initialBetAmount * $odds =  ${initialBetAmount + (initialBetAmount * odds).round()}")
-                (initialBetAmount + (initialBetAmount * odds)).toLong()
+                (initialBetAmount * winningsMultiplier).roundToLong()
             } else {
                 0
             }
@@ -125,6 +128,7 @@ class MainViewModel : ViewModel() {
                     initialBetAmount = initialBetAmount,
                     betSide = betSide,
                     odds = odds,
+                    winningsMultiplier = winningsMultiplier,
                     winnings = winnings,
                     didWin = didWin
                 )
