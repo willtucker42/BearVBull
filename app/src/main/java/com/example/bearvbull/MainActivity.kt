@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.bearvbull.data.LiveBetData
+import com.example.bearvbull.data.LivePredictionMarketData
 import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.components.*
 import com.example.bearvbull.ui.theme.*
@@ -107,7 +107,7 @@ fun BottomNavBar(modifier: Modifier, viewModel: MainViewModel, selectedScreen: N
 @Composable
 fun BetWindow(
     countDownTime: String,
-    liveBetData: LiveBetData
+    liveBetData: LivePredictionMarketData
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -156,7 +156,7 @@ fun OrderBook(liveOrderBook: OrderBook) {
 }
 
 @Composable
-fun BetButtonRow(liveBetData: LiveBetData) {
+fun BetButtonRow(liveBetData: LivePredictionMarketData) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -187,7 +187,7 @@ fun BetButtonContainer(
     backgroundColor: Color = BetGreen,
     betSide: BetSide,
     description: String = "blah",
-    liveBetData: LiveBetData
+    liveBetData: LivePredictionMarketData
 ) {
     Surface(
         modifier = Modifier.width(150.dp),
@@ -226,7 +226,7 @@ fun BetButtonContainer(
 fun BetInformationRow(
     infoType: BetInfoType,
     betSide: BetSide,
-    liveBetData: LiveBetData
+    liveBetData: LivePredictionMarketData
 ) {
     Row {
         BetInfoImage(infoType = infoType)

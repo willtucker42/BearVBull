@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.bearvbull.util.*
 import timber.log.Timber
 
-data class LiveBetData(
+data class LivePredictionMarketData(
     val betId: String,
     val bearTotal: Double,
     val bullTotal: Double,
@@ -12,6 +12,7 @@ data class LiveBetData(
     val biggestBullBet: Double,
     val totalBears: Int,
     val totalBulls: Int,
+    val betStatus: String = "live", // live, closed, waiting
     val grandTotal: Double = bearTotal + bullTotal
 ) {
     fun getBearAndBullPercentages(): Pair<Double, Double> {
@@ -31,6 +32,7 @@ data class LiveBetData(
             }
         }
     }
+
     fun createBetInfoLabel(betInfoType: BetInfoType, betSide: BetSide): String {
         return when (betInfoType) {
             BetInfoType.TOTAL_WAGERED -> getTotalWageredForBetSide(betSide).getFormattedNumber()
@@ -39,6 +41,7 @@ data class LiveBetData(
             BetInfoType.BIGGEST_BET -> getBiggestBet(betSide).getFormattedNumber()
         }
     }
+
     private fun getTotalWageredForBetSide(betSide: BetSide): Double {
         return when (betSide) {
             BetSide.BEAR -> bearTotal

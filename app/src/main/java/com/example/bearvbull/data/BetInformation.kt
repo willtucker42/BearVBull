@@ -10,6 +10,7 @@ data class BetInformation(
     val winningsMultiplier: Double = 2.0,
     val winnings: Long = 1000000,
     val userId: String = "123",
+    val betStatus: String = "active", // Status can be either active, won, lost
     val didWin: Boolean = true
 )
 
