@@ -4,13 +4,14 @@ import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bearvbull.R
-import com.example.bearvbull.data.BetInformation
-import com.example.bearvbull.data.LivePredictionMarketData
-import com.example.bearvbull.data.OrderBook
-import com.example.bearvbull.data.OrderBookEntry
+import com.example.bearvbull.data.*
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,16 +26,22 @@ import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
     // NavBar
+    private val db: FirebaseFirestore
     private var _selectedNavItem = MutableStateFlow(NavBarItems.RANKINGS_SCREEN)
     val selectedNavItem: StateFlow<NavBarItems> = _selectedNavItem
     // End nav bar
 
     private var countDownTimer: CountDownTimer? = null
 
+    private var activeMarketsHolder: ActiveMarkets = ActiveMarkets()
+    private var _activeMarkets = MutableStateFlow(ActiveMarkets())
+    val activeMarkets: StateFlow<ActiveMarkets> = _activeMarkets
+
     private var _countDownTime = MutableStateFlow("")
     val countDownTime: StateFlow<String> = _countDownTime
     private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
+    //    private val todaysBetDocument: DocumentReference
     // OrderBook
     private var orderBookHolder: OrderBook
     private var _orderBookMutableStateFlow = MutableStateFlow(
@@ -81,6 +88,11 @@ class MainViewModel : ViewModel() {
     val fakeBetHistory = mutableListOf<BetInformation>()
 
     init {
+        db = Firebase.firestore
+
+//            Firebase.firestore.collection("live_prediction_market_info")
+//                .document("SPY-9_28_2022")
+
         orderBookHolder = OrderBook(
             mutableListOf(
                 OrderBookEntry(
@@ -92,15 +104,32 @@ class MainViewModel : ViewModel() {
                 )
             )
         )
+
         generateRankingsUserList()
         generateBetHistory()
         startTimer()
+        viewModelScope.launch {
+        }
         viewModelScope.launch {
             generateOrderBookEntries()
         }
         viewModelScope.launch {
             generateAndUpdateLiveBetDataData()
         }
+    }
+
+    private fun getActiveMarkets() {
+        db.collection("live_prediction_market_info")
+            .whereEqualTo("bet_status", "live")
+            .get()
+            .addOnSuccessListener { result ->
+                for (doc in result) {
+                    println("thedoc ${doc.id} => ${doc.data}")
+                }
+            }
+            .addOnFailureListener { exception ->
+                println("Error getting documents. $exception")
+            }
     }
 
     private fun generateBetHistory() {
