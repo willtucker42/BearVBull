@@ -12,6 +12,7 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -109,6 +110,7 @@ class MainViewModel : ViewModel() {
         generateBetHistory()
         startTimer()
         viewModelScope.launch {
+            getActiveMarkets()
         }
         viewModelScope.launch {
             generateOrderBookEntries()
@@ -123,8 +125,9 @@ class MainViewModel : ViewModel() {
             .whereEqualTo("bet_status", "live")
             .get()
             .addOnSuccessListener { result ->
-                for (doc in result) {
+                result.forEach { doc ->
                     println("thedoc ${doc.id} => ${doc.data}")
+                    activeMarketsHolder.activeMarkets.add(doc.toObject(ActiveMarket::class.java))
                 }
             }
             .addOnFailureListener { exception ->
