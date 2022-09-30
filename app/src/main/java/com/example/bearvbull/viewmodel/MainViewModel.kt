@@ -11,6 +11,7 @@ import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +24,6 @@ import kotlin.math.roundToLong
 import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
-
     // NavBar
     private var _selectedNavItem = MutableStateFlow(NavBarItems.RANKINGS_SCREEN)
     val selectedNavItem: StateFlow<NavBarItems> = _selectedNavItem
