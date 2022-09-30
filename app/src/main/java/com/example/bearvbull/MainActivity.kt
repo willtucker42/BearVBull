@@ -50,9 +50,6 @@ class MainActivity : ComponentActivity() {
                 val liveOrderBookData by mainViewModel.liveOrderBook.collectAsState()
                 val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
 
-                var betScreenBool by remember {
-                    mutableStateOf(false)
-                }
                 Box(
                     modifier = Modifier
                         .background(DeepPurple)

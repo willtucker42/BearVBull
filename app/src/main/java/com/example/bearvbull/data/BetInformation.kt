@@ -1,7 +1,5 @@
 package com.example.bearvbull.data
 
-import com.example.bearvbull.util.BetSide
-
 data class BetInformation(
     val tickerSymbol: String = "SPY",
     val initialBetAmount: Long = 500000,
