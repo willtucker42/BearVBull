@@ -60,8 +60,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
     implementation "androidx.compose.runtime:runtime-livedata:$compose_ui_version"
     implementation 'com.jakewharton.timber:timber:5.0.1'
-    implementation 'com.google.firebase:firebase-functions-ktx'
-    implementation 'com.google.firebase:firebase-firestore-ktx'
+    implementation 'com.google.firebase:firebase-functions-ktx:21.4.2'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.3.1'
     implementation platform('com.google.firebase:firebase-bom:30.5.0')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
