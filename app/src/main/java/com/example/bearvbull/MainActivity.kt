@@ -128,7 +128,8 @@ fun OrderBook(liveOrderBook: OrderBook) {
                 text = "Order Book",
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 24.sp
+                fontSize = 24.sp,
+                color = Color.White
             )
             Spacer(modifier = Modifier.weight(1.0F))
         }

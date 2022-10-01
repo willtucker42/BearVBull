@@ -2,13 +2,18 @@ package com.example.bearvbull.ui.components
 
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -34,13 +39,59 @@ import com.example.bearvbull.viewmodel.MainViewModel
 
 @Composable
 fun BetScreenStatusTitle(marketStatus: String = "live") {
-    Row(modifier = Modifier.padding(8.dp)) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 2000
+                0.05f at 100
+                0.1f at 200
+                0.15f at 300
+                0.2f at 400
+                0.25f at 500
+                0.3f at 600
+                0.35f at 700
+                0.40f at 800
+                0.45f at 900
+                0.5f at 1000
+                0.55f at 1100
+                0.60f at 1200
+                0.65f at 1300
+                0.7f at 1400
+                0.75f at 1500
+                0.8f at 1600
+                0.85f at 1700
+                0.9f at 1800
+                0.95f at 1900
+                1f at 2000
+            },
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    val color = if (marketStatus == "live") BetGreen else BetRed
+    Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = "Bet markets are $marketStatus",
+            text = "Bet markets are ",
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 24.sp
+            fontSize = 24.sp,
+            color = Color.White
         )
+        Text(
+            text = marketStatus,
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 24.sp,
+            color = color
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Canvas(modifier = Modifier
+            .size(12.dp)
+            .alpha(alpha), onDraw = {
+            drawCircle(color = color)
+        })
         Spacer(modifier = Modifier.weight(1f))
     }
 }

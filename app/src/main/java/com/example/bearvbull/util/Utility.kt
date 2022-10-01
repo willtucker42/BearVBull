@@ -1,6 +1,7 @@
 package com.example.bearvbull.util
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.*
 import androidx.compose.ui.graphics.Color
 import com.example.bearvbull.R
 import com.example.bearvbull.ui.theme.PodiumBronze
@@ -98,12 +99,13 @@ fun Double.formatBigNumberWithCommas(): String {
         .reversed()
         .plus(postDecimalDigits)
 }
- fun Long.formatBigLong(): String {
-     return this.toString().reversed()
-         .chunked(3)
-         .joinToString(COMMA)
-         .reversed()
- }
+
+fun Long.formatBigLong(): String {
+    return this.toString().reversed()
+        .chunked(3)
+        .joinToString(COMMA)
+        .reversed()
+}
 
 fun Double.round(): Double {
     val df = DecimalFormat("#.##")
@@ -111,3 +113,5 @@ fun Double.round(): Double {
 
     return df.format(this).toDouble()
 }
+
+//val glowingAnimationKeyFrames = KeyframesSpec.KeyframesSpecConfig(keyframes<> {  })
