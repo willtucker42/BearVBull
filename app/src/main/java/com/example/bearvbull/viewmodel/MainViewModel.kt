@@ -8,11 +8,8 @@ import com.example.bearvbull.data.*
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +24,7 @@ import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
     // NavBar
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore = Firebase.firestore
     private var _selectedNavItem = MutableStateFlow(NavBarItems.RANKINGS_SCREEN)
     val selectedNavItem: StateFlow<NavBarItems> = _selectedNavItem
     // End nav bar
@@ -89,7 +86,6 @@ class MainViewModel : ViewModel() {
     val fakeBetHistory = mutableListOf<BetInformation>()
 
     init {
-        db = Firebase.firestore
 
 //            Firebase.firestore.collection("live_prediction_market_info")
 //                .document("SPY-9_28_2022")
@@ -128,6 +124,7 @@ class MainViewModel : ViewModel() {
                 result.forEach { doc ->
                     println("thedoc ${doc.id} => ${doc.data}")
                     activeMarketsHolder.activeMarkets.add(doc.toObject(ActiveMarket::class.java))
+                    _activeMarkets.value = activeMarketsHolder
                 }
             }
             .addOnFailureListener { exception ->

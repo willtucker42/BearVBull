@@ -31,6 +31,20 @@ import com.example.bearvbull.util.Utility.simpleDateFormat
 import com.example.bearvbull.util.formatBigLong
 import com.example.bearvbull.viewmodel.MainViewModel
 
+
+@Composable
+fun BetScreenStatusTitle(marketStatus: String = "live") {
+    Row(modifier = Modifier.padding(8.dp)) {
+        Text(
+            text = "Bet markets are $marketStatus",
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 24.sp
+        )
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
 @Composable
 fun BetInfoImage(infoType: BetInfoType) {
     Image(

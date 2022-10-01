@@ -12,6 +12,7 @@ import com.example.bearvbull.OrderBook
 import com.example.bearvbull.TopBar
 import com.example.bearvbull.data.LivePredictionMarketData
 import com.example.bearvbull.data.OrderBook
+import com.example.bearvbull.ui.components.BetScreenStatusTitle
 import com.example.bearvbull.ui.theme.DeepPurple
 
 @Composable
@@ -25,6 +26,7 @@ fun BetScreen(countDownTime: String, liveBetData: LivePredictionMarketData, live
 //                modifier = Modifier.align(Alignment.TopCenter)
             ) {
                 TopBar()
+                BetScreenStatusTitle()
                 BetWindow(
                     countDownTime = countDownTime,
                     liveBetData = liveBetData
