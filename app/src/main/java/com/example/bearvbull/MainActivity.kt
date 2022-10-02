@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                 val liveBetData by mainViewModel.liveBetDataFlow.collectAsState()
                 val liveOrderBookData by mainViewModel.liveOrderBook.collectAsState()
                 val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
-
+                val activeMarkets by mainViewModel.activeMarkets.collectAsState()
                 Box(
                     modifier = Modifier
                         .background(DeepPurple)
@@ -64,7 +64,8 @@ class MainActivity : ComponentActivity() {
                                 BetScreen(
                                     countDownTime = countDownTime,
                                     liveBetData = liveBetData,
-                                    liveOrderBookData = liveOrderBookData
+                                    liveOrderBookData = liveOrderBookData,
+                                    activeMarkets = activeMarkets
                                 )
                             NavBarItems.RANKINGS_SCREEN -> RankingsScreen(mainViewModel)
                             NavBarItems.PROFILE_SCREEN -> ProfileScreen(viewModel = mainViewModel)

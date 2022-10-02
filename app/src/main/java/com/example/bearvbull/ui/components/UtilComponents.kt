@@ -8,6 +8,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bearvbull.R
+import com.example.bearvbull.data.ActiveMarkets
 import com.example.bearvbull.data.LivePredictionMarketData
 import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.ui.theme.BetGreen
@@ -38,7 +41,7 @@ import com.example.bearvbull.viewmodel.MainViewModel
 
 
 @Composable
-fun BetScreenStatusTitle(marketStatus: String = "live") {
+fun BetScreenStatusTitle(marketStatus: String = "live", activeMarketsList: ActiveMarkets) {
     val infiniteTransition = rememberInfiniteTransition()
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -71,7 +74,7 @@ fun BetScreenStatusTitle(marketStatus: String = "live") {
         )
     )
     val color = if (marketStatus == "live") BetGreen else BetRed
-    Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = "Bet markets are ",
             fontFamily = poppinsFontFamily,
@@ -86,13 +89,41 @@ fun BetScreenStatusTitle(marketStatus: String = "live") {
             fontSize = 24.sp,
             color = color
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(6.dp))
         Canvas(modifier = Modifier
             .size(12.dp)
             .alpha(alpha), onDraw = {
             drawCircle(color = color)
         })
         Spacer(modifier = Modifier.weight(1f))
+        var expanded by remember { mutableStateOf(false) }
+        var marketDropDownText by remember { mutableStateOf("") }
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Row(
+                Modifier
+                    .padding(24.dp)
+                    .clickable {
+                        expanded = !expanded
+                    }
+                    .padding(8.dp)) {
+                Text(
+                    text = marketDropDownText,
+                    fontFamily = poppinsFontFamily,
+                    fontSize = 24.sp,
+                    color = Color.White
+                )
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    activeMarketsList.activeMarkets.forEach { market ->
+                        DropdownMenuItem(onClick = {
+                            expanded = false
+                            marketDropDownText = market.ticker
+                        }) {
+                            Text(text = market.ticker, color = Color.White)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
