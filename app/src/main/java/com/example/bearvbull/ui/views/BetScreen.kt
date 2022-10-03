@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.example.bearvbull.BetWindow
 import com.example.bearvbull.OrderBook
 import com.example.bearvbull.TopBar
+import com.example.bearvbull.data.ActiveMarket
 import com.example.bearvbull.data.ActiveMarkets
 import com.example.bearvbull.data.LivePredictionMarketData
 import com.example.bearvbull.data.OrderBook
@@ -19,7 +20,7 @@ import com.example.bearvbull.ui.theme.DeepPurple
 @Composable
 fun BetScreen(
     countDownTime: String,
-    liveBetData: LivePredictionMarketData,
+    activeMarketData: ActiveMarket,
     liveOrderBookData: OrderBook,
     activeMarkets: ActiveMarkets
 ) {
@@ -35,7 +36,7 @@ fun BetScreen(
                 BetScreenStatusTitle(activeMarketsList = activeMarkets)
                 BetWindow(
                     countDownTime = countDownTime,
-                    liveBetData = liveBetData
+                    activeMarketData = activeMarketData
                 )
                 Spacer(Modifier.height(12.dp))
                 OrderBook(liveOrderBook = liveOrderBookData)

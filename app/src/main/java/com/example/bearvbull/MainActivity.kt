@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.bearvbull.data.ActiveMarket
 import com.example.bearvbull.data.LivePredictionMarketData
 import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.components.*
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
             BearVBullTheme {
                 val mainViewModel = viewModel<MainViewModel>()
                 val countDownTime by mainViewModel.countDownTime.collectAsState()
-                val liveBetData by mainViewModel.liveBetDataFlow.collectAsState()
+                val activeMarketData by mainViewModel.liveMarketDataFlow.collectAsState()
                 val liveOrderBookData by mainViewModel.liveOrderBook.collectAsState()
                 val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
                 val activeMarkets by mainViewModel.activeMarkets.collectAsState()
@@ -63,7 +64,7 @@ class MainActivity : ComponentActivity() {
                             NavBarItems.BET_SCREEN ->
                                 BetScreen(
                                     countDownTime = countDownTime,
-                                    liveBetData = liveBetData,
+                                    activeMarketData = activeMarketData,
                                     liveOrderBookData = liveOrderBookData,
                                     activeMarkets = activeMarkets
                                 )
@@ -105,14 +106,14 @@ fun BottomNavBar(modifier: Modifier, viewModel: MainViewModel, selectedScreen: N
 @Composable
 fun BetWindow(
     countDownTime: String,
-    liveBetData: LivePredictionMarketData
+    activeMarketData: ActiveMarket
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MainBetPromptTitle(countDownTime_ = countDownTime)
         Spacer(modifier = Modifier.height(16.dp))
-        BetButtonRow(liveBetData = liveBetData)
+        BetButtonRow(activeMarketData = activeMarketData)
     }
 }
 
@@ -155,26 +156,26 @@ fun OrderBook(liveOrderBook: OrderBook) {
 }
 
 @Composable
-fun BetButtonRow(liveBetData: LivePredictionMarketData) {
+fun BetButtonRow(activeMarketData: ActiveMarket) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         BetButtonContainer(
-            percentage = liveBetData.getBearAndBullPercentages().first,
+            percentage = activeMarketData.getBearAndBullPercentages().first,
             icon = R.drawable.arrow_down,
             backgroundColor = BetRed,
             description = "Down arrow",
             betSide = BetSide.BEAR,
-            liveBetData = liveBetData
+            activeMarketData = activeMarketData
         )
         Spacer(modifier = Modifier.width(16.dp))
         BetButtonContainer(
-            percentage = liveBetData.getBearAndBullPercentages().second,
+            percentage = activeMarketData.getBearAndBullPercentages().second,
             icon = R.drawable.arrow_up,
             backgroundColor = BetGreen,
             description = "Up arrow",
             betSide = BetSide.BULL,
-            liveBetData = liveBetData
+            activeMarketData = activeMarketData
         )
     }
 }
@@ -186,7 +187,7 @@ fun BetButtonContainer(
     backgroundColor: Color = BetGreen,
     betSide: BetSide,
     description: String = "blah",
-    liveBetData: LivePredictionMarketData
+    activeMarketData: ActiveMarket
 ) {
     Surface(
         modifier = Modifier.width(150.dp),
@@ -213,7 +214,7 @@ fun BetButtonContainer(
                     BetInformationRow(
                         infoType = infoType,
                         betSide = betSide,
-                        liveBetData = liveBetData
+                        activeMarketData = activeMarketData
                     )
                 }
             }
@@ -225,12 +226,12 @@ fun BetButtonContainer(
 fun BetInformationRow(
     infoType: BetInfoType,
     betSide: BetSide,
-    liveBetData: LivePredictionMarketData
+    activeMarketData: ActiveMarket
 ) {
     Row {
         BetInfoImage(infoType = infoType)
         Spacer(modifier = Modifier.weight(1.0f))
-        BetInfoLabel(infoType = infoType, betSide = betSide, liveBetData = liveBetData)
+        BetInfoLabel(infoType = infoType, betSide = betSide, activeMarketData = activeMarketData)
     }
 }
 

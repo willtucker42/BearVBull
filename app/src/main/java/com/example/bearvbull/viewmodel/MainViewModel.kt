@@ -60,19 +60,13 @@ class MainViewModel : ViewModel() {
 
 
     // BetData
-    private var betData = MutableStateFlow(
-        LivePredictionMarketData(
-            betId = "abc123",
-            bearTotal = 89763.12,
-            bullTotal = 189699.76,
-            totalBears = 3783,
-            totalBulls = 10075,
-            biggestBearBet = 50000.00,
-            biggestBullBet = 103098.00
-        )
+    private var activeMarketData = MutableStateFlow(
+        ActiveMarket()
     )
-    val liveBetDataFlow: StateFlow<LivePredictionMarketData> = betData
+    val liveMarketDataFlow: StateFlow<ActiveMarket> = activeMarketData
     // End bet data
+
+    // ActiveMarket
 
     //    lateinit var fakeAccountInformation: RankingsUserList
     val fakeRankingsUserList = mutableListOf<UserAccountInformation>()
@@ -177,10 +171,10 @@ class MainViewModel : ViewModel() {
             val randomNum = Random.nextInt(from = 1, until = 100)
             val betPercent: Double
             betSide = if (randomNum % 2 == 0) {
-                betPercent = betData.value.getBearAndBullPercentages().first
+                betPercent = activeMarketData.value.getBearAndBullPercentages().first
                 "Bear"
             } else {
-                betPercent = betData.value.getBearAndBullPercentages().second
+                betPercent = activeMarketData.value.getBearAndBullPercentages().second
                 "Bull"
             }
             val time = Date()
@@ -218,23 +212,23 @@ class MainViewModel : ViewModel() {
     private suspend fun generateAndUpdateLiveBetDataData() {
         while (true) {
             delay(1000L)
-            val bearTotal = Random.nextDouble(from = 0.0, until = 9999999999.99)
-            val bullTotal = Random.nextDouble(from = 0.0, until = 9999999999.99)
+            val bearTotal = Random.nextLong(0,9999999999)
+            val bullTotal = Random.nextLong(from = 0, until = 9999999999)
             val totalBears = Random.nextInt(from = 0, until = 9999999)
             val totalBulls = Random.nextInt(from = 0, until = 9999999)
-            val biggestBearBet = Random.nextDouble(from = 0.0, until = bearTotal)
-            val biggestBullBet = Random.nextDouble(from = 0.0, until = bullTotal)
-            val randomData = LivePredictionMarketData(
+            val biggestBearBet = Random.nextLong(from = 0, until = bearTotal)
+            val biggestBullBet = Random.nextLong(from = 0, until = bullTotal)
+            val randomData = ActiveMarket(
                 betId = "123",
                 bearTotal = bearTotal,
                 bullTotal = bullTotal,
-                totalBears = totalBears,
-                totalBulls = totalBulls,
+                bearHeadCount = totalBears,
+                bullHeadCount = totalBulls,
                 biggestBearBet = biggestBearBet,
                 biggestBullBet = biggestBullBet,
             )
             println(randomData)
-            betData.value = randomData
+            activeMarketData.value = randomData
         }
     }
 

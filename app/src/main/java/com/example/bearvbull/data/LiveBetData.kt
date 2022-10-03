@@ -1,6 +1,5 @@
 package com.example.bearvbull.data
 
-import android.util.Log
 import com.example.bearvbull.util.*
 import timber.log.Timber
 

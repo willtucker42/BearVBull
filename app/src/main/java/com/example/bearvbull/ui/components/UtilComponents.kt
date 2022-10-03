@@ -3,33 +3,36 @@ package com.example.bearvbull.ui.components
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import com.example.bearvbull.R
+import com.example.bearvbull.data.ActiveMarket
 import com.example.bearvbull.data.ActiveMarkets
 import com.example.bearvbull.data.LivePredictionMarketData
 import com.example.bearvbull.data.OrderBookEntry
-import com.example.bearvbull.ui.theme.BetGreen
-import com.example.bearvbull.ui.theme.BetRed
-import com.example.bearvbull.ui.theme.interFontFamily
-import com.example.bearvbull.ui.theme.poppinsFontFamily
+import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.BetInfoType
 import com.example.bearvbull.util.BetSide
 import com.example.bearvbull.util.NavBarItems
@@ -38,6 +41,7 @@ import com.example.bearvbull.util.Utility.UP_ARROW
 import com.example.bearvbull.util.Utility.simpleDateFormat
 import com.example.bearvbull.util.formatBigLong
 import com.example.bearvbull.viewmodel.MainViewModel
+import kotlin.math.exp
 
 
 @Composable
@@ -97,28 +101,33 @@ fun BetScreenStatusTitle(marketStatus: String = "live", activeMarketsList: Activ
         })
         Spacer(modifier = Modifier.weight(1f))
         var expanded by remember { mutableStateOf(false) }
-        var marketDropDownText by remember { mutableStateOf("") }
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Row(
-                Modifier
-                    .padding(24.dp)
-                    .clickable {
-                        expanded = !expanded
-                    }
-                    .padding(8.dp)) {
-                Text(
-                    text = marketDropDownText,
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 24.sp,
-                    color = Color.White
-                )
+        var marketDropDownText by remember { mutableStateOf(activeMarketsList.activeMarkets.first().ticker) }
+        val icon = if (expanded)
+            Icons.Filled.KeyboardArrowUp
+        else
+            Icons.Filled.KeyboardArrowDown
+        Surface(
+            shape = RoundedCornerShape(8.dp),
+            border = BorderStroke(1.dp, ButtonOutline),
+            elevation = 8.dp
+        ) {
+            Row(modifier = Modifier
+                .clickable {
+                    expanded = !expanded
+                }
+                .background(DeepPurple)
+                .padding(8.dp)
+            ) {
+                Text(text = marketDropDownText)
+                Icon(imageVector = icon, contentDescription = null)
+
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     activeMarketsList.activeMarkets.forEach { market ->
                         DropdownMenuItem(onClick = {
-                            expanded = false
                             marketDropDownText = market.ticker
+                            expanded = false
                         }) {
-                            Text(text = market.ticker, color = Color.White)
+                            Text(text = "$${market.ticker}")
                         }
                     }
                 }
@@ -126,6 +135,7 @@ fun BetScreenStatusTitle(marketStatus: String = "live", activeMarketsList: Activ
         }
     }
 }
+
 
 @Composable
 fun BetInfoImage(infoType: BetInfoType) {
@@ -140,9 +150,9 @@ fun BetInfoImage(infoType: BetInfoType) {
 }
 
 @Composable
-fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, liveBetData: LivePredictionMarketData) {
+fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, activeMarketData: ActiveMarket) {
     Text(
-        text = liveBetData.createBetInfoLabel(infoType, betSide),
+        text = activeMarketData.createBetInfoLabel(infoType, betSide),
         fontFamily = interFontFamily,
         fontSize = 12.sp
     )
