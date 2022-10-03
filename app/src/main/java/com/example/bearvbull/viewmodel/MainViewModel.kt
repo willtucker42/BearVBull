@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.DecimalFormat
 import java.util.*
 import kotlin.math.roundToInt
@@ -98,7 +99,6 @@ class MainViewModel : ViewModel() {
 
         generateRankingsUserList()
         generateBetHistory()
-        startTimer()
         viewModelScope.launch {
             getActiveMarkets()
         }
@@ -108,6 +108,27 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             generateAndUpdateLiveBetDataData()
         }
+    }
+
+    private fun addUserBet(betInformation: BetInformation) {
+        val userBet = hashMapOf(
+            "bet_amount" to betInformation.initialBetAmount,
+            "bet_side" to betInformation.betSide,
+            "bet_status" to betInformation.betStatus,
+            "market_id" to betInformation.marketId,
+            "ticker_symbol" to betInformation.tickerSymbol,
+            "timestamp" to betInformation.timestamp,
+            "user_id" to betInformation.userId,
+            "win_multiplier" to betInformation.winMultiplier
+        )
+        db.collection("all_user_bets")
+            .add(userBet)
+            .addOnSuccessListener { docRef ->
+                Timber.i("addUserBet DocumentSnapshot added with ID: ${docRef.id}")
+            }
+            .addOnFailureListener { e ->
+                Timber.e("Error adding document, $e")
+            }
     }
 
     private fun getActiveMarkets() {
@@ -150,7 +171,7 @@ class MainViewModel : ViewModel() {
                     initialBetAmount = initialBetAmount,
                     betSide = betSide,
                     odds = odds,
-                    winningsMultiplier = winningsMultiplier,
+                    winMultiplier = winningsMultiplier,
                     winnings = winnings,
                     didWin = didWin
                 )
@@ -211,8 +232,8 @@ class MainViewModel : ViewModel() {
 
     private suspend fun generateAndUpdateLiveBetDataData() {
         while (true) {
-            delay(1000L)
-            val bearTotal = Random.nextLong(0,9999999999)
+            delay(10000L)
+            val bearTotal = Random.nextLong(0, 9999999999)
             val bullTotal = Random.nextLong(from = 0, until = 9999999999)
             val totalBears = Random.nextInt(from = 0, until = 9999999)
             val totalBulls = Random.nextInt(from = 0, until = 9999999)
@@ -231,39 +252,42 @@ class MainViewModel : ViewModel() {
             activeMarketData.value = randomData
         }
     }
+}
 
 //    val liveUserAccountInformation = UserAccountInformation(
 //        userId = "123",
 //        userBalance = 1111111
 //    )
 
-    val countDownFlow = flow {
-        val startingValue = 10
-        var currentValue = startingValue
-        emit(startingValue)
-        while (currentValue > 0) {
-            delay(1000L)
-            currentValue--
-            emit(currentValue)
-        }
-    }
 
-
-    private fun startTimer() {
-        countDownTimer = object : CountDownTimer(Utility.TIME_COUNTDOWN, 1) {
-            override fun onTick(millisRemaining: Long) {
-                val progressValue = millisRemaining.toFloat() / Utility.TIME_COUNTDOWN
-                _countDownTime.value = millisRemaining.formatTime()
-            }
-
-            override fun onFinish() {
-                _countDownTime.value = "00:00:00"
-            }
-        }.start()
-    }
-
-    fun navToDiffScreen(screen: NavBarItems) {
-        _selectedNavItem.value = screen
-    }
-
-}
+//    private fun startTimer() {
+//        countDownTimer = object : CountDownTimer(Utility.TIME_COUNTDOWN, 1) {
+//            override fun onTick(millisRemaining: Long) {
+//                val progressValue = millisRemaining.toFloat() / Utility.TIME_COUNTDOWN
+//                _countDownTime.value = millisRemaining.formatTime()
+//            }
+//
+//            override fun onFinish() {
+//                _countDownTime.value = "00:00:00"
+//            }
+//        }.start()
+//    }
+//
+//    fun navToDiffScreen(screen: NavBarItems) {
+//        _selectedNavItem.value = screen
+//    }
+//
+//}
+//
+//
+//
+//val countDownFlow = flow {
+//    val startingValue = 10
+//    var currentValue = startingValue
+//    emit(startingValue)
+//    while (currentValue > 0) {
+//        delay(1000L)
+//        currentValue--
+//        emit(currentValue)
+//    }
+//}
