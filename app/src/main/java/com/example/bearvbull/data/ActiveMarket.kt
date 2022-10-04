@@ -7,9 +7,9 @@ import timber.log.Timber
 
 data class ActiveMarket(
     val betId: String = "123",
-    val bearTotal: Long = 0,
+    val bearTotal: Long = 1,
     val ticker: String = "SPY",
-    val betStatus: String = "live",
+    val marketStatus: String = "active",
     val endTime: Timestamp = Timestamp(123412342134, 123421342),
     val bearHeadCount: Int = 0,
     val bullHeadCount: Int = 0,
@@ -24,6 +24,7 @@ data class ActiveMarket(
         val bullPercent = (bullTotal.toDouble() / totalWagered.toDouble()) * 100
         return Pair(bearPercent.round(), bullPercent.round())
     }
+
     fun createBetInfoLabel(betInfoType: BetInfoType, betSide: BetSide): String {
         return when (betInfoType) {
             BetInfoType.TOTAL_WAGERED -> getTotalWageredForBetSide(betSide).formatBigLong()
@@ -32,6 +33,7 @@ data class ActiveMarket(
             BetInfoType.BIGGEST_BET -> getBiggestBet(betSide).formatBigLong()
         }
     }
+
     private fun getTotalWageredForBetSide(betSide: BetSide): Long {
         return when (betSide) {
             BetSide.BEAR -> bearTotal
@@ -52,7 +54,8 @@ data class ActiveMarket(
             BetSide.BULL -> biggestBullBet
         }
     }
-    private fun getReturnRatio(betSide: BetSide): String {
+
+     fun getReturnRatio(betSide: BetSide): String {
         return buildString {
             val bearAndBullPercentages = getBearAndBullPercentages()
             when (betSide.bearOrBull) {
@@ -65,5 +68,5 @@ data class ActiveMarket(
 }
 
 data class ActiveMarkets(
-    val activeMarkets: MutableList<ActiveMarket> = mutableListOf()
+    val activeMarkets: MutableList<ActiveMarket> = mutableListOf(ActiveMarket())
 )

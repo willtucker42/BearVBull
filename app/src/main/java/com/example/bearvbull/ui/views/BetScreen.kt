@@ -16,13 +16,15 @@ import com.example.bearvbull.data.LivePredictionMarketData
 import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.components.BetScreenStatusTitle
 import com.example.bearvbull.ui.theme.DeepPurple
+import com.example.bearvbull.viewmodel.MainViewModel
 
 @Composable
 fun BetScreen(
     countDownTime: String,
     activeMarketData: ActiveMarket,
     liveOrderBookData: OrderBook,
-    activeMarkets: ActiveMarkets
+    activeMarkets: ActiveMarkets,
+    viewModel: MainViewModel
 ) {
     Surface {
         Box(
@@ -36,7 +38,8 @@ fun BetScreen(
                 BetScreenStatusTitle(activeMarketsList = activeMarkets)
                 BetWindow(
                     countDownTime = countDownTime,
-                    activeMarketData = activeMarketData
+                    activeMarketData = activeMarketData,
+                    viewModel = viewModel
                 )
                 Spacer(Modifier.height(12.dp))
                 OrderBook(liveOrderBook = liveOrderBookData)

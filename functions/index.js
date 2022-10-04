@@ -38,3 +38,6 @@ exports.makeUppercase = functions.firestore.document('/messages/{documentId}')
       // Setting an 'uppercase' field in Firestore document returns a Promise.
       return snap.ref.set({uppercase}, {merge: true});
     });
+exports.addBet = functions.https.onRequest(async (req, res) => {
+	
+});

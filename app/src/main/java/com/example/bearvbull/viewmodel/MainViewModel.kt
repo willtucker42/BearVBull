@@ -26,7 +26,7 @@ import kotlin.random.Random
 class MainViewModel : ViewModel() {
     // NavBar
     private val db: FirebaseFirestore = Firebase.firestore
-    private var _selectedNavItem = MutableStateFlow(NavBarItems.RANKINGS_SCREEN)
+    private var _selectedNavItem = MutableStateFlow(NavBarItems.BET_SCREEN)
     val selectedNavItem: StateFlow<NavBarItems> = _selectedNavItem
     // End nav bar
 
@@ -106,11 +106,11 @@ class MainViewModel : ViewModel() {
             generateOrderBookEntries()
         }
         viewModelScope.launch {
-            generateAndUpdateLiveBetDataData()
+//            generateAndUpdateLiveBetDataData()
         }
     }
 
-    private fun addUserBet(betInformation: BetInformation) {
+    fun addUserBet(betInformation: BetInformation) {
         val userBet = hashMapOf(
             "bet_amount" to betInformation.initialBetAmount,
             "bet_side" to betInformation.betSide,
@@ -119,8 +119,11 @@ class MainViewModel : ViewModel() {
             "ticker_symbol" to betInformation.tickerSymbol,
             "timestamp" to betInformation.timestamp,
             "user_id" to betInformation.userId,
-            "win_multiplier" to betInformation.winMultiplier
+            "win_multiplier" to betInformation.winMultiplier,
+            "odds" to betInformation.odds,
+            "did_win" to betInformation.didWin
         )
+        println(userBet)
         db.collection("all_user_bets")
             .add(userBet)
             .addOnSuccessListener { docRef ->
@@ -170,10 +173,10 @@ class MainViewModel : ViewModel() {
                 BetInformation(
                     initialBetAmount = initialBetAmount,
                     betSide = betSide,
-                    odds = odds,
                     winMultiplier = winningsMultiplier,
                     winnings = winnings,
-                    didWin = didWin
+                    didWin = didWin,
+                    odds = odds
                 )
             )
         }
@@ -241,18 +244,23 @@ class MainViewModel : ViewModel() {
             val biggestBullBet = Random.nextLong(from = 0, until = bullTotal)
             val randomData = ActiveMarket(
                 betId = "123",
+                ticker = "SPY",
                 bearTotal = bearTotal,
                 bullTotal = bullTotal,
                 bearHeadCount = totalBears,
                 bullHeadCount = totalBulls,
                 biggestBearBet = biggestBearBet,
                 biggestBullBet = biggestBullBet,
+                marketStatus = "active"
             )
-            println(randomData)
             activeMarketData.value = randomData
         }
     }
+    fun navToDiffScreen(screen: NavBarItems) {
+        _selectedNavItem.value = screen
+    }
 }
+
 
 //    val liveUserAccountInformation = UserAccountInformation(
 //        userId = "123",
@@ -273,9 +281,7 @@ class MainViewModel : ViewModel() {
 //        }.start()
 //    }
 //
-//    fun navToDiffScreen(screen: NavBarItems) {
-//        _selectedNavItem.value = screen
-//    }
+
 //
 //}
 //

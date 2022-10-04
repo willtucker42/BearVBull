@@ -108,10 +108,15 @@ fun Long.formatBigLong(): String {
 }
 
 fun Double.round(): Double {
-    val df = DecimalFormat("#.##")
+    val df = DecimalFormat("#.###")
     df.roundingMode = RoundingMode.DOWN
-
-    return df.format(this).toDouble()
+    println("WTF IS THIS $this")
+    val formattedVal: Double = try {
+        df.format(this).toDouble()
+    } catch (e: Exception) {
+        0.0
+    }
+    return formattedVal
 }
 
 //val glowingAnimationKeyFrames = KeyframesSpec.KeyframesSpecConfig(keyframes<> {  })

@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -29,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bearvbull.data.ActiveMarket
-import com.example.bearvbull.data.LivePredictionMarketData
+import com.example.bearvbull.data.BetInformation
 import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.components.*
 import com.example.bearvbull.ui.theme.*
@@ -38,6 +37,9 @@ import com.example.bearvbull.ui.views.ProfileScreen
 import com.example.bearvbull.ui.views.RankingsScreen
 import com.example.bearvbull.util.*
 import com.example.bearvbull.viewmodel.MainViewModel
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.*
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -66,7 +68,8 @@ class MainActivity : ComponentActivity() {
                                     countDownTime = countDownTime,
                                     activeMarketData = activeMarketData,
                                     liveOrderBookData = liveOrderBookData,
-                                    activeMarkets = activeMarkets
+                                    activeMarkets = activeMarkets,
+                                    viewModel = mainViewModel
                                 )
                             NavBarItems.RANKINGS_SCREEN -> RankingsScreen(mainViewModel)
                             NavBarItems.PROFILE_SCREEN -> ProfileScreen(viewModel = mainViewModel)
@@ -106,14 +109,15 @@ fun BottomNavBar(modifier: Modifier, viewModel: MainViewModel, selectedScreen: N
 @Composable
 fun BetWindow(
     countDownTime: String,
-    activeMarketData: ActiveMarket
+    activeMarketData: ActiveMarket,
+    viewModel: MainViewModel
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MainBetPromptTitle(countDownTime_ = countDownTime)
         Spacer(modifier = Modifier.height(16.dp))
-        BetButtonRow(activeMarketData = activeMarketData)
+        BetButtonRow(activeMarketData = activeMarketData, viewModel = viewModel)
     }
 }
 
@@ -156,7 +160,7 @@ fun OrderBook(liveOrderBook: OrderBook) {
 }
 
 @Composable
-fun BetButtonRow(activeMarketData: ActiveMarket) {
+fun BetButtonRow(activeMarketData: ActiveMarket, viewModel: MainViewModel) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -166,7 +170,8 @@ fun BetButtonRow(activeMarketData: ActiveMarket) {
             backgroundColor = BetRed,
             description = "Down arrow",
             betSide = BetSide.BEAR,
-            activeMarketData = activeMarketData
+            activeMarketData = activeMarketData,
+            viewModel = viewModel
         )
         Spacer(modifier = Modifier.width(16.dp))
         BetButtonContainer(
@@ -175,7 +180,8 @@ fun BetButtonRow(activeMarketData: ActiveMarket) {
             backgroundColor = BetGreen,
             description = "Up arrow",
             betSide = BetSide.BULL,
-            activeMarketData = activeMarketData
+            activeMarketData = activeMarketData,
+            viewModel = viewModel
         )
     }
 }
@@ -187,7 +193,8 @@ fun BetButtonContainer(
     backgroundColor: Color = BetGreen,
     betSide: BetSide,
     description: String = "blah",
-    activeMarketData: ActiveMarket
+    activeMarketData: ActiveMarket,
+    viewModel: MainViewModel
 ) {
     Surface(
         modifier = Modifier.width(150.dp),
@@ -203,7 +210,24 @@ fun BetButtonContainer(
                 percentage = percentage,
                 icon = icon,
                 backgroundColor = backgroundColor,
-                description = description
+                description = description,
+                onClickMethod = {
+                    println("bet button on click")
+                    viewModel.addUserBet(
+                        betInformation = BetInformation(
+                            tickerSymbol = activeMarketData.ticker,
+                            initialBetAmount = 100,
+                            betSide = betSide.name,
+                            winMultiplier = activeMarketData.getReturnRatio(betSide)
+                                .substringAfter(':').toDouble(),
+                            userId = "willTucker42",
+                            betStatus = "active",
+                            marketId = activeMarketData.marketId,
+                            timestamp = Timestamp(Calendar.getInstance().time),
+                            odds = percentage
+                        )
+                    )
+                }
             )
             Column(
                 modifier = Modifier
@@ -240,10 +264,11 @@ fun BetButton(
     percentage: Double,
     icon: Int = R.drawable.arrow_up,
     backgroundColor: Color = BetGreen,
-    description: String = "blah"
+    description: String = "blah",
+    onClickMethod: () -> Unit,
 ) {
     Button(
-        onClick = { },
+        onClick = { onClickMethod() },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = backgroundColor.copy(alpha = 1f),
