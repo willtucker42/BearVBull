@@ -28,10 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.example.bearvbull.R
-import com.example.bearvbull.data.ActiveMarket
-import com.example.bearvbull.data.ActiveMarkets
-import com.example.bearvbull.data.LivePredictionMarketData
-import com.example.bearvbull.data.OrderBookEntry
+import com.example.bearvbull.data.*
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.BetInfoType
 import com.example.bearvbull.util.BetSide
@@ -243,8 +240,8 @@ fun OrderBookEntryPercentText(betside: String, percent: String, modifier: Modifi
 }
 
 @Composable
-fun OrderBookEntryRow(orderBookEntry: OrderBookEntry, modifier: Modifier) {
-    Row(modifier = modifier) {
+fun OrderBookEntryRow(orderBookEntry: OrderBookEntry) {
+    Row() {
         OrderBookEntryText(
             orderBookEntry.userName, modifier = Modifier
                 .fillMaxWidth()

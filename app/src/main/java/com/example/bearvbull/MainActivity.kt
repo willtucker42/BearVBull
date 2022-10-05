@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.example.bearvbull
 
 import android.annotation.SuppressLint
@@ -30,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bearvbull.data.ActiveMarket
 import com.example.bearvbull.data.BetInformation
 import com.example.bearvbull.data.OrderBook
+import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.ui.components.*
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.ui.views.BetScreen
@@ -48,11 +47,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             BearVBullTheme {
                 val mainViewModel = viewModel<MainViewModel>()
-                val countDownTime by mainViewModel.countDownTime.collectAsState()
-                val activeMarketData by mainViewModel.liveMarketDataFlow.collectAsState()
-                val liveOrderBookData by mainViewModel.liveOrderBook.collectAsState()
                 val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
-                val activeMarkets by mainViewModel.activeMarkets.collectAsState()
+
                 Box(
                     modifier = Modifier
                         .background(DeepPurple)
@@ -65,10 +61,6 @@ class MainActivity : ComponentActivity() {
                         when (selectedScreen) {
                             NavBarItems.BET_SCREEN ->
                                 BetScreen(
-                                    countDownTime = countDownTime,
-                                    activeMarketData = activeMarketData,
-                                    liveOrderBookData = liveOrderBookData,
-                                    activeMarkets = activeMarkets,
                                     viewModel = mainViewModel
                                 )
                             NavBarItems.RANKINGS_SCREEN -> RankingsScreen(mainViewModel)
@@ -121,9 +113,8 @@ fun BetWindow(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OrderBook(liveOrderBook: OrderBook) {
+fun OrderBook(liveOrderBook: List<OrderBookEntry>) {
     Column(
         modifier = Modifier
             .height((LocalConfiguration.current.screenHeightDp / 2.5).dp)
@@ -145,13 +136,9 @@ fun OrderBook(liveOrderBook: OrderBook) {
                 contentPadding = PaddingValues(vertical = 4.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                items(items = liveOrderBook.orderBook.reversed()) { order ->
+                items(items = liveOrderBook.reversed()) { order ->
                     OrderBookEntryRow(
-                        orderBookEntry = order, modifier = Modifier.animateItemPlacement(
-                            animationSpec = tween(
-                                durationMillis = 200
-                            )
-                        )
+                        orderBookEntry = order
                     )
                 }
             }

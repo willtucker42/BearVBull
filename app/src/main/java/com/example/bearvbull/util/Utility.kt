@@ -109,8 +109,7 @@ fun Long.formatBigLong(): String {
 
 fun Double.round(): Double {
     val df = DecimalFormat("#.###")
-    df.roundingMode = RoundingMode.DOWN
-    println("WTF IS THIS $this")
+    df.roundingMode = RoundingMode.UP
     val formattedVal: Double = try {
         df.format(this).toDouble()
     } catch (e: Exception) {

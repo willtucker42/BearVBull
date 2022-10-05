@@ -1,6 +1,7 @@
 package com.example.bearvbull.viewmodel
 
 import android.os.CountDownTimer
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bearvbull.R
@@ -9,8 +10,10 @@ import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firestore.v1.StructuredQuery.Order
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,16 +22,25 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.DecimalFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
+    private val ORDERBOOK_QUERY_LIMIT: Long = 1000
+
     // NavBar
     private val db: FirebaseFirestore = Firebase.firestore
     private var _selectedNavItem = MutableStateFlow(NavBarItems.BET_SCREEN)
     val selectedNavItem: StateFlow<NavBarItems> = _selectedNavItem
     // End nav bar
+
+    // currently selected marketId
+    private var _selectedMarketId = MutableStateFlow("SPY")
+    val selectedMarketId: StateFlow<String> = _selectedMarketId
+    val currentMarketId: String = "SPY"
+    // end currently selected marketId
 
     private var countDownTimer: CountDownTimer? = null
 
@@ -42,28 +54,18 @@ class MainViewModel : ViewModel() {
 
     //    private val todaysBetDocument: DocumentReference
     // OrderBook
-    private var orderBookHolder: OrderBook
-    private var _orderBookMutableStateFlow = MutableStateFlow(
-        OrderBook(
-            orderBook = mutableListOf(
-                OrderBookEntry(
-                    userName = "User01",
-                    amountWagered = 0.00,
-                    betSide = "Bear",
-                    time = Date(),
-                    betPercent = 0.00
-                )
-            )
-        )
-    )
-    val liveOrderBook: StateFlow<OrderBook> = _orderBookMutableStateFlow
+
+//    private var newOrderBookHolder:
+
+
+    private var orderBookHolder: MutableList<OrderBookEntry> = mutableListOf(OrderBookEntry())
+    private var _orderBookMutableStateFlow = MutableStateFlow<List<OrderBookEntry>>(listOf())
+    val liveOrderBook: MutableStateFlow<List<OrderBookEntry>> = _orderBookMutableStateFlow
     // End OrderBook
 
 
     // BetData
-    private var activeMarketData = MutableStateFlow(
-        ActiveMarket()
-    )
+    private var activeMarketData = MutableStateFlow(ActiveMarket())
     val liveMarketDataFlow: StateFlow<ActiveMarket> = activeMarketData
     // End bet data
 
@@ -81,32 +83,29 @@ class MainViewModel : ViewModel() {
     val fakeBetHistory = mutableListOf<BetInformation>()
 
     init {
-
-//            Firebase.firestore.collection("live_prediction_market_info")
-//                .document("SPY-9_28_2022")
-
-        orderBookHolder = OrderBook(
-            mutableListOf(
-                OrderBookEntry(
-                    userName = "User01",
-                    amountWagered = 0.00,
-                    betSide = "Bear",
-                    time = Date(),
-                    betPercent = 0.00
-                )
-            )
-        )
+        viewModelScope.launch {
+            startTimer()
+        }
 
         generateRankingsUserList()
         generateBetHistory()
+
+//        viewModelScope.launch {
+//            launch { getActiveMarkets() }
+//            launch { getMarketBookData() }
+//            launch { generateOrderBookEntries() }
+//            launch { generateAndUpdateLiveBetDataData() }
+//        }
         viewModelScope.launch {
             getActiveMarkets()
         }
+        getMarketBookData()
+
         viewModelScope.launch {
             generateOrderBookEntries()
         }
         viewModelScope.launch {
-//            generateAndUpdateLiveBetDataData()
+            generateAndUpdateLiveBetDataData()
         }
     }
 
@@ -135,6 +134,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun getActiveMarkets() {
+        Timber.i("in getActiveMarkets")
         db.collection("live_prediction_market_info")
             .whereEqualTo("bet_status", "live")
             .get()
@@ -144,10 +144,34 @@ class MainViewModel : ViewModel() {
                     activeMarketsHolder.activeMarkets.add(doc.toObject(ActiveMarket::class.java))
                     _activeMarkets.value = activeMarketsHolder
                 }
+                _selectedMarketId.value = result.first().id
             }
-            .addOnFailureListener { exception ->
-                println("Error getting documents. $exception")
+            .addOnFailureListener { e ->
+                Timber.e("Error getting documents. $e")
             }
+    }
+
+    private fun getMarketBookData() {
+        Timber.i("in  getMarketBookData.")
+        db.collection("all_user_bets")
+            .whereEqualTo("bet_status", "active")
+            .get()
+            .addOnSuccessListener { result ->
+                Timber.i("lmao?")
+                result.forEach { doc ->
+                    Timber.i("Trade doc: $doc")
+                }
+            }
+            .addOnFailureListener { e ->
+                Timber.e("Error getting trade history: $e")
+            }
+            .addOnCanceledListener {
+                Timber.i("CANCELED?")
+            }
+            .addOnCompleteListener {
+                Timber.i("COMPLETE?")
+            }
+
     }
 
     private fun generateBetHistory() {
@@ -162,7 +186,7 @@ class MainViewModel : ViewModel() {
             val didWin = Random.nextInt(0, 2) == 0
             val odds = Random.nextDouble(0.00, 100.00).round()
 
-            println("asdfasdf $initialBetAmount * $odds =  ${(initialBetAmount * odds).roundToLong()}")
+//            println("asdfasdf $initialBetAmount * $odds =  ${(initialBetAmount * odds).roundToLong()}")
             val winningsMultiplier = (100 / odds)
             val winnings = if (didWin) {
                 (initialBetAmount * winningsMultiplier).roundToLong()
@@ -189,7 +213,7 @@ class MainViewModel : ViewModel() {
                 .map { Random.nextInt(0, charPool.size) }
                 .map(charPool::get)
                 .joinToString("")
-            val amountWagered = Random.nextDouble(from = 0.0, until = 99999999.99).roundToInt()
+            val amountWagered = Random.nextLong(from = 0, until = 99999999)
 //            println("AmountWagered: $amountWagered")
             var betSide: String
             val randomNum = Random.nextInt(from = 1, until = 100)
@@ -202,10 +226,11 @@ class MainViewModel : ViewModel() {
                 "Bull"
             }
             val time = Date()
-            orderBookHolder.orderBook.add(
+//            val newArrayList: ArrayList<OrderBookEntry>
+            orderBookHolder.add(
                 OrderBookEntry(
                     userName = userName,
-                    amountWagered = amountWagered.toDouble(),
+                    amountWagered = amountWagered,
                     betSide = betSide,
                     betPercent = betPercent,
                     time = time
@@ -256,9 +281,24 @@ class MainViewModel : ViewModel() {
             activeMarketData.value = randomData
         }
     }
+
     fun navToDiffScreen(screen: NavBarItems) {
         _selectedNavItem.value = screen
     }
+
+    private fun startTimer() {
+        countDownTimer = object : CountDownTimer(Utility.TIME_COUNTDOWN, 1) {
+            override fun onTick(millisRemaining: Long) {
+                val progressValue = millisRemaining.toFloat() / Utility.TIME_COUNTDOWN
+                _countDownTime.value = progressValue.toString()
+            }
+
+            override fun onFinish() {
+                _countDownTime.value = "00:00:00"
+            }
+        }.start()
+    }
+
 }
 
 
@@ -267,20 +307,6 @@ class MainViewModel : ViewModel() {
 //        userBalance = 1111111
 //    )
 
-
-//    private fun startTimer() {
-//        countDownTimer = object : CountDownTimer(Utility.TIME_COUNTDOWN, 1) {
-//            override fun onTick(millisRemaining: Long) {
-//                val progressValue = millisRemaining.toFloat() / Utility.TIME_COUNTDOWN
-//                _countDownTime.value = millisRemaining.formatTime()
-//            }
-//
-//            override fun onFinish() {
-//                _countDownTime.value = "00:00:00"
-//            }
-//        }.start()
-//    }
-//
 
 //
 //}

@@ -4,38 +4,35 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.bearvbull.BetWindow
 import com.example.bearvbull.OrderBook
 import com.example.bearvbull.TopBar
-import com.example.bearvbull.data.ActiveMarket
-import com.example.bearvbull.data.ActiveMarkets
-import com.example.bearvbull.data.LivePredictionMarketData
-import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.ui.components.BetScreenStatusTitle
 import com.example.bearvbull.ui.theme.DeepPurple
 import com.example.bearvbull.viewmodel.MainViewModel
 
 @Composable
 fun BetScreen(
-    countDownTime: String,
-    activeMarketData: ActiveMarket,
-    liveOrderBookData: OrderBook,
-    activeMarkets: ActiveMarkets,
     viewModel: MainViewModel
 ) {
+    val activeMarketData by viewModel.liveMarketDataFlow.collectAsState()
+    val activeMarkets by viewModel.activeMarkets.collectAsState()
+    val countDownTime by viewModel.countDownTime.collectAsState()
+    val liveOrderBookData by viewModel.liveOrderBook.collectAsState()
     Surface {
         Box(
             modifier = Modifier
                 .background(DeepPurple)
         ) {
-            Column(
-//                modifier = Modifier.align(Alignment.TopCenter)
-            ) {
+            Column() {
                 TopBar()
-                BetScreenStatusTitle(activeMarketsList = activeMarkets)
+                BetScreenStatusTitle(
+                    activeMarketsList = activeMarkets
+                )
                 BetWindow(
                     countDownTime = countDownTime,
                     activeMarketData = activeMarketData,

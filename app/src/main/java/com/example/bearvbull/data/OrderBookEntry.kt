@@ -1,11 +1,11 @@
 package com.example.bearvbull.data
 
-import java.util.Date
+import java.util.*
 
 data class OrderBookEntry(
-    val userName : String,
-    val amountWagered: Double,
-    val betSide: String,
-    val time: Date,
-    val betPercent: Double
+    val userName : String = "123",
+    val amountWagered: Long = 100,
+    val betSide: String = "bear",
+    val time: Date = Calendar.getInstance().time,
+    val betPercent: Double = 50.0
 )
