@@ -60,8 +60,8 @@ class MainViewModel : ViewModel() {
     //    private val todaysBetDocument: DocumentReference
 
     // OrderBook
-    private var orderBookHolderMap: MutableMap<OrderBookEntry, Boolean> =
-        mutableMapOf(OrderBookEntry() to true)
+    private var orderBookIdHashMap: MutableMap<String, Boolean> =
+        mutableMapOf("" to true)
 
     private var orderBookHolder: MutableList<OrderBookEntry> = mutableListOf(OrderBookEntry())
     private var _orderBookMutableStateFlow = MutableStateFlow<List<OrderBookEntry>>(listOf())
@@ -126,7 +126,8 @@ class MainViewModel : ViewModel() {
             "user_id" to betInformation.userId,
             "win_multiplier" to betInformation.winMultiplier,
             "odds" to betInformation.odds,
-            "did_win" to betInformation.didWin
+            "did_win" to betInformation.didWin,
+            "bet_id" to UUID.randomUUID()
         )
         println(userBet)
         db.collection("all_user_bets")
@@ -169,16 +170,21 @@ class MainViewModel : ViewModel() {
                 .get()
                 .addOnSuccessListener { result ->
                     result.forEach { tradeDoc ->
-                        println("the tradedoc: $tradeDoc")
-                        orderBookHolder.add(
-                            OrderBookEntry(
-                                userName = "willTucker42",
-                                amountWagered = tradeDoc.get("bet_amount") as Long,
-                                betSide = tradeDoc.get("bet_side") as String,
-                                time = (tradeDoc.get("timestamp") as Timestamp).toDate(),
-                                betPercent = tradeDoc.get("odds") as Double
+                        if (!orderBookIdHashMap.containsKey(tradeDoc.get("bet_id").toString())) {
+                            println("adding tradedoc: $tradeDoc")
+                            orderBookIdHashMap[tradeDoc.get("bet_id").toString()] = true
+                            orderBookHolder.add(
+                                OrderBookEntry(
+                                    userName = "willTucker42",
+                                    amountWagered = tradeDoc.get("bet_amount") as Long,
+                                    betSide = tradeDoc.get("bet_side") as String,
+                                    time = (tradeDoc.get("timestamp") as Timestamp).toDate(),
+                                    betPercent = tradeDoc.get("odds") as Double
+                                )
                             )
-                        )
+                        } else {
+                            println("Key found, not adding ${tradeDoc.get("bet_id")}")
+                        }
                     }
                     _orderBookMutableStateFlow.value = orderBookHolder
                 }
