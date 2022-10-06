@@ -1,6 +1,9 @@
 package com.example.bearvbull.viewmodel
 
+import android.annotation.SuppressLint
 import android.os.CountDownTimer
+import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +12,7 @@ import com.example.bearvbull.data.*
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -23,6 +27,7 @@ import timber.log.Timber
 import java.text.DecimalFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import kotlin.random.Random
@@ -53,14 +58,17 @@ class MainViewModel : ViewModel() {
     private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
     //    private val todaysBetDocument: DocumentReference
+
     // OrderBook
-
-//    private var newOrderBookHolder:
-
+    private var orderBookHolderMap: MutableMap<OrderBookEntry, Boolean> =
+        mutableMapOf(OrderBookEntry() to true)
 
     private var orderBookHolder: MutableList<OrderBookEntry> = mutableListOf(OrderBookEntry())
     private var _orderBookMutableStateFlow = MutableStateFlow<List<OrderBookEntry>>(listOf())
-    val liveOrderBook: MutableStateFlow<List<OrderBookEntry>> = _orderBookMutableStateFlow
+    val liveOrderBook: StateFlow<List<OrderBookEntry>> = _orderBookMutableStateFlow
+
+    private var _orderBookLoadingState = MutableStateFlow(State.LOADING)
+    val orderBookLoadingState: StateFlow<State> = _orderBookLoadingState
     // End OrderBook
 
 
@@ -83,30 +91,28 @@ class MainViewModel : ViewModel() {
     val fakeBetHistory = mutableListOf<BetInformation>()
 
     init {
-        viewModelScope.launch {
-            startTimer()
-        }
 
         generateRankingsUserList()
         generateBetHistory()
 
-//        viewModelScope.launch {
-//            launch { getActiveMarkets() }
-//            launch { getMarketBookData() }
+        viewModelScope.launch {
+            launch { startTimer() }
+            launch { getActiveMarkets() }
+            launch { getMarketBookData() }
 //            launch { generateOrderBookEntries() }
-//            launch { generateAndUpdateLiveBetDataData() }
-//        }
-        viewModelScope.launch {
-            getActiveMarkets()
+            launch { generateAndUpdateLiveBetDataData() }
         }
-        getMarketBookData()
 
-        viewModelScope.launch {
-            generateOrderBookEntries()
-        }
-        viewModelScope.launch {
-            generateAndUpdateLiveBetDataData()
-        }
+//        getActiveMarkets()
+
+//        getMarketBookData()
+
+//        viewModelScope.launch {
+//            generateOrderBookEntries()
+//        }
+//        viewModelScope.launch {
+//            generateAndUpdateLiveBetDataData()
+//        }
     }
 
     fun addUserBet(betInformation: BetInformation) {
@@ -151,27 +157,35 @@ class MainViewModel : ViewModel() {
             }
     }
 
-    private fun getMarketBookData() {
-        Timber.i("in  getMarketBookData.")
-        db.collection("all_user_bets")
-            .whereEqualTo("bet_status", "active")
-            .get()
-            .addOnSuccessListener { result ->
-                Timber.i("lmao?")
-                result.forEach { doc ->
-                    Timber.i("Trade doc: $doc")
+    @SuppressLint("LogNotTimber")
+    private suspend fun getMarketBookData() {
+        while (true) {
+            delay(1000)
+            println("in  getMarketBookData")
+            db.collection("all_user_bets")
+                .whereEqualTo("bet_status", "active")
+                .limit(ORDERBOOK_QUERY_LIMIT)
+//            .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { result ->
+                    result.forEach { tradeDoc ->
+                        println("the tradedoc: $tradeDoc")
+                        orderBookHolder.add(
+                            OrderBookEntry(
+                                userName = "willTucker42",
+                                amountWagered = tradeDoc.get("bet_amount") as Long,
+                                betSide = tradeDoc.get("bet_side") as String,
+                                time = (tradeDoc.get("timestamp") as Timestamp).toDate(),
+                                betPercent = tradeDoc.get("odds") as Double
+                            )
+                        )
+                    }
+                    _orderBookMutableStateFlow.value = orderBookHolder
                 }
-            }
-            .addOnFailureListener { e ->
-                Timber.e("Error getting trade history: $e")
-            }
-            .addOnCanceledListener {
-                Timber.i("CANCELED?")
-            }
-            .addOnCompleteListener {
-                Timber.i("COMPLETE?")
-            }
-
+                .addOnFailureListener { e ->
+                    Log.e("MainViewModel.kt", "Error getting trade history: $e")
+                }
+        }
     }
 
     private fun generateBetHistory() {
@@ -241,6 +255,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun generateRankingsUserList() {
+        println("generateRankingsUSerList")
         for (i in 0..200) {
             fakeRankingsUserList.add(UserAccountInformation(
                 userId = (1..10)

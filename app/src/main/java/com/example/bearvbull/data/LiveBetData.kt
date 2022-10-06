@@ -11,7 +11,7 @@ data class LivePredictionMarketData(
     val biggestBullBet: Double,
     val totalBears: Int,
     val totalBulls: Int,
-    val betStatus: String = "live", // live, closed, waiting
+    val betStatus: String = "active", // live, closed, waiting
     val grandTotal: Double = bearTotal + bullTotal
 ) {
     fun getBearAndBullPercentages(): Pair<Double, Double> {

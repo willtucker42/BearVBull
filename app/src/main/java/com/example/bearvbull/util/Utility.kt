@@ -118,4 +118,8 @@ fun Double.round(): Double {
     return formattedVal
 }
 
+enum class State {
+    LOADING, LOADED
+}
+
 //val glowingAnimationKeyFrames = KeyframesSpec.KeyframesSpecConfig(keyframes<> {  })
