@@ -216,8 +216,8 @@ fun OrderBookEntryText(orderBookEntryText: String, modifier: Modifier) {
 
 @Composable
 fun OrderBookEntryPercentText(betside: String, percent: String, modifier: Modifier) {
-    val imageResource = if (betside == "Bear") DOWN_ARROW else UP_ARROW
-    val betColor = if (betside == "Bear") BetRed else BetGreen
+    val imageResource = if (betside.lowercase() == "bear") DOWN_ARROW else UP_ARROW
+    val betColor = if (betside.lowercase() == "bear") BetRed else BetGreen
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
