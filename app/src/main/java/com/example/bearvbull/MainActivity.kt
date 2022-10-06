@@ -4,14 +4,17 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -27,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bearvbull.data.ActiveMarket
 import com.example.bearvbull.data.BetInformation
-import com.example.bearvbull.data.OrderBook
 import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.ui.components.*
 import com.example.bearvbull.ui.theme.*
@@ -37,7 +39,6 @@ import com.example.bearvbull.ui.views.RankingsScreen
 import com.example.bearvbull.util.*
 import com.example.bearvbull.viewmodel.MainViewModel
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
 class MainActivity : ComponentActivity() {

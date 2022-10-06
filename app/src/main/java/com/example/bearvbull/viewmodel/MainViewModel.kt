@@ -3,32 +3,30 @@ package com.example.bearvbull.viewmodel
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bearvbull.R
-import com.example.bearvbull.data.*
+import com.example.bearvbull.data.ActiveMarket
+import com.example.bearvbull.data.ActiveMarkets
+import com.example.bearvbull.data.BetInformation
+import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.data.users.UserAccountInformation
-import com.example.bearvbull.util.*
-import com.example.bearvbull.util.Utility.formatTime
+import com.example.bearvbull.util.NavBarItems
+import com.example.bearvbull.util.State
+import com.example.bearvbull.util.Utility
+import com.example.bearvbull.util.round
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firestore.v1.StructuredQuery.Order
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.DecimalFormat
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import kotlin.random.Random
 
@@ -193,7 +191,6 @@ class MainViewModel : ViewModel() {
     }
 
     private fun generateBetHistory() {
-        val df = DecimalFormat("0.00")
         for (i in 0..200) {
             val initialBetAmount = Random.nextLong(0, 199999999)
             val betSide = if (Random.nextInt(0, 2) == 0) {
