@@ -166,12 +166,12 @@ class MainViewModel : ViewModel() {
             db.collection("all_user_bets")
                 .whereEqualTo("bet_status", "active")
                 .limit(ORDERBOOK_QUERY_LIMIT)
-//            .orderBy("timestamp", Query.Direction.DESCENDING)
+                .orderBy("timestamp", Query.Direction.ASCENDING)
                 .get()
                 .addOnSuccessListener { result ->
                     result.forEach { tradeDoc ->
+                        // Only add the bet if it's not already in the bet list
                         if (!orderBookIdHashMap.containsKey(tradeDoc.get("bet_id").toString())) {
-                            println("adding tradedoc: $tradeDoc")
                             orderBookIdHashMap[tradeDoc.get("bet_id").toString()] = true
                             orderBookHolder.add(
                                 OrderBookEntry(
@@ -182,8 +182,6 @@ class MainViewModel : ViewModel() {
                                     betPercent = tradeDoc.get("odds") as Double
                                 )
                             )
-                        } else {
-                            println("Key found, not adding ${tradeDoc.get("bet_id")}")
                         }
                     }
                     _orderBookMutableStateFlow.value = orderBookHolder
