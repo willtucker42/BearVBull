@@ -14,7 +14,7 @@ data class LivePredictionMarketData(
     val betStatus: String = "active", // live, closed, waiting
     val grandTotal: Double = bearTotal + bullTotal
 ) {
-    fun getBearAndBullPercentages(): Pair<Double, Double> {
+    private fun getBearAndBullPercentages(): Pair<Double, Double> {
         val totalWagered = grandTotal
         val bearPercent = (bearTotal / totalWagered) * 100
         val bullPercent = (bullTotal / totalWagered) * 100

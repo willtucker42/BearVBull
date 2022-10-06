@@ -11,10 +11,8 @@ import com.example.bearvbull.data.ActiveMarkets
 import com.example.bearvbull.data.BetInformation
 import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.data.users.UserAccountInformation
-import com.example.bearvbull.util.NavBarItems
-import com.example.bearvbull.util.State
-import com.example.bearvbull.util.Utility
-import com.example.bearvbull.util.round
+import com.example.bearvbull.util.*
+import com.example.bearvbull.util.Utility.formatTime
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -305,8 +303,8 @@ class MainViewModel : ViewModel() {
     private fun startTimer() {
         countDownTimer = object : CountDownTimer(Utility.TIME_COUNTDOWN, 1) {
             override fun onTick(millisRemaining: Long) {
-                val progressValue = millisRemaining.toFloat() / Utility.TIME_COUNTDOWN
-                _countDownTime.value = progressValue.toString()
+//                val progressValue = millisRemaining.toFloat() / Utility.TIME_COUNTDOWN
+                _countDownTime.value = millisRemaining.formatTime()
             }
 
             override fun onFinish() {
