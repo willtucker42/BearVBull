@@ -145,7 +145,8 @@ fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, activeMarketData: Acti
     Text(
         text = activeMarketData.createBetInfoLabel(infoType, betSide),
         fontFamily = interFontFamily,
-        fontSize = 12.sp
+        fontSize = 12.sp,
+        color = Color.White
     )
 }
 
@@ -167,7 +168,8 @@ fun OrderBookLabel(text: String, modifier: Modifier) {
         text = text,
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.SemiBold,
-        modifier = modifier
+        modifier = modifier,
+        color = Color.White
     )
 }
 
@@ -204,7 +206,8 @@ fun OrderBookEntryText(orderBookEntryText: String, modifier: Modifier) {
         modifier = modifier,
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
+        fontSize = 12.sp,
+        color = Color.White
     )
 }
 
