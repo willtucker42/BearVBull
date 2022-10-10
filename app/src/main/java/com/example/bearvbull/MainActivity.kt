@@ -12,9 +12,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -190,6 +189,7 @@ fun BetButtonContainer(
         border = BorderStroke(0.5.dp, ButtonOutline),
         elevation = 8.dp
     ) {
+        var showTextField by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
                 .background(DeepPurple),
@@ -200,6 +200,7 @@ fun BetButtonContainer(
                 backgroundColor = backgroundColor,
                 description = description,
                 onClickMethod = {
+                    showTextField = true
                     println("bet button on click")
                     viewModel.addUserBet(
                         betInformation = BetInformation(
@@ -217,6 +218,20 @@ fun BetButtonContainer(
                     )
                 }
             )
+            var text by rememberSaveable { mutableStateOf("") }
+            if (showTextField) {
+                TextField(
+                    value = text,
+                    onValueChange = {
+                        text = it
+                    },
+                    label = { Text("Bet amount") },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = DeepPurple,
+                        textColor = Color.White
+                    )
+                )
+            }
             Column(
                 modifier = Modifier
                     .background(DeepPurple)
