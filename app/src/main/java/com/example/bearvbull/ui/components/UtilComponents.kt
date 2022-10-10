@@ -84,7 +84,7 @@ fun BetScreenStatusTitle(marketStatus: String = "live", activeMarketsList: Activ
             fontSize = 24.sp,
             color = color
         )
-        Spacer(modifier = Modifier.width(6.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Canvas(modifier = Modifier
             .size(12.dp)
             .alpha(alpha), onDraw = {
@@ -109,7 +109,7 @@ fun BetScreenStatusTitle(marketStatus: String = "live", activeMarketsList: Activ
                 .background(DeepPurple)
                 .padding(8.dp)
             ) {
-                Text(text = marketDropDownText)
+                Text(text = marketDropDownText, color = Color.White)
                 Icon(imageVector = icon, contentDescription = null)
 
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
