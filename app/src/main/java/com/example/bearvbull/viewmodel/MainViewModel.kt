@@ -98,17 +98,6 @@ class MainViewModel : ViewModel() {
 //            launch { generateOrderBookEntries() }
             launch { generateAndUpdateLiveBetDataData() }
         }
-
-//        getActiveMarkets()
-
-//        getMarketBookData()
-
-//        viewModelScope.launch {
-//            generateOrderBookEntries()
-//        }
-//        viewModelScope.launch {
-//            generateAndUpdateLiveBetDataData()
-//        }
     }
 
     fun addUserBet(betInformation: BetInformation) {
