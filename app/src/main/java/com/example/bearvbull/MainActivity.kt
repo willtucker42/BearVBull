@@ -7,18 +7,22 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.textInputServiceFactory
@@ -204,41 +208,51 @@ fun BetButtonContainer(
                 description = description,
                 onClickMethod = {
                     showTextField = true
-                    println("bet button on click")
-                    viewModel.addUserBet(
-                        betInformation = BetInformation(
-                            tickerSymbol = activeMarketData.ticker,
-                            initialBetAmount = 100,
-                            betSide = betSide.name,
-                            winMultiplier = activeMarketData.getReturnRatio(betSide)
-                                .substringAfter(':').toDouble(),
-                            userId = "willTucker42",
-                            betStatus = "active",
-                            marketId = activeMarketData.marketId,
-                            timestamp = Timestamp(Calendar.getInstance().time),
-                            odds = percentage
-                        )
-                    )
                 }
             )
             var text by rememberSaveable { mutableStateOf("") }
             if (showTextField) {
-                TextField(
-                    value = text,
-                    onValueChange = { value ->
-                        text = value.filter {
-                            it.isDigit() || it == '.'
-                        }
-                    },
-                    label = { Text("Bet amount") },
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = DeepPurple,
-                        textColor = Color.White,
-                        focusedLabelColor = Color.White,
-                        placeholderColor = Color.White
-                    ),
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-                )
+                Row () {
+                    TextField(
+                        value = text,
+                        onValueChange = { value ->
+                            text = value.filter {
+                                it.isDigit() || it == '.'
+                            }
+                        },
+                        label = { Text("Bet amount") },
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = DeepPurple,
+                            textColor = Color.White,
+                            focusedLabelColor = Color.White,
+                            placeholderColor = Color.White
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                    )
+                    Spacer(Modifier.width(2.dp))
+                    Image(
+                        imageVector = Icons.Default.Send,
+                        contentDescription = "Send",
+                        Modifier.size(24.dp).clickable {
+                            viewModel.addUserBet(
+                                betInformation = BetInformation(
+                                    tickerSymbol = activeMarketData.ticker,
+                                    initialBetAmount = text.toLong(),
+                                    betSide = betSide.name,
+                                    winMultiplier = activeMarketData.getReturnRatio(betSide)
+                                        .substringAfter(':').toDouble(),
+                                    userId = "willTucker42",
+                                    betStatus = "active",
+                                    marketId = activeMarketData.marketId,
+                                    timestamp = Timestamp(Calendar.getInstance().time),
+                                    odds = percentage
+                                )
+                            )
+                            text = ""
+                        },
+                        colorFilter = ColorFilter.tint(color = Color.White)
+                    )
+                }
             }
             Column(
                 modifier = Modifier
