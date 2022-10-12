@@ -233,7 +233,9 @@ fun BetButtonContainer(
                     label = { Text("Bet amount") },
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = DeepPurple,
-                        textColor = Color.White
+                        textColor = Color.White,
+                        focusedLabelColor = Color.White,
+                        placeholderColor = Color.White
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
                 )
