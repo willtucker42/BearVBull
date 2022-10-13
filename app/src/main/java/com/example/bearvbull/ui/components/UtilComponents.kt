@@ -252,7 +252,7 @@ fun OrderBookEntryRow(orderBookEntry: OrderBookEntry) {
                 .weight(1F)
         )
         OrderBookEntryText(
-            orderBookEntry.amountWagered.toString(), modifier = Modifier
+            orderBookEntry.amountWagered.formatBigLong(), modifier = Modifier
                 .fillMaxWidth()
                 .weight(1F)
         )

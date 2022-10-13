@@ -43,7 +43,7 @@ enum class BetSide(val bearOrBull: String) {
 
 enum class BetInfoType(val icon: Int) {
     TOTAL_WAGERED(R.drawable.coin_stack_icon),
-    RETURN_RATIO(R.drawable.trophy_icon),
+    RETURN_RATIO(R.drawable.bet_return_icon),
     TOTAL_USERS(R.drawable.user_group_icon),
     BIGGEST_BET(R.drawable.money_bag_icon)
 }

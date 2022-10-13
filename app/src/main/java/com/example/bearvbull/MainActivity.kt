@@ -211,6 +211,7 @@ fun BetButtonContainer(
                 }
             )
             var text by rememberSaveable { mutableStateOf("") }
+            var inputError by remember { mutableStateOf(false) }
             if (showTextField) {
                 Row (verticalAlignment = Alignment.CenterVertically) {
                     TextField(
@@ -219,6 +220,7 @@ fun BetButtonContainer(
                             text = value.filter {
                                 it.isDigit() || it == '.'
                             }
+                            inputError = false
                         },
                         label = { Text("Bet amount") },
                         colors = TextFieldDefaults.textFieldColors(
@@ -228,14 +230,15 @@ fun BetButtonContainer(
                             placeholderColor = Color.White
                         ),
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.width(120.dp)
+                        modifier = Modifier.width(120.dp),
+                        isError = inputError
                     )
                     Spacer(Modifier.width(2.dp))
                     Image(
                         imageVector = Icons.Default.Send,
                         contentDescription = "Send",
                         Modifier.size(24.dp).clickable {
-                            if (text.toLong() > 0) {
+                            if (text.isNotEmpty() &&text.toLong() > 0) {
                                 viewModel.addUserBet(
                                     betInformation = BetInformation(
                                         tickerSymbol = activeMarketData.ticker,
@@ -250,6 +253,8 @@ fun BetButtonContainer(
                                         odds = percentage
                                     )
                                 )
+                            } else {
+                                inputError = true
                             }
                             text = ""
                         },
