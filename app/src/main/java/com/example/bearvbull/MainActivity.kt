@@ -212,7 +212,7 @@ fun BetButtonContainer(
             )
             var text by rememberSaveable { mutableStateOf("") }
             if (showTextField) {
-                Row () {
+                Row (verticalAlignment = Alignment.CenterVertically) {
                     TextField(
                         value = text,
                         onValueChange = { value ->
@@ -227,27 +227,30 @@ fun BetButtonContainer(
                             focusedLabelColor = Color.White,
                             placeholderColor = Color.White
                         ),
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.width(120.dp)
                     )
                     Spacer(Modifier.width(2.dp))
                     Image(
                         imageVector = Icons.Default.Send,
                         contentDescription = "Send",
                         Modifier.size(24.dp).clickable {
-                            viewModel.addUserBet(
-                                betInformation = BetInformation(
-                                    tickerSymbol = activeMarketData.ticker,
-                                    initialBetAmount = text.toLong(),
-                                    betSide = betSide.name,
-                                    winMultiplier = activeMarketData.getReturnRatio(betSide)
-                                        .substringAfter(':').toDouble(),
-                                    userId = "willTucker42",
-                                    betStatus = "active",
-                                    marketId = activeMarketData.marketId,
-                                    timestamp = Timestamp(Calendar.getInstance().time),
-                                    odds = percentage
+                            if (text.toLong() > 0) {
+                                viewModel.addUserBet(
+                                    betInformation = BetInformation(
+                                        tickerSymbol = activeMarketData.ticker,
+                                        initialBetAmount = text.toLong(),
+                                        betSide = betSide.name,
+                                        winMultiplier = activeMarketData.getReturnRatio(betSide)
+                                            .substringAfter(':').toDouble(),
+                                        userId = "willTucker42",
+                                        betStatus = "active",
+                                        marketId = activeMarketData.marketId,
+                                        timestamp = Timestamp(Calendar.getInstance().time),
+                                        odds = percentage
+                                    )
                                 )
-                            )
+                            }
                             text = ""
                         },
                         colorFilter = ColorFilter.tint(color = Color.White)
