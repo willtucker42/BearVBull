@@ -2,6 +2,7 @@ package com.example.bearvbull
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -26,10 +27,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.textInputServiceFactory
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -218,6 +216,7 @@ fun BetButtonContainer(
             var text by rememberSaveable { mutableStateOf("") }
             var inputError by remember { mutableStateOf(false) }
             val focusManager = LocalFocusManager.current
+            val context = LocalContext.current
             if (showTextField) {
                 Row (verticalAlignment = Alignment.CenterVertically) {
                     TextField(
@@ -260,6 +259,7 @@ fun BetButtonContainer(
                                     )
                                 )
                                 focusManager.clearFocus()
+                                Toast.makeText(context,"Bet placed",Toast.LENGTH_LONG).show()
                             } else {
                                 inputError = true
                             }
