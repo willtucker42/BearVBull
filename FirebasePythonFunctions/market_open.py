@@ -18,9 +18,9 @@ def getTodaysOpen(ticker):
     previousMarketClose = ticker_info['regularMarketPreviousClose']
 
     if todaysMarketOpen >= previousMarketClose:
-        updateBets('green')
+        update('green')
     elif todaysMarketOpen < previousMarketClose:
-        updateBets('red')
+        update('red')
     else:
         print('error1')
 
@@ -28,34 +28,55 @@ def getTodaysOpen(ticker):
     print('previous market open: ' + str(previousMarketClose))
 
 
-def greenOpen():
+def update(open_color):
     print("Starting green open update process")
+    user_winnings_dict = {}
     docs = db.collection(u'all_user_bets').where(u'bet_status', u'==', "active").stream()
+    winnings = 0
     for doc in docs:
         bet_dict = doc.to_dict()
-        winnings = 0
-        if bet_dict['bet_side'] == 'BULL':
+        if bet_dict['bet_side'] == 'BULL' and open_color == 'green':
             winnings = bet_dict['win_multiplier'] * bet_dict['bet_amount']
-            print("User ", bet_dict['user_id'], " won ", winnings, "(", bet_dict['win_multiplier'], " * ",
-                  bet_dict['bet_amount'], ")")
+            # print("User ", bet_dict['user_id'], " won ", winnings, "(", bet_dict['win_multiplier'], " * ",
+            #       bet_dict['bet_amount'], ")")
+        elif bet_dict['bet_side'] == 'BEAR' and open_color == 'red':
+            winnings = bet_dict['win_multiplier'] * bet_dict['bet_amount']
+            # print("User ", bet_dict['user_id'], " won ", winnings, "(", bet_dict['win_multiplier'], " * ",
+            #       bet_dict['bet_amount'], ")")
         else:
-            print("User", bet_dict['user_id'], " lost ", bet_dict['bet_amount'])
-        updateUserAccount(winnings=winnings, user_id=bet_dict['user_id'])
+            pass
+            # print("User", bet_dict['user_id'], " lost ", bet_dict['bet_amount'])
+        user_winnings_dict[bet_dict['user_id']] = winnings
+
+    updateUserAccounts(user_winnings_dict=user_winnings_dict)
 
 
-def updateUserAccount(winnings, user_id):
-    print("Updating user: ", user_id, ". They won ", winnings)
+def updateUserAccounts(user_winnings_dict):
+    # user_id in user_bet document == username in users document
+    i = 0
+    batch = db.batch()
 
+    for thing in user_winnings_dict:
+        print(thing)
 
-def redOpen():
-    print("Starting red open update process")
-
-
-def updateBets(open_color):
-    if open_color == 'green':
-        greenOpen()
-    else:
-        redOpen()
+    for user in user_winnings_dict.keys():
+        print("Updating user: ", user, ". They won ", user_winnings_dict[user])
+        user_doc = db.collection(u'users').where(u'username', u'==', user).limit(1).get()
+        for doc in user_doc:
+            user_dict = doc.to_dict()
+            og_balance_avail = user_dict['balance_available']
+            print("Adding ", str(user_winnings_dict[user]), " to og balance of ", str(og_balance_avail))
+            # user_doc.reference.update()
+            batch.update(doc.reference, {u'balance_available': og_balance_avail + user_winnings_dict[user]})
+        i += 1
+        if i == 499:
+            # right here we commit the batch and create a new instance of a batch
+            print("committing and resetting batch...")
+            batch.commit()
+            batch = db.batch()
+            i = 0
+    batch.commit()
+    # user_doc.update()
 
 
 getTodaysOpen('SPY')
