@@ -1,15 +1,18 @@
-import firebase_admin
 import yfinance as yf
-from firebase_admin import credentials, firestore
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
+# Use a service account.
 cred = credentials.Certificate('./bearvbull_service_account_key.json')
-default_app = firebase_admin.initialize_app(cred)
+
+app = firebase_admin.initialize_app(cred)
+
 db = firestore.client()
 
 
 def getTodaysOpen(ticker):
     ticker_info = yf.Ticker(ticker).info
-    # print(ticker_info.keys())
 
     todaysMarketOpen = ticker_info['regularMarketOpen']
     previousMarketClose = ticker_info['regularMarketPreviousClose']
@@ -27,7 +30,21 @@ def getTodaysOpen(ticker):
 
 def greenOpen():
     print("Starting green open update process")
+    docs = db.collection(u'all_user_bets').where(u'bet_status', u'==', "active").stream()
+    for doc in docs:
+        bet_dict = doc.to_dict()
+        winnings = 0
+        if bet_dict['bet_side'] == 'BULL':
+            winnings = bet_dict['win_multiplier'] * bet_dict['bet_amount']
+            print("User ", bet_dict['user_id'], " won ", winnings, "(", bet_dict['win_multiplier'], " * ",
+                  bet_dict['bet_amount'], ")")
+        else:
+            print("User", bet_dict['user_id'], " lost ", bet_dict['bet_amount'])
+        updateUserAccount(winnings=winnings, user_id=bet_dict['user_id'])
 
+
+def updateUserAccount(winnings, user_id):
+    print("Updating user: ", user_id, ". They won ", winnings)
 
 
 def redOpen():
