@@ -251,7 +251,7 @@ fun BetButtonContainer(
                                         betSide = betSide.name,
                                         winMultiplier = activeMarketData.getReturnRatio(betSide)
                                             .substringAfter(':').toDouble(),
-                                        userId = "willTucker42",
+                                        userId = UUID.randomUUID().toString(),
                                         betStatus = "active",
                                         marketId = activeMarketData.marketId,
                                         timestamp = Timestamp(Calendar.getInstance().time),

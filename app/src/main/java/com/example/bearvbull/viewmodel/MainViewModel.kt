@@ -100,6 +100,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    @SuppressLint("LogNotTimber")
     fun addUserBet(betInformation: BetInformation) {
         val userBet = hashMapOf(
             "bet_amount" to betInformation.initialBetAmount,
@@ -118,10 +119,26 @@ class MainViewModel : ViewModel() {
         db.collection("all_user_bets")
             .add(userBet)
             .addOnSuccessListener { docRef ->
-                Timber.i("addUserBet DocumentSnapshot added with ID: ${docRef.id}")
+                Log.i("MainViewModel.kt","addUserBet DocumentSnapshot added with ID: ${docRef.id}")
             }
             .addOnFailureListener { e ->
-                Timber.e("Error adding document, $e")
+                Log.i("MainViewModel.kt","Error adding document, $e")
+            }
+
+        val user = hashMapOf(
+            "balance_available" to 1,
+            "elo_score" to 100,
+            "email" to "fake@email.com",
+            "user_id" to betInformation.userId,
+            "username" to betInformation.userId
+        )
+        db.collection("users")
+            .add(user)
+            .addOnSuccessListener { docRef ->
+                Log.i("MainViewModel.kt","Added user id $docRef")
+            }
+            .addOnFailureListener { e ->
+                Log.i("MainViewModel.kt", "Error adding user, $e")
             }
     }
 
@@ -139,7 +156,7 @@ class MainViewModel : ViewModel() {
                 _selectedMarketId.value = result.first().id
             }
             .addOnFailureListener { e ->
-                Timber.e("Error getting documents. $e")
+                Log.i("MainViewModel.kt","Error getting documents. $e")
             }
     }
 
@@ -147,7 +164,6 @@ class MainViewModel : ViewModel() {
     private suspend fun getMarketBookData() {
         while (true) {
             delay(1000)
-            println("in  getMarketBookData")
             db.collection("all_user_bets")
                 .whereEqualTo("bet_status", "active")
                 .limit(ORDERBOOK_QUERY_LIMIT)

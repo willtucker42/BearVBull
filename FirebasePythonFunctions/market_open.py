@@ -65,9 +65,10 @@ def updateUserAccounts(user_winnings_dict):
         for doc in user_doc:
             user_dict = doc.to_dict()
             og_balance_avail = user_dict['balance_available']
-            print("Adding ", str(user_winnings_dict[user]), " to og balance of ", str(og_balance_avail))
             # user_doc.reference.update()
-            batch.update(doc.reference, {u'balance_available': og_balance_avail + user_winnings_dict[user]})
+            batch.update(doc.reference, {u'balance_available': round(og_balance_avail + user_winnings_dict[user])})            
+            print("Their balance is:", round(og_balance_avail + user_winnings_dict[user]))
+
         i += 1
         if i == 499:
             # right here we commit the batch and create a new instance of a batch
