@@ -79,7 +79,7 @@ def updateUserAccounts(user_winnings_dict):
             i = 0
     batch.commit()
     # user_doc.update()
-    
+
 def getActiveMarkets():
  	# Returns a list of the activemarket tickers
  	tickers = []
@@ -90,8 +90,8 @@ def getActiveMarkets():
  		print(ticker)
  		tickers.append(ticker)
  	return tickers
- 	
- 	
+
+
 
 def isTodayAValidStockMarketDay():
 	# Get todays date in datetime format
