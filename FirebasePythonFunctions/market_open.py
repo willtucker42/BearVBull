@@ -1,5 +1,6 @@
 import yfinance as yf
 import firebase_admin
+import datetime
 from firebase_admin import credentials
 from firebase_admin import firestore
 
@@ -78,6 +79,31 @@ def updateUserAccounts(user_winnings_dict):
             i = 0
     batch.commit()
     # user_doc.update()
+    
+def getActiveMarkets():
+ 	# Returns a list of the activemarket tickers
+ 	tickers = []
+ 	active_markets = db.collection(u'live_prediction_market_info').where(u'bet_status',u'==',"live").stream()
+ 	for market in active_markets: 
+ 		market_dict = market.to_dict()
+ 		ticker = market_dict['ticker']
+ 		print(ticker)
+ 		tickers.append(ticker)
+ 	return tickers
+ 	
+ 	
+
+def isTodayAValidStockMarketDay():
+	# Get todays date in datetime format
+	stock_market_day_nums = [0, 1, 2, 3, 4]
+	today = datetime.datetime.today()
+	day_of_week_nums = today.weekday()
+	if day_of_week_nums not in stock_market_day_nums:
+		return False
+	return True
 
 
-getTodaysOpen('SPY')
+for ticker in getActiveMarkets():
+	getTodaysOpen(ticker)
+#if isTodayAValidStockMarketDay():
+#	getTodaysOpen('SPY')
