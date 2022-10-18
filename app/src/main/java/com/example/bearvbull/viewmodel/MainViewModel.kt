@@ -318,6 +318,10 @@ class MainViewModel : ViewModel() {
         }.start()
     }
 
+    fun onSelectedTickerChanged(ticker: String) {
+        _selectedMarketId.value = ticker
+    }
+
 }
 
 
