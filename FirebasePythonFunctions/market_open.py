@@ -67,7 +67,7 @@ def updateUserAccounts(user_winnings_dict):
             user_dict = doc.to_dict()
             og_balance_avail = user_dict['balance_available']
             # user_doc.reference.update()
-            batch.update(doc.reference, {u'balance_available': round(og_balance_avail + user_winnings_dict[user])})            
+            batch.update(doc.reference, {u'balance_available': round(og_balance_avail + user_winnings_dict[user])})
             print("Their balance is:", round(og_balance_avail + user_winnings_dict[user]))
 
         i += 1
@@ -80,30 +80,35 @@ def updateUserAccounts(user_winnings_dict):
     batch.commit()
     # user_doc.update()
 
-def getActiveMarkets():
- 	# Returns a list of the activemarket tickers
- 	tickers = []
- 	active_markets = db.collection(u'live_prediction_market_info').where(u'bet_status',u'==',"live").stream()
- 	for market in active_markets: 
- 		market_dict = market.to_dict()
- 		ticker = market_dict['ticker']
- 		print(ticker)
- 		tickers.append(ticker)
- 	return tickers
 
+def finishMarkets():
+    current_live_markets = db.collection(u'live_prediction_market_info').where(u'bet_status', u'==', 'live')
+
+
+def getActiveMarkets():
+    # Returns a list of the active market tickers
+    tickers = []
+    active_markets = db.collection(u'live_prediction_market_info').where(u'bet_status', u'==', "live").stream()
+    for market in active_markets:
+        market_dict = market.to_dict()
+        ticker = market_dict['ticker']
+        print(ticker)
+        tickers.append(ticker)
+        market.update({u'bet_status': 'finished'})
+    return tickers
 
 
 def isTodayAValidStockMarketDay():
-	# Get todays date in datetime format
-	stock_market_day_nums = [0, 1, 2, 3, 4]
-	today = datetime.datetime.today()
-	day_of_week_nums = today.weekday()
-	if day_of_week_nums not in stock_market_day_nums:
-		return False
-	return True
+    # Get today's date in datetime format
+    stock_market_day_nums = [0, 1, 2, 3, 4]
+    today = datetime.datetime.today()
+    day_of_week_nums = today.weekday()
+    if day_of_week_nums not in stock_market_day_nums:
+        return False
+    return True
 
 
-for ticker in getActiveMarkets():
-	getTodaysOpen(ticker)
-#if isTodayAValidStockMarketDay():
-#	getTodaysOpen('SPY')
+for tikr in getActiveMarkets():
+    getTodaysOpen(tikr)
+# if isTodayAValidStockMarketDay():
+# getTodaysOpen('SPY')

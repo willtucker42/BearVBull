@@ -15,7 +15,7 @@ def createDocumentNameForMarket(tkr):
     next_trading_day = str(datetime.date.today() + datetime.timedelta(days=1)).replace('-', '_')
 
     print(tkr + "_" + next_trading_day)
-    return tkr + "_" + next_trading_day
+    return tkr + "-" + next_trading_day
 
 
 def createNewMarket(ticker):
@@ -33,4 +33,4 @@ def createNewMarket(ticker):
     })
 
 
-createNewMarket("SPY")
+createNewMarket("META")
