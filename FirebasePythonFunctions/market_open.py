@@ -3,25 +3,32 @@ import firebase_admin
 import datetime
 from firebase_admin import credentials
 from firebase_admin import firestore
+import create_new_market as cnm
 
 # Use a service account.
 cred = credentials.Certificate('./bearvbull_service_account_key.json')
 
-app = firebase_admin.initialize_app(cred)
+app = cnm.app
 
 db = firestore.client()
+
+# new_market_tickers = ["SPY", "TSLA", "MSFT", "AAPL", "GOOG"]
+# new_market_tickers = ["asfd", "54h54", "ffdg", "sdafg", "2435t", "gabababa"]
 
 
 def getTodaysOpen(ticker):
     ticker_info = yf.Ticker(ticker).info
-
-    todaysMarketOpen = ticker_info['regularMarketOpen']
-    previousMarketClose = ticker_info['regularMarketPreviousClose']
+    try:
+        todaysMarketOpen = ticker_info['regularMarketOpen']
+        previousMarketClose = ticker_info['regularMarketPreviousClose']
+    except:
+        print("Error getting ticker info")
+        return
 
     if todaysMarketOpen >= previousMarketClose:
-        update('green')
+        update('green', ticker)
     elif todaysMarketOpen < previousMarketClose:
-        update('red')
+        update('red', ticker)
     else:
         print('error1')
 
@@ -29,10 +36,11 @@ def getTodaysOpen(ticker):
     print('previous market open: ' + str(previousMarketClose))
 
 
-def update(open_color):
+def update(open_color, ticker):
     print("Starting green open update process")
     user_winnings_dict = {}
-    docs = db.collection(u'all_user_bets').where(u'bet_status', u'==', "active").stream()
+    docs = db.collection(u'all_user_bets').where(u'bet_status', u'==', "active").where(u'ticker_symbol', u'==',
+                                                                                       ticker).stream()
     winnings = 0
     for doc in docs:
         bet_dict = doc.to_dict()
@@ -94,7 +102,7 @@ def getActiveMarkets():
         ticker = market_dict['ticker']
         print(ticker)
         tickers.append(ticker)
-        market.update({u'bet_status': 'finished'})
+        market.reference.update({u'bet_status': 'finished'})
     return tickers
 
 
@@ -105,10 +113,17 @@ def isTodayAValidStockMarketDay():
     day_of_week_nums = today.weekday()
     if day_of_week_nums not in stock_market_day_nums:
         return False
+
+    # if nextDayIsAHoliday(): return false
     return True
 
 
+# First update the existing markets, bets
 for tikr in getActiveMarkets():
     getTodaysOpen(tikr)
+
+# Then add the new markets for the day
+# for new_market in new_market_tickers:
+#     cnm.createNewMarket(new_market)
 # if isTodayAValidStockMarketDay():
 # getTodaysOpen('SPY')
