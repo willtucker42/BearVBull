@@ -38,7 +38,7 @@ class MainViewModel : ViewModel() {
     // End nav bar
 
     // currently selected marketId
-    private var _selectedMarketId = MutableStateFlow("SPY")
+    var _selectedMarketId = MutableStateFlow("SPY")
     val selectedMarketId: StateFlow<String> = _selectedMarketId
     val currentMarketId: String = "SPY"
     // end currently selected marketId

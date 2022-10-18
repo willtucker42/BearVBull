@@ -114,7 +114,7 @@ def isTodayAValidStockMarketDay():
     if day_of_week_nums not in stock_market_day_nums:
         return False
 
-    # if nextDayIsAHoliday(): return false
+    # if todayIsAHoliday(): return false
     return True
 
 

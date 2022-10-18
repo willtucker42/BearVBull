@@ -36,7 +36,11 @@ import com.example.bearvbull.viewmodel.MainViewModel
 
 
 @Composable
-fun BetScreenStatusTitle(marketStatus: String = "live", activeMarketsList: ActiveMarkets) {
+fun BetScreenStatusTitle(
+    marketStatus: String = "live",
+    activeMarketsList: ActiveMarkets,
+    viewModel: MainViewModel
+) {
     val infiniteTransition = rememberInfiniteTransition()
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -116,6 +120,7 @@ fun BetScreenStatusTitle(marketStatus: String = "live", activeMarketsList: Activ
                     activeMarketsList.activeMarkets.forEach { market ->
                         DropdownMenuItem(onClick = {
                             marketDropDownText = market.ticker
+                            viewModel._selectedMarketId.value = market.ticker
                             expanded = false
                         }) {
                             Text(text = "$${market.ticker}")
