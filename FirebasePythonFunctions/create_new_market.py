@@ -10,5 +10,16 @@ app = firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
+
+def createDocumentNameForMarket(tkr):
+    next_trading_day = str(datetime.date.today() + datetime.timedelta(days=1)).replace('-', '_')
+
+    print(tkr + "_" + next_trading_day)
+    return tkr + "_" + next_trading_day
+
+
 def createNewMarket(ticker):
-	doc_ref = db.collection(u'live_prediction_market_info').document(u'')
+    doc_ref = db.collection(u'live_prediction_market_info').document(u'')
+
+
+createDocumentNameForMarket("SPY")
