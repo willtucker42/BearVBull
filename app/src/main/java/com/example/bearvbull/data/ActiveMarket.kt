@@ -6,13 +6,12 @@ import com.example.bearvbull.util.*
 import timber.log.Timber
 
 data class ActiveMarket(
-    val betId: String = "123",
     val bearTotal: Long = 1,
     val ticker: String = "SPY",
-    val marketStatus: String = "active",
+    val marketStatus: String = "live", // live, waiting, finished
     val endTime: Timestamp = Timestamp(123412342134, 123421342),
-    val bearHeadCount: Int = 0,
-    val bullHeadCount: Int = 0,
+    val bearHeadCount: Long = 0,
+    val bullHeadCount: Long = 0,
     val marketId: String = "SPY-9_28_2022",
     val biggestBullBet: Long = 10,
     val biggestBearBet: Long = 10,
@@ -41,7 +40,7 @@ data class ActiveMarket(
         }
     }
 
-    private fun getTotalUsersWageringOnBet(betSide: BetSide): Int {
+    private fun getTotalUsersWageringOnBet(betSide: BetSide): Long {
         return when (betSide) {
             BetSide.BEAR -> bearHeadCount
             BetSide.BULL -> bullHeadCount

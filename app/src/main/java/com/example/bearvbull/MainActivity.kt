@@ -117,7 +117,7 @@ fun BetWindow(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        MainBetPromptTitle(countDownTime_ = countDownTime)
+        MainBetPromptTitle(countDownTime_ = countDownTime, activeMarket = activeMarketData)
         Spacer(modifier = Modifier.height(16.dp))
         BetButtonRow(activeMarketData = activeMarketData, viewModel = viewModel)
     }
@@ -393,10 +393,10 @@ fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel
 //@Preview
 @Composable
 fun MainBetPromptTitle(
-    ticker: String = "SPY",
+    activeMarket: ActiveMarket,
     countDownTime_: String = ""
 ) {
-    val betPrompt = "Will $$ticker open red or green tomorrow?"
+    val betPrompt = "Will $${activeMarket.ticker} open red or green tomorrow?"
     Box(
         modifier = Modifier
             .wrapContentWidth()

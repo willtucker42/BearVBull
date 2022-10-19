@@ -99,9 +99,29 @@ class MainViewModel : ViewModel() {
             launch { generateAndUpdateLiveBetDataData() }
         }
     }
-
+    fun onSelectedTickerChanged(marketId: String) {
+        orderBookHolder.clear()
+        _orderBookMutableStateFlow.value = orderBookHolder
+        db.collection("live_prediction_market_info")
+            .document(marketId)
+            .get()
+            .addOnSuccessListener { marketDoc ->
+                activeMarketData.value = ActiveMarket(
+                    marketId = marketId,
+                    bearHeadCount = marketDoc.get("bear_headcount") as Long,
+                    bearTotal = marketDoc.get("bear_total") as Long,
+                    marketStatus = marketDoc.get("bet_status") as String,
+                    biggestBearBet = marketDoc.get("biggest_bear_bet") as Long,
+                    biggestBullBet = marketDoc.get("biggest_bear_bet") as Long,
+                    bullHeadCount = marketDoc.get("bull_headcount") as Long,
+                    bullTotal = marketDoc.get("bull_total") as Long,
+                    ticker = marketDoc.get("ticker") as String
+                )
+            }
+    }
     @SuppressLint("LogNotTimber")
     fun addUserBet(betInformation: BetInformation) {
+        println("Adding user bet with to ${betInformation.tickerSymbol}")
         val userBet = hashMapOf(
             "bet_amount" to betInformation.initialBetAmount,
             "bet_side" to betInformation.betSide,
@@ -143,17 +163,40 @@ class MainViewModel : ViewModel() {
     }
 
     private fun getActiveMarkets() {
-        Timber.i("in getActiveMarkets")
+        println("in getActiveMarkets")
         db.collection("live_prediction_market_info")
-            .whereEqualTo("bet_status", "live")
+//            .whereEqualTo("bet_status", "live")
             .get()
-            .addOnSuccessListener { result ->
-                result.forEach { doc ->
+            .addOnSuccessListener { mDoc ->
+                mDoc.forEach { doc ->
                     println("thedoc ${doc.id} => ${doc.data}")
-                    activeMarketsHolder.activeMarkets.add(doc.toObject(ActiveMarket::class.java))
-                    _activeMarkets.value = activeMarketsHolder
+//                    activeMarketsHolder.activeMarkets.add(doc.toObject(ActiveMarket::class.java))
+                    activeMarketsHolder.activeMarkets.add(ActiveMarket(
+                        marketId = doc.id,
+                        bearHeadCount = doc.get("bear_headcount") as Long,
+                        bearTotal = doc.get("bear_total") as Long,
+                        marketStatus = doc.get("bet_status") as String,
+                        biggestBearBet = doc.get("biggest_bear_bet") as Long,
+                        biggestBullBet = doc.get("biggest_bear_bet") as Long,
+                        bullHeadCount = doc.get("bull_headcount") as Long,
+                        bullTotal = doc.get("bull_total") as Long,
+                        ticker = doc.get("ticker") as String
+                    ))
                 }
-                _selectedMarketId.value = result.first().id
+                _activeMarkets.value = activeMarketsHolder
+               val marketDoc = mDoc.first()
+                _selectedMarketId.value = marketDoc.id
+                activeMarketData.value = ActiveMarket(
+                    marketId = marketDoc.id,
+                    bearHeadCount = marketDoc.get("bear_headcount") as Long,
+                    bearTotal = marketDoc.get("bear_total") as Long,
+                    marketStatus = marketDoc.get("bet_status") as String,
+                    biggestBearBet = marketDoc.get("biggest_bear_bet") as Long,
+                    biggestBullBet = marketDoc.get("biggest_bear_bet") as Long,
+                    bullHeadCount = marketDoc.get("bull_headcount") as Long,
+                    bullTotal = marketDoc.get("bull_total") as Long,
+                    ticker = marketDoc.get("ticker") as String
+                )
             }
             .addOnFailureListener { e ->
                 Log.i("MainViewModel.kt","Error getting documents. $e")
@@ -166,6 +209,7 @@ class MainViewModel : ViewModel() {
             delay(1000)
             db.collection("all_user_bets")
                 .whereEqualTo("bet_status", "active")
+                .whereEqualTo("ticker_symbol", _selectedMarketId.value)
                 .limit(ORDERBOOK_QUERY_LIMIT)
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .get()
@@ -282,12 +326,12 @@ class MainViewModel : ViewModel() {
             delay(10000L)
             val bearTotal = Random.nextLong(0, 9999999999)
             val bullTotal = Random.nextLong(from = 0, until = 9999999999)
-            val totalBears = Random.nextInt(from = 0, until = 9999999)
-            val totalBulls = Random.nextInt(from = 0, until = 9999999)
+            val totalBears = Random.nextLong(from = 0, until = 9999999)
+            val totalBulls = Random.nextLong(from = 0, until = 9999999)
             val biggestBearBet = Random.nextLong(from = 0, until = bearTotal)
             val biggestBullBet = Random.nextLong(from = 0, until = bullTotal)
             val randomData = ActiveMarket(
-                betId = "123",
+                marketId = "123",
                 ticker = "SPY",
                 bearTotal = bearTotal,
                 bullTotal = bullTotal,
@@ -318,9 +362,6 @@ class MainViewModel : ViewModel() {
         }.start()
     }
 
-    fun onSelectedTickerChanged(ticker: String) {
-        _selectedMarketId.value = ticker
-    }
 
 }
 
