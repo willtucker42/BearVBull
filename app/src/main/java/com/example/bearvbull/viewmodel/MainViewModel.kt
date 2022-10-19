@@ -118,6 +118,9 @@ class MainViewModel : ViewModel() {
                     ticker = marketDoc.get("ticker") as String
                 )
             }
+            .addOnFailureListener { e ->
+                println("Error in onSelectedTickerChanged $e")
+            }
     }
     @SuppressLint("LogNotTimber")
     fun addUserBet(betInformation: BetInformation) {
