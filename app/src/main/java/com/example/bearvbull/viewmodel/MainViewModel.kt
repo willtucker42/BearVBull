@@ -36,6 +36,7 @@ class MainViewModel : ViewModel() {
     private val db: FirebaseFirestore = Firebase.firestore
     private var _selectedNavItem = MutableStateFlow(NavBarItems.BET_SCREEN)
     val selectedNavItem: StateFlow<NavBarItems> = _selectedNavItem
+
     // End nav bar
     private var countDownTimer: CountDownTimer? = null
 
@@ -116,6 +117,7 @@ class MainViewModel : ViewModel() {
                 println("Error in onSelectedTickerChanged $e")
             }
     }
+
     @SuppressLint("LogNotTimber")
     fun addUserBet(betInformation: BetInformation) {
         println("Adding user bet with to ${betInformation.tickerSymbol}")
@@ -136,10 +138,10 @@ class MainViewModel : ViewModel() {
         db.collection("all_user_bets")
             .add(userBet)
             .addOnSuccessListener { docRef ->
-                Log.i("MainViewModel.kt","addUserBet DocumentSnapshot added with ID: ${docRef.id}")
+                Log.i("MainViewModel.kt", "addUserBet DocumentSnapshot added with ID: ${docRef.id}")
             }
             .addOnFailureListener { e ->
-                Log.i("MainViewModel.kt","Error adding document, $e")
+                Log.i("MainViewModel.kt", "Error adding document, $e")
             }
 
         val user = hashMapOf(
@@ -152,7 +154,7 @@ class MainViewModel : ViewModel() {
         db.collection("users")
             .add(user)
             .addOnSuccessListener { docRef ->
-                Log.i("MainViewModel.kt","Added user id $docRef")
+                Log.i("MainViewModel.kt", "Added user id $docRef")
             }
             .addOnFailureListener { e ->
                 Log.i("MainViewModel.kt", "Error adding user, $e")
@@ -165,39 +167,41 @@ class MainViewModel : ViewModel() {
 //            .whereEqualTo("bet_status", "live")
             .get()
             .addOnSuccessListener { mDoc ->
+                /** This for loop adds the markets to the list of markets for the dropdown */
                 mDoc.forEach { doc ->
                     println("thedoc ${doc.id} => ${doc.data}")
 //                    activeMarketsHolder.activeMarkets.add(doc.toObject(ActiveMarket::class.java))
-                    activeMarketsHolder.activeMarkets.add(ActiveMarket(
-                        marketId = doc.id,
-                        bearHeadCount = doc.get("bear_headcount") as Long,
-                        bearTotal = doc.get("bear_total") as Long,
-                        marketStatus = doc.get("bet_status") as String,
-                        biggestBearBet = doc.get("biggest_bear_bet") as Long,
-                        biggestBullBet = doc.get("biggest_bear_bet") as Long,
-                        bullHeadCount = doc.get("bull_headcount") as Long,
-                        bullTotal = doc.get("bull_total") as Long,
-                        ticker = doc.get("ticker") as String
-                    ))
+                    activeMarketsHolder.activeMarkets.add(
+                        ActiveMarket(
+                            marketId = doc.id,
+                            bearHeadCount = doc.get("bear_headcount") as Long,
+                            bearTotal = doc.get("bear_total") as Long,
+                            marketStatus = doc.get("bet_status") as String,
+                            biggestBearBet = doc.get("biggest_bear_bet") as Long,
+                            biggestBullBet = doc.get("biggest_bear_bet") as Long,
+                            bullHeadCount = doc.get("bull_headcount") as Long,
+                            bullTotal = doc.get("bull_total") as Long,
+                            ticker = doc.get("ticker") as String
+                        )
+                    )
                 }
                 _activeMarkets.value = activeMarketsHolder
-               val marketDoc = mDoc.last()
-//                _selectedMarketId.value = marketDoc.id
-
-                activeMarketData.value = ActiveMarket(
-                    marketId = marketDoc.id,
-                    bearHeadCount = marketDoc.get("bear_headcount") as Long,
-                    bearTotal = marketDoc.get("bear_total") as Long,
-                    marketStatus = marketDoc.get("bet_status") as String,
-                    biggestBearBet = marketDoc.get("biggest_bear_bet") as Long,
-                    biggestBullBet = marketDoc.get("biggest_bear_bet") as Long,
-                    bullHeadCount = marketDoc.get("bull_headcount") as Long,
-                    bullTotal = marketDoc.get("bull_total") as Long,
-                    ticker = marketDoc.get("ticker") as String
-                )
+                mDoc.last().let {
+                    activeMarketData.value = ActiveMarket(
+                        marketId = it.id,
+                        bearHeadCount = it.get("bear_headcount") as Long,
+                        bearTotal = it.get("bear_total") as Long,
+                        marketStatus = it.get("bet_status") as String,
+                        biggestBearBet = it.get("biggest_bear_bet") as Long,
+                        biggestBullBet = it.get("biggest_bear_bet") as Long,
+                        bullHeadCount = it.get("bull_headcount") as Long,
+                        bullTotal = it.get("bull_total") as Long,
+                        ticker = it.get("ticker") as String
+                    )
+                }
             }
             .addOnFailureListener { e ->
-                Log.i("MainViewModel.kt","Error getting documents. $e")
+                Log.i("MainViewModel.kt", "Error getting documents. $e")
             }
     }
 
@@ -213,7 +217,7 @@ class MainViewModel : ViewModel() {
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .get()
                 .addOnSuccessListener { result ->
-                    println("orderbook result size is ${result.size()}")
+                    println("order book result size is ${result.size()}")
                     result.forEach { tradeDoc ->
                         // Only add the bet if it's not already in the bet list
                         if (!orderBookIdHashMap.containsKey(tradeDoc.get("bet_id").toString())) {
