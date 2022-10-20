@@ -120,7 +120,7 @@ fun BetScreenStatusTitle(
                     activeMarketsList.activeMarkets.forEach { market ->
                         DropdownMenuItem(onClick = {
                             marketDropDownText = market.ticker
-                            viewModel.onSelectedTickerChanged(market.ticker)
+                            viewModel.onSelectedTickerChanged(market.marketId)
                             expanded = false
                         }) {
                             Text(text = "$${market.ticker}")

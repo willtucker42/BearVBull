@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,9 +39,9 @@ class MainViewModel : ViewModel() {
     // End nav bar
 
     // currently selected marketId
-    var _selectedMarketId = MutableStateFlow("SPY")
-    val selectedMarketId: StateFlow<String> = _selectedMarketId
-    val currentMarketId: String = "SPY"
+//    var _selectedTicker = MutableStateFlow("SPY")
+//    val selectedMarketId: StateFlow<String> = _selectedMarketId
+//    val currentMarketId: String = "SPY"
     // end currently selected marketId
 
     private var countDownTimer: CountDownTimer? = null
@@ -86,8 +87,8 @@ class MainViewModel : ViewModel() {
     )
     val fakeBetHistory = mutableListOf<BetInformation>()
 
-    init {
-
+    fun manualInit() {
+        println("MainViewModel init")
         generateRankingsUserList()
         generateBetHistory()
 
@@ -96,11 +97,26 @@ class MainViewModel : ViewModel() {
             launch { getActiveMarkets() }
             launch { getMarketBookData() }
 //            launch { generateOrderBookEntries() }
-            launch { generateAndUpdateLiveBetDataData() }
+//            launch { generateAndUpdateLiveBetDataData() }
         }
     }
+    init {
+//        println("MainViewModel init")
+//        generateRankingsUserList()
+//        generateBetHistory()
+//
+//        viewModelScope.launch {
+//            launch { startTimer() }
+//            launch { getActiveMarkets() }
+//            launch { getMarketBookData() }
+////            launch { generateOrderBookEntries() }
+////            launch { generateAndUpdateLiveBetDataData() }
+//        }
+    }
     fun onSelectedTickerChanged(marketId: String) {
+        println("onSelectedTickerChanged market id: $marketId")
         orderBookHolder.clear()
+        orderBookIdHashMap.clear()
         _orderBookMutableStateFlow.value = orderBookHolder
         db.collection("live_prediction_market_info")
             .document(marketId)
@@ -187,8 +203,9 @@ class MainViewModel : ViewModel() {
                     ))
                 }
                 _activeMarkets.value = activeMarketsHolder
-               val marketDoc = mDoc.first()
-                _selectedMarketId.value = marketDoc.id
+               val marketDoc = mDoc.last()
+//                _selectedMarketId.value = marketDoc.id
+
                 activeMarketData.value = ActiveMarket(
                     marketId = marketDoc.id,
                     bearHeadCount = marketDoc.get("bear_headcount") as Long,
@@ -209,14 +226,16 @@ class MainViewModel : ViewModel() {
     @SuppressLint("LogNotTimber")
     private suspend fun getMarketBookData() {
         while (true) {
+            println("getMarketBookData1, ticker: ${liveMarketDataFlow.value.ticker}")
             delay(1000)
             db.collection("all_user_bets")
                 .whereEqualTo("bet_status", "active")
-                .whereEqualTo("ticker_symbol", _selectedMarketId.value)
+                .whereEqualTo("ticker_symbol", liveMarketDataFlow.value.ticker)
                 .limit(ORDERBOOK_QUERY_LIMIT)
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .get()
                 .addOnSuccessListener { result ->
+                    println("orderbook result size is ${result.size()}")
                     result.forEach { tradeDoc ->
                         // Only add the bet if it's not already in the bet list
                         if (!orderBookIdHashMap.containsKey(tradeDoc.get("bet_id").toString())) {
