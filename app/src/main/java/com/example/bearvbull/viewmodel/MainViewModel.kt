@@ -37,13 +37,6 @@ class MainViewModel : ViewModel() {
     private var _selectedNavItem = MutableStateFlow(NavBarItems.BET_SCREEN)
     val selectedNavItem: StateFlow<NavBarItems> = _selectedNavItem
     // End nav bar
-
-    // currently selected marketId
-//    var _selectedTicker = MutableStateFlow("SPY")
-//    val selectedMarketId: StateFlow<String> = _selectedMarketId
-//    val currentMarketId: String = "SPY"
-    // end currently selected marketId
-
     private var countDownTimer: CountDownTimer? = null
 
     private var activeMarketsHolder: ActiveMarkets = ActiveMarkets()
@@ -53,8 +46,6 @@ class MainViewModel : ViewModel() {
     private var _countDownTime = MutableStateFlow("")
     val countDownTime: StateFlow<String> = _countDownTime
     private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
-
-    //    private val todaysBetDocument: DocumentReference
 
     // OrderBook
     private var orderBookIdHashMap: MutableMap<String, Boolean> =
@@ -76,7 +67,6 @@ class MainViewModel : ViewModel() {
 
     // ActiveMarket
 
-    //    lateinit var fakeAccountInformation: RankingsUserList
     val fakeRankingsUserList = mutableListOf<UserAccountInformation>()
     val fakeUser = UserAccountInformation(
         userId = "123",
@@ -100,19 +90,7 @@ class MainViewModel : ViewModel() {
 //            launch { generateAndUpdateLiveBetDataData() }
         }
     }
-    init {
-//        println("MainViewModel init")
-//        generateRankingsUserList()
-//        generateBetHistory()
-//
-//        viewModelScope.launch {
-//            launch { startTimer() }
-//            launch { getActiveMarkets() }
-//            launch { getMarketBookData() }
-////            launch { generateOrderBookEntries() }
-////            launch { generateAndUpdateLiveBetDataData() }
-//        }
-    }
+
     fun onSelectedTickerChanged(marketId: String) {
         println("onSelectedTickerChanged market id: $marketId")
         orderBookHolder.clear()

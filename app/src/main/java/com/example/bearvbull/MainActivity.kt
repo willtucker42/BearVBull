@@ -51,13 +51,12 @@ import com.google.firebase.Timestamp
 import java.util.*
 
 class MainActivity : ComponentActivity() {
-//    @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BearVBullTheme {
-//                val mainViewModel = viewModel<MainViewModel>()
-                val mainViewModel = MainViewModel()
+                val mainViewModel = viewModel<MainViewModel>()
+//                val mainViewModel = MainViewModel()
                 mainViewModel.manualInit()
                 val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
 
