@@ -208,7 +208,7 @@ class MainViewModel : ViewModel() {
     @SuppressLint("LogNotTimber")
     private suspend fun getMarketBookData() {
         while (true) {
-            println("getMarketBookData1, ticker: ${liveMarketDataFlow.value.ticker}")
+//            println("getMarketBookData1, ticker: ${liveMarketDataFlow.value.ticker}")
             delay(1000)
             db.collection("all_user_bets")
                 .whereEqualTo("bet_status", "active")
@@ -217,7 +217,7 @@ class MainViewModel : ViewModel() {
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .get()
                 .addOnSuccessListener { result ->
-                    println("order book result size is ${result.size()}")
+                    println("order book result size is ${result.size()} for ticker: ${liveMarketDataFlow.value.ticker}")
                     result.forEach { tradeDoc ->
                         // Only add the bet if it's not already in the bet list
                         if (!orderBookIdHashMap.containsKey(tradeDoc.get("bet_id").toString())) {

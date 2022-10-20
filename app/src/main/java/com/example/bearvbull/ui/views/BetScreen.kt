@@ -32,7 +32,8 @@ fun BetScreen(
                 TopBar()
                 BetScreenStatusTitle(
                     activeMarketsList = activeMarkets,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    activeMarketData = activeMarketData
                 )
                 BetWindow(
                     countDownTime = countDownTime,
