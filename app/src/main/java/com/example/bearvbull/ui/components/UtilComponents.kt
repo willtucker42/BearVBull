@@ -39,8 +39,10 @@ import com.example.bearvbull.viewmodel.MainViewModel
 fun BetScreenStatusTitle(
     marketStatus: String = "live",
     activeMarketsList: ActiveMarkets,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    activeMarketData: ActiveMarket
 ) {
+
     val infiniteTransition = rememberInfiniteTransition()
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -96,7 +98,7 @@ fun BetScreenStatusTitle(
         })
         Spacer(modifier = Modifier.weight(1f))
         var expanded by remember { mutableStateOf(false) }
-        var marketDropDownText by remember { mutableStateOf(activeMarketsList.activeMarkets.first().ticker) }
+//        var marketDropDownText by remember { mutableStateOf(activeMarketData.ticker) }
         val icon = if (expanded)
             Icons.Filled.KeyboardArrowUp
         else
@@ -113,13 +115,13 @@ fun BetScreenStatusTitle(
                 .background(DeepPurple)
                 .padding(8.dp)
             ) {
-                Text(text = marketDropDownText, color = Color.White)
+                Text(text = if (activeMarketData.ticker == "") "..." else activeMarketData.ticker , color = Color.White)
                 Icon(imageVector = icon, contentDescription = null)
 
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     activeMarketsList.activeMarkets.forEach { market ->
                         DropdownMenuItem(onClick = {
-                            marketDropDownText = market.ticker
+//                            marketDropDownText = market.ticker
                             viewModel.onSelectedTickerChanged(market.marketId)
                             expanded = false
                         }) {

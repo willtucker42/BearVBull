@@ -7,7 +7,7 @@ import timber.log.Timber
 
 data class ActiveMarket(
     val bearTotal: Long = 1,
-    val ticker: String = "SPY",
+    val ticker: String = "",
     val marketStatus: String = "live", // live, waiting, finished
     val endTime: Timestamp = Timestamp(123412342134, 123421342),
     val bearHeadCount: Long = 0,
