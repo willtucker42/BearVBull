@@ -45,29 +45,33 @@ exports.makeUppercase = functions.firestore
 
 exports.updateMarketInfoOnNewBet = functions.firestore
   .document('/all_user_bets/{id}')
-  .onCreate((snap, context) => {
-    docData = snap.data();
-    console.log(docData);
+  .onCreate(async (snap, context) => {
+    const docData = snap.data();
+    functions.logger.log('updating ', context.params.id, docData);
+//     console.log(docData);
     const livePredictionMarketInfoRef = admin
       .firestore()
       .collection('live_prediction_market_info')
       .doc(docData['market_id']);
-    const marketDoc = livePredictionMarketInfoRef.get();
+      
+    functions.logger.log('the marketDoc reference', livePredictionMarketInfoRef);
+    const marketDoc = await livePredictionMarketInfoRef.get();
+    functions.logger.log('the marketDoc ', marketDoc);
     const marketData = marketDoc.data();
     const currentBiggestBullBet = Number(marketData["biggest_bull_bet"]);
 	const currentBiggestBearBet = Number(marketData["biggest_bear_bet"]);
+    const betAmount = Number(docData["bet_amount"]);
+    functions.logger.log('is this not a valid number? ', betAmount);
     if (docData["bet_side"] === "BEAR") {
-      bearTotal = Number(docData["bear_total"]);
       livePredictionMarketInfoRef.update({
-      		bear_headcount : FieldValue.increment(1),
-      		bear_total : FieldValue.increment(bearTotal),
+      		bear_headcount : admin.firestore.FieldValue.increment(1),
+      		bear_total : admin.firestore.FieldValue.increment(betAmount),
       		biggest_bear_bet : (docData['bet_amount'] > currentBiggestBearBet ? docData['bet_amount'] : currentBiggestBearBet)
     	});
     } else {
-      bullTotal = Number(docData["bull_total"]);
       livePredictionMarketInfoRef.update({
-      		bull_headcount : FieldValue.increment(1),
-      		bull_total : FieldValue.increment(bullTotal),
+      		bull_headcount : admin.firestore.FieldValue.increment(1),
+      		bull_total : admin.firestore.FieldValue.increment(betAmount),
       		biggest_bull_bet : (docData['bet_amount'] > currentBiggestBullBet ? docData['bet_amount'] : currentBiggestBullBet)
     	});
     }
