@@ -87,8 +87,32 @@ class MainViewModel : ViewModel() {
             launch { startTimer() }
             launch { getActiveMarkets() }
             launch { getMarketBookData() }
-//            launch { generateOrderBookEntries() }
-//            launch { generateAndUpdateLiveBetDataData() }
+            launch { getActiveMarketData() }
+        }
+    }
+
+    private suspend fun getActiveMarketData() {
+        while (true) {
+            println("getting activeMarketData for ${activeMarketData.value.marketId}")
+            if (activeMarketData.value.marketId != "") {
+                db.collection("live_prediction_market_info")
+                    .document(activeMarketData.value.marketId)
+                    .get()
+                    .addOnSuccessListener { marketDoc ->
+                        activeMarketData.value = ActiveMarket(
+                            marketId = activeMarketData.value.marketId,
+                            bearHeadCount = marketDoc.get("bear_headcount") as Long,
+                            bearTotal = marketDoc.get("bear_total") as Long,
+                            marketStatus = marketDoc.get("bet_status") as String,
+                            biggestBearBet = marketDoc.get("biggest_bear_bet") as Long,
+                            biggestBullBet = marketDoc.get("biggest_bear_bet") as Long,
+                            bullHeadCount = marketDoc.get("bull_headcount") as Long,
+                            bullTotal = marketDoc.get("bull_total") as Long,
+                            ticker = marketDoc.get("ticker") as String
+                        )
+                    }
+            }
+            delay(1000)
         }
     }
 
@@ -201,7 +225,7 @@ class MainViewModel : ViewModel() {
                 }
             }
             .addOnFailureListener { e ->
-                Log.i("MainViewModel.kt", "Error getting documents. $e")
+                println("Error getting documents. $e")
             }
     }
 
