@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
 //                val mainViewModel = MainViewModel()
                 mainViewModel.manualInit()
                 val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
-                val userId by mainViewModel.activeUserId.collect
+                val userId by mainViewModel.activeUser.collectAsState()
                 Box(
                     modifier = Modifier
                         .background(DeepPurple)
@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .align(Alignment.TopCenter)
                     ) {
-                        if (mainViewModel.activeUserId != "") {
+                        if (userId.userId != "") {
                             when (selectedScreen) {
                                 NavBarItems.BET_SCREEN ->
                                     BetScreen(
@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
                             SignInScreen(mainViewModel = mainViewModel)
                         }
                     }
-                    if (mainViewModel.activeUserId != "") {
+                    if (userId.userId != "") {
                         BottomNavBar(
                             modifier = Modifier.align(Alignment.BottomCenter),
                             viewModel = mainViewModel,
@@ -250,29 +250,37 @@ fun BetButtonContainer(
                     Image(
                         imageVector = Icons.Default.Send,
                         contentDescription = "Send",
-                        Modifier.size(24.dp).clickable {
-                            if (text.isNotEmpty() && text.toLong() > 0) {
-                                viewModel.addUserBet(
-                                    betInformation = BetInformation(
-                                        tickerSymbol = activeMarketData.ticker,
-                                        initialBetAmount = text.toLong(),
-                                        betSide = betSide.name,
-                                        winMultiplier = activeMarketData.getReturnRatio(betSide)
-                                            .substringAfter(':').toDouble(),
-                                        userId = UUID.randomUUID().toString(),
-                                        betStatus = "active",
-                                        marketId = activeMarketData.marketId,
-                                        timestamp = Timestamp(Calendar.getInstance().time),
-                                        odds = percentage
+                        Modifier
+                            .size(24.dp)
+                            .clickable {
+                                if (text.isNotEmpty() && text.toLong() > 0) {
+                                    viewModel.addUserBet(
+                                        betInformation = BetInformation(
+                                            tickerSymbol = activeMarketData.ticker,
+                                            initialBetAmount = text.toLong(),
+                                            betSide = betSide.name,
+                                            winMultiplier = activeMarketData
+                                                .getReturnRatio(betSide)
+                                                .substringAfter(':')
+                                                .toDouble(),
+                                            userId = UUID
+                                                .randomUUID()
+                                                .toString(),
+                                            betStatus = "active",
+                                            marketId = activeMarketData.marketId,
+                                            timestamp = Timestamp(Calendar.getInstance().time),
+                                            odds = percentage
+                                        )
                                     )
-                                )
-                                focusManager.clearFocus()
-                                Toast.makeText(context,"Bet placed",Toast.LENGTH_LONG).show()
-                            } else {
-                                inputError = true
-                            }
-                            text = ""
-                        },
+                                    focusManager.clearFocus()
+                                    Toast
+                                        .makeText(context, "Bet placed", Toast.LENGTH_LONG)
+                                        .show()
+                                } else {
+                                    inputError = true
+                                }
+                                text = ""
+                            },
                         colorFilter = ColorFilter.tint(color = Color.White)
                     )
                 }

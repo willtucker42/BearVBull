@@ -32,7 +32,8 @@ import kotlin.random.Random
 class MainViewModel : ViewModel() {
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
 
-    var activeUserId: String = ""
+    var _activeUser =  MutableStateFlow(UserAccountInformation())
+    val activeUser: StateFlow<UserAccountInformation> = _activeUser
 
     // NavBar
     private val db: FirebaseFirestore = Firebase.firestore
