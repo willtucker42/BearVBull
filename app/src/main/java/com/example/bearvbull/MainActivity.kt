@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
 //                val mainViewModel = MainViewModel()
                 mainViewModel.manualInit()
                 val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
-
+                val userId by mainViewModel.activeUserId.collect
                 Box(
                     modifier = Modifier
                         .background(DeepPurple)
@@ -80,7 +80,7 @@ class MainActivity : ComponentActivity() {
                                 NavBarItems.PROFILE_SCREEN -> ProfileScreen(viewModel = mainViewModel)
                             }
                         } else {
-                            SignInScreen()
+                            SignInScreen(mainViewModel = mainViewModel)
                         }
                     }
                     if (mainViewModel.activeUserId != "") {
