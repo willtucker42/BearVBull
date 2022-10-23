@@ -83,11 +83,13 @@ class MainActivity : ComponentActivity() {
                             SignInScreen()
                         }
                     }
-                    BottomNavBar(
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                        viewModel = mainViewModel,
-                        selectedScreen = selectedScreen
-                    )
+                    if (mainViewModel.activeUserId != "") {
+                        BottomNavBar(
+                            modifier = Modifier.align(Alignment.BottomCenter),
+                            viewModel = mainViewModel,
+                            selectedScreen = selectedScreen
+                        )
+                    }
                 }
             }
         }
