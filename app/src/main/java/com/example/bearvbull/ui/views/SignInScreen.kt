@@ -23,17 +23,20 @@ fun SignInScreen(mainViewModel: MainViewModel) {
         Box(
             modifier = Modifier.background(DeepPurple)
         ) {
-            Column() {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp)
+            ) {
                 Row(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(24.dp)
                 ) {
                     BearVBullTitle()
                     Spacer(modifier = Modifier.weight(1.0F))
                 }
-                Row(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Column() {
+                Row {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
                         Text(
                             text = "The Stock Market Prediction App",
                             fontFamily = poppinsFontFamily,
