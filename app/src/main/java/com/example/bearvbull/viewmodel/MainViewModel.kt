@@ -67,6 +67,7 @@ class MainViewModel : ViewModel() {
     // End bet data
 
     // ActiveMarket
+    private var initialMarketsRetrieved = false
 
     val fakeRankingsUserList = mutableListOf<UserAccountInformation>()
     val fakeUser = UserAccountInformation(
@@ -86,8 +87,6 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             launch { startTimer() }
             launch { getActiveMarkets() }
-            launch { getMarketBookData() }
-            launch { getActiveMarketData() }
         }
     }
 
@@ -105,7 +104,7 @@ class MainViewModel : ViewModel() {
                             bearTotal = marketDoc.get("bear_total") as Long,
                             marketStatus = marketDoc.get("bet_status") as String,
                             biggestBearBet = marketDoc.get("biggest_bear_bet") as Long,
-                            biggestBullBet = marketDoc.get("biggest_bear_bet") as Long,
+                            biggestBullBet = marketDoc.get("biggest_bull_bet") as Long,
                             bullHeadCount = marketDoc.get("bull_headcount") as Long,
                             bullTotal = marketDoc.get("bull_total") as Long,
                             ticker = marketDoc.get("ticker") as String
@@ -131,7 +130,7 @@ class MainViewModel : ViewModel() {
                     bearTotal = marketDoc.get("bear_total") as Long,
                     marketStatus = marketDoc.get("bet_status") as String,
                     biggestBearBet = marketDoc.get("biggest_bear_bet") as Long,
-                    biggestBullBet = marketDoc.get("biggest_bear_bet") as Long,
+                    biggestBullBet = marketDoc.get("biggest_bull_bet") as Long,
                     bullHeadCount = marketDoc.get("bull_headcount") as Long,
                     bullTotal = marketDoc.get("bull_total") as Long,
                     ticker = marketDoc.get("ticker") as String
@@ -202,7 +201,7 @@ class MainViewModel : ViewModel() {
                             bearTotal = doc.get("bear_total") as Long,
                             marketStatus = doc.get("bet_status") as String,
                             biggestBearBet = doc.get("biggest_bear_bet") as Long,
-                            biggestBullBet = doc.get("biggest_bear_bet") as Long,
+                            biggestBullBet = doc.get("biggest_bull_bet") as Long,
                             bullHeadCount = doc.get("bull_headcount") as Long,
                             bullTotal = doc.get("bull_total") as Long,
                             ticker = doc.get("ticker") as String
@@ -217,16 +216,21 @@ class MainViewModel : ViewModel() {
                         bearTotal = it.get("bear_total") as Long,
                         marketStatus = it.get("bet_status") as String,
                         biggestBearBet = it.get("biggest_bear_bet") as Long,
-                        biggestBullBet = it.get("biggest_bear_bet") as Long,
+                        biggestBullBet = it.get("biggest_bull_bet") as Long,
                         bullHeadCount = it.get("bull_headcount") as Long,
                         bullTotal = it.get("bull_total") as Long,
                         ticker = it.get("ticker") as String
                     )
                 }
+                viewModelScope.launch {
+                    launch { getActiveMarketData() }
+                    launch { getMarketBookData() }
+                }
             }
             .addOnFailureListener { e ->
                 println("Error getting documents. $e")
             }
+
     }
 
     @SuppressLint("LogNotTimber")
