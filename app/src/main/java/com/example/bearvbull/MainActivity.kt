@@ -45,6 +45,7 @@ import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.ui.views.BetScreen
 import com.example.bearvbull.ui.views.ProfileScreen
 import com.example.bearvbull.ui.views.RankingsScreen
+import com.example.bearvbull.ui.views.SignInScreen
 import com.example.bearvbull.util.*
 import com.example.bearvbull.viewmodel.MainViewModel
 import com.google.firebase.Timestamp
@@ -69,13 +70,17 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .align(Alignment.TopCenter)
                     ) {
-                        when (selectedScreen) {
-                            NavBarItems.BET_SCREEN ->
-                                BetScreen(
-                                    viewModel = mainViewModel
-                                )
-                            NavBarItems.RANKINGS_SCREEN -> RankingsScreen(mainViewModel)
-                            NavBarItems.PROFILE_SCREEN -> ProfileScreen(viewModel = mainViewModel)
+                        if (mainViewModel.activeUserId != "") {
+                            when (selectedScreen) {
+                                NavBarItems.BET_SCREEN ->
+                                    BetScreen(
+                                        viewModel = mainViewModel
+                                    )
+                                NavBarItems.RANKINGS_SCREEN -> RankingsScreen(mainViewModel)
+                                NavBarItems.PROFILE_SCREEN -> ProfileScreen(viewModel = mainViewModel)
+                            }
+                        } else {
+                            SignInScreen()
                         }
                     }
                     BottomNavBar(
@@ -379,13 +384,7 @@ fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel
     ) {
         TopBarIcon(icon = R.drawable.profile_icon)
         Spacer(modifier = Modifier.weight(1.0f))
-        Text(
-            text = title,
-            fontFamily = poppinsFontFamily,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontSize = 22.sp
-        )
+        BearVBullTitle()
         Spacer(modifier = Modifier.weight(1.0f))
         TopBarIcon(icon = R.drawable.money_bag_icon)
     }

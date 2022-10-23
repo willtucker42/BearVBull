@@ -25,13 +25,10 @@ import com.example.bearvbull.data.ActiveMarket
 import com.example.bearvbull.data.ActiveMarkets
 import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.ui.theme.*
-import com.example.bearvbull.util.BetInfoType
-import com.example.bearvbull.util.BetSide
-import com.example.bearvbull.util.NavBarItems
+import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.DOWN_ARROW
 import com.example.bearvbull.util.Utility.UP_ARROW
 import com.example.bearvbull.util.Utility.simpleDateFormat
-import com.example.bearvbull.util.formatBigLong
 import com.example.bearvbull.viewmodel.MainViewModel
 
 
@@ -154,6 +151,17 @@ fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, activeMarketData: Acti
         fontFamily = interFontFamily,
         fontSize = 12.sp,
         color = Color.White
+    )
+}
+
+@Composable
+fun BearVBullTitle () {
+    Text(
+        text = BEAR_V_BULL_TITLE,
+        fontFamily = poppinsFontFamily,
+        color = Color.White,
+        fontWeight = FontWeight.Bold,
+        fontSize = 22.sp
     )
 }
 

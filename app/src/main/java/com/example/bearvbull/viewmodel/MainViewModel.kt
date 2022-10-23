@@ -32,6 +32,8 @@ import kotlin.random.Random
 class MainViewModel : ViewModel() {
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
 
+    var activeUserId: String = ""
+
     // NavBar
     private val db: FirebaseFirestore = Firebase.firestore
     private var _selectedNavItem = MutableStateFlow(NavBarItems.BET_SCREEN)
@@ -67,7 +69,6 @@ class MainViewModel : ViewModel() {
     // End bet data
 
     // ActiveMarket
-    private var initialMarketsRetrieved = false
 
     val fakeRankingsUserList = mutableListOf<UserAccountInformation>()
     val fakeUser = UserAccountInformation(
