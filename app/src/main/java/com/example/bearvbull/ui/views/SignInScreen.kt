@@ -1,5 +1,8 @@
 package com.example.bearvbull.ui.views
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,9 +25,32 @@ import com.example.bearvbull.ui.theme.DeepPurple
 import com.example.bearvbull.ui.theme.poppinsFontFamily
 import com.example.bearvbull.viewmodel.MainViewModel
 import com.example.bearvbull.R
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.tasks.Task
 
 @Composable
-fun SignInScreen(mainViewModel: MainViewModel) {
+fun SignInScreen(mainViewModel: MainViewModel, gsc: GoogleSignInClient) {
+    val startForResult =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            println("blabalbalabla")
+        if (it.resultCode == Activity.RESULT_OK) {
+            val intent = it.data
+            if (it.data != null) {
+                val task: Task<GoogleSignInAccount> =
+                    GoogleSignIn.getSignedInAccountFromIntent(intent)
+//                handleSignInResult(task)
+                task.addOnSuccessListener { googleAccount ->
+                    println("SUCCESS ${googleAccount.email} ${googleAccount.email}")
+                }
+                task.addOnFailureListener { e ->
+                    println("FAILURE $e")
+                }
+            }
+        }
+    }
     Surface {
         Box(
             modifier = Modifier.background(DeepPurple)
@@ -59,6 +85,7 @@ fun SignInScreen(mainViewModel: MainViewModel) {
                         )
                         Button(
                             onClick = {
+                                      startForResult.launch(gsc.signInIntent)
 //                                startForResult.launch(googleSignInClient?.signInIntent)
                             },
                             modifier = Modifier
@@ -79,12 +106,6 @@ fun SignInScreen(mainViewModel: MainViewModel) {
                     }
                     Spacer(modifier = Modifier.weight(1.0F))
                 }
-
-//                Button(onClick = {
-//                    mainViewModel._activeUser.value = UserAccountInformation(userId = "willTucker42")
-//                }) {
-//                    Text("go to main screen")
-//                }
             }
         }
     }

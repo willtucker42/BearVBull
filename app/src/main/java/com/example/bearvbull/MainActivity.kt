@@ -51,6 +51,7 @@ import com.example.bearvbull.viewmodel.MainViewModel
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Timestamp
@@ -72,6 +73,15 @@ class MainActivity : ComponentActivity() {
                     .build())
             .setAutoSelectEnabled(true)
             .build()
+        fun getGoogleLoginAuth(): GoogleSignInClient {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestIdToken("840464186489-bdk1amljulc4uqo1ldgkhr2u2h5sfgbr.apps.googleusercontent.com")
+                .requestId()
+                .requestProfile()
+                .build()
+            return GoogleSignIn.getClient(this, gso)
+        }
         setContent {
             BearVBullTheme {
                 val mainViewModel = viewModel<MainViewModel>()
@@ -99,7 +109,7 @@ class MainActivity : ComponentActivity() {
                                 NavBarItems.PROFILE_SCREEN -> ProfileScreen(viewModel = mainViewModel)
                             }
                         } else {
-                            SignInScreen(mainViewModel = mainViewModel)
+                            SignInScreen(mainViewModel = mainViewModel, getGoogleLoginAuth())
                         }
                     }
                     if (userId.userId != "") {
