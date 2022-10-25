@@ -22,6 +22,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.DecimalFormat
@@ -396,6 +397,13 @@ class MainViewModel : ViewModel() {
         }.start()
     }
 
+//    fun onTapSignInWithGoogle() = flow {
+//        try {
+//            emit()
+//        } catch (e: Exception) {
+//
+//        }
+//    }
 
 }
 

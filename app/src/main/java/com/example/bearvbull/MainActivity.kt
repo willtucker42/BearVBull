@@ -48,19 +48,38 @@ import com.example.bearvbull.ui.views.RankingsScreen
 import com.example.bearvbull.ui.views.SignInScreen
 import com.example.bearvbull.util.*
 import com.example.bearvbull.viewmodel.MainViewModel
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Timestamp
 import java.util.*
 
 class MainActivity : ComponentActivity() {
+    private lateinit var onTapClient: SignInClient
+    private lateinit var signInRequest: BeginSignInRequest
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onTapClient = Identity.getSignInClient(this)
+        signInRequest = BeginSignInRequest.builder()
+            .setGoogleIdTokenRequestOptions(
+                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                    .setSupported(true)
+                    .setServerClientId("840464186489-bdk1amljulc4uqo1ldgkhr2u2h5sfgbr.apps.googleusercontent.com")
+                    .setFilterByAuthorizedAccounts(false)
+                    .build())
+            .setAutoSelectEnabled(true)
+            .build()
         setContent {
             BearVBullTheme {
                 val mainViewModel = viewModel<MainViewModel>()
-//                val mainViewModel = MainViewModel()
                 mainViewModel.manualInit()
+
                 val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
                 val userId by mainViewModel.activeUser.collectAsState()
+
                 Box(
                     modifier = Modifier
                         .background(DeepPurple)
