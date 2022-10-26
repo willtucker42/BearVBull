@@ -397,7 +397,7 @@ class MainViewModel : ViewModel() {
             .whereEqualTo("user_id", account.id.toString())
             .get()
             .addOnSuccessListener { doc ->
-                println("the doc.size ${doc.size()}")
+                println("the user doc.size ${doc.size()}")
                 if (doc.size() >= 0) {
                     println("User found. Signing in... ${account.id.toString()}")
                     updateSignInStatus(SignInStatus.SIGNED_IN)
