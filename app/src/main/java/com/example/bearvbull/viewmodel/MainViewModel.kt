@@ -35,13 +35,13 @@ class MainViewModel : ViewModel() {
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
 
     var _signInStatus = MutableStateFlow(SignInStatus.NOT_SIGNED_IN)
-    val signInStatus : StateFlow<SignInStatus> = _signInStatus
+    val signInStatus: StateFlow<SignInStatus> = _signInStatus
 
-    var _activeUser =  MutableStateFlow(UserAccountInformation())
+    var _activeUser = MutableStateFlow(UserAccountInformation())
     val activeUser: StateFlow<UserAccountInformation> = _activeUser
 
     var _userId = MutableStateFlow("")
-    val userId : StateFlow<String> = _userId
+    val userId: StateFlow<String> = _userId
 
     // NavBar
     private val db: FirebaseFirestore = Firebase.firestore
@@ -88,7 +88,7 @@ class MainViewModel : ViewModel() {
         1
     )
     val fakeBetHistory = mutableListOf<BetInformation>()
-
+    var changingTicker = false
     fun manualInit() {
         println("MainViewModel init")
         generateRankingsUserList()
@@ -102,23 +102,25 @@ class MainViewModel : ViewModel() {
 
     private suspend fun getActiveMarketData() {
         while (true) {
-            println("getting activeMarketData for ${activeMarketData.value.marketId}")
+//            println("getting activeMarketData for ${activeMarketData.value.marketId}")
             if (activeMarketData.value.marketId != "") {
                 db.collection("live_prediction_market_info")
                     .document(activeMarketData.value.marketId)
                     .get()
                     .addOnSuccessListener { marketDoc ->
-                        activeMarketData.value = ActiveMarket(
-                            marketId = activeMarketData.value.marketId,
-                            bearHeadCount = marketDoc.get("bear_headcount") as Long,
-                            bearTotal = marketDoc.get("bear_total") as Long,
-                            marketStatus = marketDoc.get("bet_status") as String,
-                            biggestBearBet = marketDoc.get("biggest_bear_bet") as Long,
-                            biggestBullBet = marketDoc.get("biggest_bull_bet") as Long,
-                            bullHeadCount = marketDoc.get("bull_headcount") as Long,
-                            bullTotal = marketDoc.get("bull_total") as Long,
-                            ticker = marketDoc.get("ticker") as String
-                        )
+                        if (!changingTicker) {
+                            activeMarketData.value = ActiveMarket(
+                                marketId = activeMarketData.value.marketId,
+                                bearHeadCount = marketDoc.get("bear_headcount") as Long,
+                                bearTotal = marketDoc.get("bear_total") as Long,
+                                marketStatus = marketDoc.get("bet_status") as String,
+                                biggestBearBet = marketDoc.get("biggest_bear_bet") as Long,
+                                biggestBullBet = marketDoc.get("biggest_bull_bet") as Long,
+                                bullHeadCount = marketDoc.get("bull_headcount") as Long,
+                                bullTotal = marketDoc.get("bull_total") as Long,
+                                ticker = marketDoc.get("ticker") as String
+                            )
+                        }
                     }
             }
             delay(1000)
@@ -126,6 +128,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun onSelectedTickerChanged(marketId: String) {
+        changingTicker = true
         println("onSelectedTickerChanged market id: $marketId")
         orderBookHolder.clear()
         orderBookIdHashMap.clear()
@@ -145,9 +148,11 @@ class MainViewModel : ViewModel() {
                     bullTotal = marketDoc.get("bull_total") as Long,
                     ticker = marketDoc.get("ticker") as String
                 )
+                changingTicker = false
             }
             .addOnFailureListener { e ->
                 println("Error in onSelectedTickerChanged $e")
+                changingTicker = false
             }
     }
 
@@ -195,15 +200,14 @@ class MainViewModel : ViewModel() {
     }
 
     private fun getActiveMarkets() {
-        println("in getActiveMarkets")
+//        println("in getActiveMarkets")
         db.collection("live_prediction_market_info")
 //            .whereEqualTo("bet_status", "live")
             .get()
             .addOnSuccessListener { mDoc ->
                 /** This for loop adds the markets to the list of markets for the dropdown */
                 mDoc.forEach { doc ->
-                    println("thedoc ${doc.id} => ${doc.data}")
-//                    activeMarketsHolder.activeMarkets.add(doc.toObject(ActiveMarket::class.java))
+//                    println("thedoc ${doc.id} => ${doc.data}")
                     activeMarketsHolder.activeMarkets.add(
                         ActiveMarket(
                             marketId = doc.id,
@@ -245,7 +249,7 @@ class MainViewModel : ViewModel() {
 
     @SuppressLint("LogNotTimber")
     private suspend fun getMarketBookData() {
-        while (true) {
+        while (!changingTicker) {
 //            println("getMarketBookData1, ticker: ${liveMarketDataFlow.value.ticker}")
             delay(1000)
             db.collection("all_user_bets")
@@ -255,23 +259,28 @@ class MainViewModel : ViewModel() {
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .get()
                 .addOnSuccessListener { result ->
-                    println("order book result size is ${result.size()} for ticker: ${liveMarketDataFlow.value.ticker}")
-                    result.forEach { tradeDoc ->
-                        // Only add the bet if it's not already in the bet list
-                        if (!orderBookIdHashMap.containsKey(tradeDoc.get("bet_id").toString())) {
-                            orderBookIdHashMap[tradeDoc.get("bet_id").toString()] = true
-                            orderBookHolder.add(
-                                OrderBookEntry(
-                                    userName = "willTucker42",
-                                    amountWagered = tradeDoc.get("bet_amount") as Long,
-                                    betSide = tradeDoc.get("bet_side") as String,
-                                    time = (tradeDoc.get("timestamp") as Timestamp).toDate(),
-                                    betPercent = tradeDoc.get("odds") as Double
+                    if (!changingTicker) {
+//                        println("order book result size is ${result.size()} for ticker: ${liveMarketDataFlow.value.ticker}")
+                        result.forEach { tradeDoc ->
+                            // Only add the bet if it's not already in the bet list
+                            if (!orderBookIdHashMap.containsKey(
+                                    tradeDoc.get("bet_id").toString()
                                 )
-                            )
+                            ) {
+                                orderBookIdHashMap[tradeDoc.get("bet_id").toString()] = true
+                                orderBookHolder.add(
+                                    OrderBookEntry(
+                                        userName = "willTucker42",
+                                        amountWagered = tradeDoc.get("bet_amount") as Long,
+                                        betSide = tradeDoc.get("bet_side") as String,
+                                        time = (tradeDoc.get("timestamp") as Timestamp).toDate(),
+                                        betPercent = tradeDoc.get("odds") as Double
+                                    )
+                                )
+                            }
                         }
+                        _orderBookMutableStateFlow.value = orderBookHolder
                     }
-                    _orderBookMutableStateFlow.value = orderBookHolder
                 }
                 .addOnFailureListener { e ->
                     Log.e("MainViewModel.kt", "Error getting trade history: $e")
@@ -398,16 +407,17 @@ class MainViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { doc ->
                 println("the user doc.size ${doc.size()}")
-                if (doc.size() >= 0) {
+                if (doc.size() > 0) {
                     println("User found. Signing in... ${account.id.toString()}")
                     updateSignInStatus(SignInStatus.SIGNED_IN)
-                    _userId.value = account.id.toString()
+//                    updateUserId(account.id.toString())
+                    addNewUserToDb(account)
                 } else {
                     addNewUserToDb(account)
                 }
             }
-            .addOnFailureListener {
-
+            .addOnFailureListener { e ->
+                Log.e("MainViewModel.kt", "Error getting User: $e")
             }
     }
 
@@ -418,20 +428,26 @@ class MainViewModel : ViewModel() {
             "elo_score" to 100,
             "email" to account.email,
             "user_id" to account.id.toString(),
-            "username" to account.displayName
-        )
+            "username" to account.displayName,
+
+            )
         db.collection("users")
-            .add(user)
+            .document(account.email.toString())
+            .set(user)
             .addOnSuccessListener { docRef ->
                 Log.i("MainViewModel.kt", "Added user id $docRef")
             }
             .addOnFailureListener { e ->
-                Log.i("MainViewModel.kt", "Error adding user, $e")
+                Log.e("MainViewModel.kt", "Error adding user, $e")
             }
     }
 
     private fun updateSignInStatus(value: SignInStatus) {
         _signInStatus.value = value
+    }
+
+    private fun updateUserId(id: String) {
+        _userId.value = id
     }
 
     private fun startTimer() {

@@ -44,6 +44,7 @@ fun SignInScreen(mainViewModel: MainViewModel, gsc: GoogleSignInClient) {
                 task.addOnSuccessListener { googleAccount ->
                     println("Login SUCCESS ${googleAccount.email} ${googleAccount.id}")
                     mainViewModel._userId.value = googleAccount.id.toString()
+                    mainViewModel.checkIfUserExistsInDb(googleAccount)
                 }
                 task.addOnFailureListener { e ->
                     println("Login FAILURE $e")

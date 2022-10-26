@@ -58,25 +58,13 @@ import com.google.firebase.Timestamp
 import java.util.*
 
 class MainActivity : ComponentActivity() {
-    private lateinit var onTapClient: SignInClient
-    private lateinit var signInRequest: BeginSignInRequest
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        onTapClient = Identity.getSignInClient(this)
-        signInRequest = BeginSignInRequest.builder()
-            .setGoogleIdTokenRequestOptions(
-                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                    .setSupported(true)
-                    .setServerClientId("840464186489-bdk1amljulc4uqo1ldgkhr2u2h5sfgbr.apps.googleusercontent.com")
-                    .setFilterByAuthorizedAccounts(false)
-                    .build())
-            .setAutoSelectEnabled(true)
-            .build()
         fun getGoogleLoginAuth(): GoogleSignInClient {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .requestIdToken("840464186489-bdk1amljulc4uqo1ldgkhr2u2h5sfgbr.apps.googleusercontent.com")
+                .requestIdToken(resources.getString(R.string.SERVER_CLIENT_ID))
                 .requestId()
                 .requestProfile()
                 .build()

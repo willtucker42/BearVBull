@@ -37,7 +37,8 @@ fun BetScreenStatusTitle(
     marketStatus: String = "live",
     activeMarketsList: ActiveMarkets,
     viewModel: MainViewModel,
-    activeMarketData: ActiveMarket
+    activeMarketData: ActiveMarket,
+    changeMarket: (String) -> Unit
 ) {
 
     val infiniteTransition = rememberInfiniteTransition()
@@ -114,12 +115,12 @@ fun BetScreenStatusTitle(
             ) {
                 Text(text = if (activeMarketData.ticker == "") "..." else activeMarketData.ticker , color = Color.White)
                 Icon(imageVector = icon, contentDescription = null)
-
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     activeMarketsList.activeMarkets.forEach { market ->
                         DropdownMenuItem(onClick = {
 //                            marketDropDownText = market.ticker
-                            viewModel.onSelectedTickerChanged(market.marketId)
+//                            viewModel.onSelectedTickerChanged(market.marketId)
+                            changeMarket(market.marketId)
                             expanded = false
                         }) {
                             Text(text = "$${market.ticker}")

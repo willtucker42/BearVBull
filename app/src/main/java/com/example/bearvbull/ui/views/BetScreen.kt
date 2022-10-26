@@ -33,7 +33,8 @@ fun BetScreen(
                 BetScreenStatusTitle(
                     activeMarketsList = activeMarkets,
                     viewModel = viewModel,
-                    activeMarketData = activeMarketData
+                    activeMarketData = activeMarketData,
+                    changeMarket = { marketId: String -> viewModel.onSelectedTickerChanged(marketId) }
                 )
                 BetWindow(
                     countDownTime = countDownTime,

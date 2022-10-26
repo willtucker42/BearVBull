@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">BearVBull</string>
-    <string name ="get_bet_ratio_error">UNKNOWN VALUE IN getBetRatio()</string>
+    <string name="get_bet_ratio_error">UNKNOWN VALUE IN getBetRatio()</string>
+    <string name="SERVER_CLIENT_ID">840464186489-bdk1amljulc4uqo1ldgkhr2u2h5sfgbr.apps.googleusercontent.com</string>
 </resources>
