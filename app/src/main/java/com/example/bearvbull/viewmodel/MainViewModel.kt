@@ -36,6 +36,9 @@ class MainViewModel : ViewModel() {
     var _activeUser =  MutableStateFlow(UserAccountInformation())
     val activeUser: StateFlow<UserAccountInformation> = _activeUser
 
+    var _userId = MutableStateFlow("")
+    val userId : StateFlow<String> = _userId
+
     // NavBar
     private val db: FirebaseFirestore = Firebase.firestore
     private var _selectedNavItem = MutableStateFlow(NavBarItems.BET_SCREEN)

@@ -35,7 +35,6 @@ import com.google.android.gms.tasks.Task
 fun SignInScreen(mainViewModel: MainViewModel, gsc: GoogleSignInClient) {
     val startForResult =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            println("blabalbalabla")
         if (it.resultCode == Activity.RESULT_OK) {
             val intent = it.data
             if (it.data != null) {
@@ -43,10 +42,11 @@ fun SignInScreen(mainViewModel: MainViewModel, gsc: GoogleSignInClient) {
                     GoogleSignIn.getSignedInAccountFromIntent(intent)
 //                handleSignInResult(task)
                 task.addOnSuccessListener { googleAccount ->
-                    println("SUCCESS ${googleAccount.email} ${googleAccount.email}")
+                    println("Login SUCCESS ${googleAccount.email} ${googleAccount.id}")
+                    mainViewModel._userId.value = googleAccount.id.toString()
                 }
                 task.addOnFailureListener { e ->
-                    println("FAILURE $e")
+                    println("Login FAILURE $e")
                 }
             }
         }
