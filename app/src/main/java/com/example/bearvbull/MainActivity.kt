@@ -235,7 +235,7 @@ fun BetButtonContainer(
                 backgroundColor = backgroundColor,
                 description = description,
                 onClickMethod = {
-                    showTextField = true
+                    showTextField = !showTextField
                 }
             )
             var text by rememberSaveable { mutableStateOf("") }
