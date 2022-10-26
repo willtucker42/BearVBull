@@ -41,6 +41,10 @@ enum class BetSide(val bearOrBull: String) {
     BEAR(com.example.bearvbull.util.BEAR), BULL(com.example.bearvbull.util.BULL)
 }
 
+enum class SignInStatus() {
+    NOT_SIGNED_IN, CHECKING_USER, SIGNED_IN, ADDING_NEW_USER
+}
+
 enum class BetInfoType(val icon: Int) {
     TOTAL_WAGERED(R.drawable.coin_stack_icon),
     RETURN_RATIO(R.drawable.bet_return_icon),

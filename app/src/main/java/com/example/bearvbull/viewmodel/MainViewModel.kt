@@ -13,6 +13,7 @@ import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -32,6 +33,9 @@ import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
+
+    var _signInStatus = MutableStateFlow(SignInStatus.NOT_SIGNED_IN)
+    val signInStatus : StateFlow<SignInStatus> = _signInStatus
 
     var _activeUser =  MutableStateFlow(UserAccountInformation())
     val activeUser: StateFlow<UserAccountInformation> = _activeUser
@@ -385,6 +389,49 @@ class MainViewModel : ViewModel() {
 
     fun navToDiffScreen(screen: NavBarItems) {
         _selectedNavItem.value = screen
+    }
+
+    fun checkIfUserExistsInDb(account: GoogleSignInAccount) {
+        updateSignInStatus(SignInStatus.CHECKING_USER)
+        db.collection("users")
+            .whereEqualTo("user_id", account.id.toString())
+            .get()
+            .addOnSuccessListener { doc ->
+                println("the doc.size ${doc.size()}")
+                if (doc.size() >= 0) {
+                    println("User found. Signing in... ${account.id.toString()}")
+                    updateSignInStatus(SignInStatus.SIGNED_IN)
+                    _userId.value = account.id.toString()
+                } else {
+                    addNewUserToDb(account)
+                }
+            }
+            .addOnFailureListener {
+
+            }
+    }
+
+    private fun addNewUserToDb(account: GoogleSignInAccount) {
+        println("User not found... adding new user... ${account.email}")
+        val user = hashMapOf(
+            "balance_available" to 1000,
+            "elo_score" to 100,
+            "email" to account.email,
+            "user_id" to account.id.toString(),
+            "username" to account.displayName
+        )
+        db.collection("users")
+            .add(user)
+            .addOnSuccessListener { docRef ->
+                Log.i("MainViewModel.kt", "Added user id $docRef")
+            }
+            .addOnFailureListener { e ->
+                Log.i("MainViewModel.kt", "Error adding user, $e")
+            }
+    }
+
+    private fun updateSignInStatus(value: SignInStatus) {
+        _signInStatus.value = value
     }
 
     private fun startTimer() {
