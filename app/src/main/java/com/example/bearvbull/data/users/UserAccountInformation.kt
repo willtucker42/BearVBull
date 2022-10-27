@@ -5,5 +5,6 @@ data class UserAccountInformation(
     val userName: String = "",
     val userBalance: Long = 0,
     val profileImage: Int = 0,
-    val rank: Int = 0
+    val rank: Int = 0,
+    val email: String = ""
 )

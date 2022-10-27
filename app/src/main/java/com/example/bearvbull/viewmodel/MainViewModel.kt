@@ -15,6 +15,7 @@ import com.example.bearvbull.util.*
 import com.example.bearvbull.util.Utility.formatTime
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -411,6 +412,7 @@ class MainViewModel : ViewModel() {
                     println("User found. Signing in... ${account.id.toString()}")
                     updateSignInStatus(SignInStatus.SIGNED_IN)
 //                    updateUserId(account.id.toString())
+                    updateUserFromDbDoc(doc.first())
                     addNewUserToDb(account)
                 } else {
                     addNewUserToDb(account)
@@ -442,6 +444,31 @@ class MainViewModel : ViewModel() {
             }
     }
 
+    private fun setUserAccountInformation() {
+        db.collection("all_user_bets")
+            .document(activeUser.value.email)
+            .get()
+            .addOnSuccessListener { doc ->
+                if (doc != null) {
+                    doc.get("balance_available").let {
+                        _activeUser.value = UserAccountInformation(
+                            userId = _activeUser.value.userId,
+                            userName = _activeUser.value.userName,
+                            userBalance = it.toString().toLong(),
+                            profileImage = _activeUser.value.profileImage,
+                            rank = _activeUser.value.rank,
+                            email = _activeUser.value.email
+                        )
+                    }
+                } else {
+                    Log.e("MainViewModel.kt", "There appears to be no document checkBalance()")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("MainViewModel.kt", "Error checking balance $e")
+            }
+    }
+
     private fun updateSignInStatus(value: SignInStatus) {
         _signInStatus.value = value
     }
@@ -449,7 +476,16 @@ class MainViewModel : ViewModel() {
     private fun updateUserId(id: String) {
         _userId.value = id
     }
-
+    private fun updateUserFromDbDoc(doc: DocumentSnapshot) {
+        _activeUser.value = UserAccountInformation(
+            userId = doc.get("user_id") as String,
+            userName = doc.get("username") as String,
+            userBalance = doc.get("balance_available") as Long,
+            profileImage = _activeUser.value.profileImage,
+            rank = _activeUser.value.rank,
+            email = _activeUser.value.email
+        )
+    }
     private fun startTimer() {
         countDownTimer = object : CountDownTimer(Utility.TIME_COUNTDOWN, 1) {
             override fun onTick(millisRemaining: Long) {
