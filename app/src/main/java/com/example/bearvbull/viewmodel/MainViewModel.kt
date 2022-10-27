@@ -411,9 +411,8 @@ class MainViewModel : ViewModel() {
                 if (doc.size() > 0) {
                     println("User found. Signing in... ${account.id.toString()}")
                     updateSignInStatus(SignInStatus.SIGNED_IN)
-//                    updateUserId(account.id.toString())
                     updateUserFromDbDoc(doc.first())
-                    addNewUserToDb(account)
+                    addNewUserToDb(account) // remove this later
                 } else {
                     addNewUserToDb(account)
                 }
@@ -426,7 +425,7 @@ class MainViewModel : ViewModel() {
     private fun addNewUserToDb(account: GoogleSignInAccount) {
         println("User not found... adding new user... ${account.email}")
         val user = hashMapOf(
-            "balance_available" to 1000,
+            "balance_available" to 1000000,
             "elo_score" to 100,
             "email" to account.email,
             "user_id" to account.id.toString(),
@@ -442,6 +441,15 @@ class MainViewModel : ViewModel() {
             .addOnFailureListener { e ->
                 Log.e("MainViewModel.kt", "Error adding user, $e")
             }
+        _activeUser.value = UserAccountInformation(
+            userId = _activeUser.value.userId,
+            userName = _activeUser.value.userName,
+            userBalance = 1000000,
+            profileImage = _activeUser.value.profileImage,
+            rank = _activeUser.value.rank,
+            email = _activeUser.value.email,
+            eloScore = 100
+        )
     }
 
     private fun setUserAccountInformation() {
@@ -476,6 +484,7 @@ class MainViewModel : ViewModel() {
     private fun updateUserId(id: String) {
         _userId.value = id
     }
+
     private fun updateUserFromDbDoc(doc: DocumentSnapshot) {
         _activeUser.value = UserAccountInformation(
             userId = doc.get("user_id") as String,
