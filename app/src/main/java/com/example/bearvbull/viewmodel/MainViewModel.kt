@@ -188,6 +188,8 @@ class MainViewModel : ViewModel() {
                     // already participating do
                     Toast.makeText(c, "You have already bet in this market", Toast.LENGTH_LONG)
                         .show()
+                    println("Already participating in market")
+                    checkIfSufficientFunds(betInformation, c) // REMOVE THIS LATER
                 } else {
                     checkIfSufficientFunds(betInformation, c)
                 }
@@ -206,6 +208,7 @@ class MainViewModel : ViewModel() {
                     "Checking if user has sufficient funds... ${activeUser.value.email} balance: " +
                             "${doc.get("balance_available") as Long}"
                 )
+                println(doc)
                 if (doc.get("balance_available") as Long >= betInformation.initialBetAmount) {
                     addUserBet(betInformation, c)
                 } else {
@@ -259,10 +262,10 @@ class MainViewModel : ViewModel() {
             .document(activeUser.value.email)
             .update("balance_available", FieldValue.increment(amount))
             .addOnSuccessListener {
-                println("asdasd")
+                println("updateUserBalance success. ")
             }
-            .addOnFailureListener {
-
+            .addOnFailureListener { e ->
+                Log.e("MainViewModel", "updateUserBalance() failed with error: $e")
             }
         _activeUser.value = UserAccountInformation(
             userId = _activeUser.value.userId,
@@ -486,7 +489,7 @@ class MainViewModel : ViewModel() {
                     println("User found. Signing in... ${account.id.toString()}")
                     updateSignInStatus(SignInStatus.SIGNED_IN)
                     updateUserFromDbDoc(doc.first())
-                    addNewUserToDb(account) // remove this later
+//                    addNewUserToDb(account) // remove this later
                 } else {
                     addNewUserToDb(account)
                 }
