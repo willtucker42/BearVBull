@@ -271,7 +271,7 @@ fun BetButtonContainer(
                             .size(24.dp)
                             .clickable {
                                 if (text.isNotEmpty() && text.toLong() > 0) {
-                                    viewModel.addUserBet(
+                                    viewModel.beginUserBetFlow(
                                         betInformation = BetInformation(
                                             tickerSymbol = activeMarketData.ticker,
                                             initialBetAmount = text.toLong(),
@@ -280,19 +280,14 @@ fun BetButtonContainer(
                                                 .getReturnRatio(betSide)
                                                 .substringAfter(':')
                                                 .toDouble(),
-                                            userId = UUID
-                                                .randomUUID()
-                                                .toString(),
+                                            userId = viewModel.activeUser.value.userId,
                                             betStatus = "active",
                                             marketId = activeMarketData.marketId,
                                             timestamp = Timestamp(Calendar.getInstance().time),
                                             odds = percentage
-                                        )
+                                        ), context
                                     )
                                     focusManager.clearFocus()
-                                    Toast
-                                        .makeText(context, "Bet placed", Toast.LENGTH_LONG)
-                                        .show()
                                 } else {
                                     inputError = true
                                 }

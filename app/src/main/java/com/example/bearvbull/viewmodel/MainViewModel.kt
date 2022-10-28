@@ -1,8 +1,10 @@
 package com.example.bearvbull.viewmodel
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.CountDownTimer
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bearvbull.R
@@ -16,18 +18,15 @@ import com.example.bearvbull.util.Utility.formatTime
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.text.DecimalFormat
 import java.util.*
 import kotlin.math.roundToLong
 import kotlin.random.Random
@@ -157,9 +156,71 @@ class MainViewModel : ViewModel() {
             }
     }
 
-    @SuppressLint("LogNotTimber")
-    fun addUserBet(betInformation: BetInformation) {
-        println("Adding user bet with to ${betInformation.tickerSymbol}")
+    fun beginUserBetFlow(betInformation: BetInformation, contextForToast: Context) {
+        println("Beginning User bet flow...")
+        // first get the current user from database and check the balance
+        checkIfAlreadyParticipatingInMarket(betInformation, contextForToast)
+//        val user = hashMapOf(
+//            "balance_available" to 1,
+//            "elo_score" to 100,
+//            "email" to "fake@email.com",
+//            "user_id" to betInformation.userId,
+//            "username" to betInformation.userId
+//        )
+//        db.collection("users")
+//            .add(user)
+//            .addOnSuccessListener { docRef ->
+//                Log.i("MainViewModel.kt", "Added user id $docRef")
+//            }
+//            .addOnFailureListener { e ->
+//                Log.i("MainViewModel.kt", "Error adding user, $e")
+//            }
+    }
+
+    private fun checkIfAlreadyParticipatingInMarket(betInformation: BetInformation, c: Context) {
+        println("Checking if user is already participating in market...")
+        db.collection("all_user_bets")
+            .whereEqualTo("market_id", betInformation.marketId)
+            .whereEqualTo("user_id", activeUser.value.userId)
+            .get()
+            .addOnSuccessListener {
+                if (it.size() > 0) {
+                    // already participating do
+                    Toast.makeText(c, "You have already bet in this market", Toast.LENGTH_LONG)
+                        .show()
+                } else {
+                    checkIfSufficientFunds(betInformation, c)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("MainViewModel.kt", "Error checking if in market $e")
+            }
+    }
+
+    private fun checkIfSufficientFunds(betInformation: BetInformation, c: Context) {
+        db.collection("users")
+            .document(activeUser.value.email)
+            .get()
+            .addOnSuccessListener { doc ->
+                println(
+                    "Checking if user has sufficient funds... ${activeUser.value.email} balance: " +
+                            "${doc.get("balance_available") as Long}"
+                )
+                if (doc.get("balance_available") as Long >= betInformation.initialBetAmount) {
+                    addUserBet(betInformation, c)
+                } else {
+                    Toast.makeText(c, "Insufficient funds", Toast.LENGTH_LONG)
+                        .show()
+                    println("Insufficient funds")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("MainViewModel.kt", "Error getting funds info $e")
+            }
+    }
+
+    private fun addUserBet(betInformation: BetInformation, c: Context) {
+        println("Adding user bet... $betInformation")
         val userBet = hashMapOf(
             "bet_amount" to betInformation.initialBetAmount,
             "bet_side" to betInformation.betSide,
@@ -173,31 +234,44 @@ class MainViewModel : ViewModel() {
             "did_win" to betInformation.didWin,
             "bet_id" to UUID.randomUUID()
         )
-        println(userBet)
+
         db.collection("all_user_bets")
             .add(userBet)
             .addOnSuccessListener { docRef ->
                 Log.i("MainViewModel.kt", "addUserBet DocumentSnapshot added with ID: ${docRef.id}")
+                Toast.makeText(c, "Bet sent. Good luck!", Toast.LENGTH_LONG).show()
+                updateUserBalance(-betInformation.initialBetAmount)
             }
             .addOnFailureListener { e ->
                 Log.i("MainViewModel.kt", "Error adding document, $e")
+                Toast.makeText(c, "Bet failed to send. Funds are safe.", Toast.LENGTH_LONG)
+                    .show()
             }
+    }
 
-        val user = hashMapOf(
-            "balance_available" to 1,
-            "elo_score" to 100,
-            "email" to "fake@email.com",
-            "user_id" to betInformation.userId,
-            "username" to betInformation.userId
-        )
+    /**
+     * Updates the balance in the database and locally
+     * @param amount can be negative or positive
+     */
+    private fun updateUserBalance(amount: Long) {
+        println("Updating user balance... $amount")
         db.collection("users")
-            .add(user)
-            .addOnSuccessListener { docRef ->
-                Log.i("MainViewModel.kt", "Added user id $docRef")
+            .document(activeUser.value.email)
+            .update("balance_available", FieldValue.increment(amount))
+            .addOnSuccessListener {
+                println("asdasd")
             }
-            .addOnFailureListener { e ->
-                Log.i("MainViewModel.kt", "Error adding user, $e")
+            .addOnFailureListener {
+
             }
+        _activeUser.value = UserAccountInformation(
+            userId = _activeUser.value.userId,
+            userName = _activeUser.value.userName,
+            userBalance = _activeUser.value.userBalance.plus(amount),
+            profileImage = _activeUser.value.profileImage,
+            rank = _activeUser.value.rank,
+            email = _activeUser.value.email
+        )
     }
 
     private fun getActiveMarkets() {
@@ -442,12 +516,12 @@ class MainViewModel : ViewModel() {
                 Log.e("MainViewModel.kt", "Error adding user, $e")
             }
         _activeUser.value = UserAccountInformation(
-            userId = _activeUser.value.userId,
-            userName = _activeUser.value.userName,
+            userId = account.id.toString(),
+            userName = account.displayName.toString(),
             userBalance = 1000000,
             profileImage = _activeUser.value.profileImage,
             rank = _activeUser.value.rank,
-            email = _activeUser.value.email,
+            email = account.email.toString(),
             eloScore = 100
         )
     }
@@ -477,6 +551,9 @@ class MainViewModel : ViewModel() {
             }
     }
 
+    private fun checkIfSufficientFunds(betAmount: Long, fundsAmount: Long): Boolean =
+        fundsAmount >= betAmount
+
     private fun updateSignInStatus(value: SignInStatus) {
         _signInStatus.value = value
     }
@@ -495,6 +572,7 @@ class MainViewModel : ViewModel() {
             email = _activeUser.value.email
         )
     }
+
     private fun startTimer() {
         countDownTimer = object : CountDownTimer(Utility.TIME_COUNTDOWN, 1) {
             override fun onTick(millisRemaining: Long) {

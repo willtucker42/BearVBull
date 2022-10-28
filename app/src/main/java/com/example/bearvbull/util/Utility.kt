@@ -41,7 +41,8 @@ enum class BetSide(val bearOrBull: String) {
     BEAR(com.example.bearvbull.util.BEAR), BULL(com.example.bearvbull.util.BULL)
 }
 
-enum class SignInStatus() {
+
+enum class SignInStatus {
     NOT_SIGNED_IN, CHECKING_USER, SIGNED_IN, ADDING_NEW_USER
 }
 
