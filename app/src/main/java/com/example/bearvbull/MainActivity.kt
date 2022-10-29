@@ -75,8 +75,8 @@ class MainActivity : ComponentActivity() {
                 val mainViewModel = viewModel<MainViewModel>()
 
                 val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
-                val userId by mainViewModel.userId.collectAsState()
-
+//                val userId by mainViewModel.userId.collectAsState()
+                val signInStatus by mainViewModel.signInStatus.collectAsState()
                 Box(
                     modifier = Modifier
                         .background(DeepPurple)
@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .align(Alignment.TopCenter)
                     ) {
-                        if (userId != "") {
+                        if (signInStatus == SignInStatus.SIGNED_IN) {
                             mainViewModel.manualInit()
                             when (selectedScreen) {
                                 NavBarItems.BET_SCREEN ->
@@ -100,7 +100,7 @@ class MainActivity : ComponentActivity() {
                             SignInScreen(mainViewModel = mainViewModel, getGoogleLoginAuth())
                         }
                     }
-                    if (userId != "") {
+                    if (signInStatus == SignInStatus.SIGNED_IN) {
                         BottomNavBar(
                             modifier = Modifier.align(Alignment.BottomCenter),
                             viewModel = mainViewModel,

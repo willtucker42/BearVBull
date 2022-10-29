@@ -34,6 +34,9 @@ import kotlin.random.Random
 class MainViewModel : ViewModel() {
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
 
+    var _betTxnStatus = MutableStateFlow(BetTransactionStatus.NOT_SENDING_BET)
+    val betTxnStatus : StateFlow<BetTransactionStatus> = _betTxnStatus
+
     var _signInStatus = MutableStateFlow(SignInStatus.NOT_SIGNED_IN)
     val signInStatus: StateFlow<SignInStatus> = _signInStatus
 
@@ -160,21 +163,6 @@ class MainViewModel : ViewModel() {
         println("Beginning User bet flow...")
         // first get the current user from database and check the balance
         checkIfAlreadyParticipatingInMarket(betInformation, contextForToast)
-//        val user = hashMapOf(
-//            "balance_available" to 1,
-//            "elo_score" to 100,
-//            "email" to "fake@email.com",
-//            "user_id" to betInformation.userId,
-//            "username" to betInformation.userId
-//        )
-//        db.collection("users")
-//            .add(user)
-//            .addOnSuccessListener { docRef ->
-//                Log.i("MainViewModel.kt", "Added user id $docRef")
-//            }
-//            .addOnFailureListener { e ->
-//                Log.i("MainViewModel.kt", "Error adding user, $e")
-//            }
     }
 
     private fun checkIfAlreadyParticipatingInMarket(betInformation: BetInformation, c: Context) {
@@ -396,41 +384,6 @@ class MainViewModel : ViewModel() {
             )
         }
     }
-
-    private suspend fun generateOrderBookEntries() {
-        while (true) {
-            delay(Random.nextLong(300, 1000))
-            val userName = (1..10)
-                .map { Random.nextInt(0, charPool.size) }
-                .map(charPool::get)
-                .joinToString("")
-            val amountWagered = Random.nextLong(from = 0, until = 99999999)
-//            println("AmountWagered: $amountWagered")
-            var betSide: String
-            val randomNum = Random.nextInt(from = 1, until = 100)
-            val betPercent: Double
-            betSide = if (randomNum % 2 == 0) {
-                betPercent = activeMarketData.value.getBearAndBullPercentages().first
-                "Bear"
-            } else {
-                betPercent = activeMarketData.value.getBearAndBullPercentages().second
-                "Bull"
-            }
-            val time = Date()
-//            val newArrayList: ArrayList<OrderBookEntry>
-            orderBookHolder.add(
-                OrderBookEntry(
-                    userName = userName,
-                    amountWagered = amountWagered,
-                    betSide = betSide,
-                    betPercent = betPercent,
-                    time = time
-                )
-            )
-            _orderBookMutableStateFlow.value = orderBookHolder
-        }
-    }
-
     private fun generateRankingsUserList() {
         println("generateRankingsUSerList")
         for (i in 0..200) {
@@ -450,29 +403,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private suspend fun generateAndUpdateLiveBetDataData() {
-        while (true) {
-            delay(10000L)
-            val bearTotal = Random.nextLong(0, 9999999999)
-            val bullTotal = Random.nextLong(from = 0, until = 9999999999)
-            val totalBears = Random.nextLong(from = 0, until = 9999999)
-            val totalBulls = Random.nextLong(from = 0, until = 9999999)
-            val biggestBearBet = Random.nextLong(from = 0, until = bearTotal)
-            val biggestBullBet = Random.nextLong(from = 0, until = bullTotal)
-            val randomData = ActiveMarket(
-                marketId = "123",
-                ticker = "SPY",
-                bearTotal = bearTotal,
-                bullTotal = bullTotal,
-                bearHeadCount = totalBears,
-                bullHeadCount = totalBulls,
-                biggestBearBet = biggestBearBet,
-                biggestBullBet = biggestBullBet,
-                marketStatus = "active"
-            )
-            activeMarketData.value = randomData
-        }
-    }
 
     fun navToDiffScreen(screen: NavBarItems) {
         _selectedNavItem.value = screen
@@ -528,35 +458,6 @@ class MainViewModel : ViewModel() {
             eloScore = 100
         )
     }
-
-    private fun setUserAccountInformation() {
-        db.collection("all_user_bets")
-            .document(activeUser.value.email)
-            .get()
-            .addOnSuccessListener { doc ->
-                if (doc != null) {
-                    doc.get("balance_available").let {
-                        _activeUser.value = UserAccountInformation(
-                            userId = _activeUser.value.userId,
-                            userName = _activeUser.value.userName,
-                            userBalance = it.toString().toLong(),
-                            profileImage = _activeUser.value.profileImage,
-                            rank = _activeUser.value.rank,
-                            email = _activeUser.value.email
-                        )
-                    }
-                } else {
-                    Log.e("MainViewModel.kt", "There appears to be no document checkBalance()")
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("MainViewModel.kt", "Error checking balance $e")
-            }
-    }
-
-    private fun checkIfSufficientFunds(betAmount: Long, fundsAmount: Long): Boolean =
-        fundsAmount >= betAmount
-
     private fun updateSignInStatus(value: SignInStatus) {
         _signInStatus.value = value
     }

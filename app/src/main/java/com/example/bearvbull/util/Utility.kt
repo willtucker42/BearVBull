@@ -4,15 +4,20 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.core.*
 import androidx.compose.ui.graphics.Color
 import com.example.bearvbull.R
+import com.example.bearvbull.data.ActiveMarket
+import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.ui.theme.PodiumBronze
 import com.example.bearvbull.ui.theme.PodiumGold
 import com.example.bearvbull.ui.theme.PodiumSilver
+import kotlinx.coroutines.delay
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.ln
 import kotlin.math.pow
+import kotlin.random.Random
 
 object Utility {
 
@@ -41,6 +46,9 @@ enum class BetSide(val bearOrBull: String) {
     BEAR(com.example.bearvbull.util.BEAR), BULL(com.example.bearvbull.util.BULL)
 }
 
+enum class BetTransactionStatus {
+    NOT_SENDING_BET, SENDING_BET
+}
 
 enum class SignInStatus {
     NOT_SIGNED_IN, CHECKING_USER, SIGNED_IN, ADDING_NEW_USER
@@ -126,5 +134,63 @@ fun Double.round(): Double {
 enum class State {
     LOADING, LOADED
 }
+
+//private suspend fun generateAndUpdateLiveBetDataData() {
+//    while (true) {
+//        delay(10000L)
+//        val bearTotal = Random.nextLong(0, 9999999999)
+//        val bullTotal = Random.nextLong(from = 0, until = 9999999999)
+//        val totalBears = Random.nextLong(from = 0, until = 9999999)
+//        val totalBulls = Random.nextLong(from = 0, until = 9999999)
+//        val biggestBearBet = Random.nextLong(from = 0, until = bearTotal)
+//        val biggestBullBet = Random.nextLong(from = 0, until = bullTotal)
+//        val randomData = ActiveMarket(
+//            marketId = "123",
+//            ticker = "SPY",
+//            bearTotal = bearTotal,
+//            bullTotal = bullTotal,
+//            bearHeadCount = totalBears,
+//            bullHeadCount = totalBulls,
+//            biggestBearBet = biggestBearBet,
+//            biggestBullBet = biggestBullBet,
+//            marketStatus = "active"
+//        )
+//        activeMarketData.value = randomData
+//    }
+//}
+//
+//private suspend fun generateOrderBookEntries() {
+//    while (true) {
+//        delay(Random.nextLong(300, 1000))
+//        val userName = (1..10)
+//            .map { Random.nextInt(0, charPool.size) }
+//            .map(charPool::get)
+//            .joinToString("")
+//        val amountWagered = Random.nextLong(from = 0, until = 99999999)
+////            println("AmountWagered: $amountWagered")
+//        var betSide: String
+//        val randomNum = Random.nextInt(from = 1, until = 100)
+//        val betPercent: Double
+//        betSide = if (randomNum % 2 == 0) {
+//            betPercent = activeMarketData.value.getBearAndBullPercentages().first
+//            "Bear"
+//        } else {
+//            betPercent = activeMarketData.value.getBearAndBullPercentages().second
+//            "Bull"
+//        }
+//        val time = Date()
+////            val newArrayList: ArrayList<OrderBookEntry>
+//        orderBookHolder.add(
+//            OrderBookEntry(
+//                userName = userName,
+//                amountWagered = amountWagered,
+//                betSide = betSide,
+//                betPercent = betPercent,
+//                time = time
+//            )
+//        )
+//        _orderBookMutableStateFlow.value = orderBookHolder
+//    }
+//}
 
 //val glowingAnimationKeyFrames = KeyframesSpec.KeyframesSpecConfig(keyframes<> {  })
