@@ -243,7 +243,7 @@ fun BetButtonContainer(
             val focusManager = LocalFocusManager.current
             val context = LocalContext.current
             if (showTextField) {
-                Row (verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     TextField(
                         value = text,
                         onValueChange = { value ->
@@ -397,7 +397,7 @@ fun UserTotalBalance(balance: Double = 1123.44, viewModel: MainViewModel) {
 
 @Preview
 @Composable
-fun TopBar(title: String = "BearVBull", viewModel: MainViewModel = MainViewModel()) {
+fun TopBar(title: String = "BearVBull") {
     Row(
         modifier = Modifier
             .wrapContentWidth()

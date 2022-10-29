@@ -34,8 +34,13 @@ import kotlin.random.Random
 class MainViewModel : ViewModel() {
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
 
+    var participatingInMarketsMapHolder = mutableMapOf<String, Boolean>()
+    var _participatingInMarketsMapMutableFlow = MutableStateFlow(mutableMapOf<String, Boolean>())
+    val participatingInMarketsMapStateFlow: StateFlow<MutableMap<String, Boolean>> =
+        _participatingInMarketsMapMutableFlow
+
     var _betTxnStatus = MutableStateFlow(BetTransactionStatus.NOT_SENDING_BET)
-    val betTxnStatus : StateFlow<BetTransactionStatus> = _betTxnStatus
+    val betTxnStatus: StateFlow<BetTransactionStatus> = _betTxnStatus
 
     var _signInStatus = MutableStateFlow(SignInStatus.NOT_SIGNED_IN)
     val signInStatus: StateFlow<SignInStatus> = _signInStatus
@@ -157,6 +162,7 @@ class MainViewModel : ViewModel() {
                 println("Error in onSelectedTickerChanged $e")
                 changingTicker = false
             }
+        checkIfAlreadyParticipatingInMarket(marketId)
     }
 
     fun beginUserBetFlow(betInformation: BetInformation, contextForToast: Context) {
@@ -181,8 +187,9 @@ class MainViewModel : ViewModel() {
                     // already participating do
                     Toast.makeText(c, "You have already bet in this market", Toast.LENGTH_LONG)
                         .show()
-                    println("Already participating in market")
+                    println("Already participating in market ${betInformation.marketId}")
                     checkIfSufficientFunds(betInformation, c) // REMOVE THIS LATER
+                    addMarketToMap(betInformation.marketId)
 //                    _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
                     // ADD ABOVE LINE LATER
                 } else {
@@ -195,9 +202,34 @@ class MainViewModel : ViewModel() {
             }
     }
 
+    private fun checkIfAlreadyParticipatingInMarket(marketId: String) {
+        db.collection("all_user_bets")
+            .whereEqualTo("market_id", marketId)
+            .whereEqualTo("user_id", activeUser.value.userId)
+            .get()
+            .addOnSuccessListener {
+                if (it.size() > 0) {
+                    println("Already participating in the market $marketId")
+                    addMarketToMap(marketId)
+                } else {
+                    println("Not participating in market $marketId")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("checkIfAlreadyParticipatingInMarket(marketId: String)", "Error $e")
+            }
+    }
+
+    private fun addMarketToMap(marketId: String) {
+        participatingInMarketsMapHolder[marketId] = true
+        _participatingInMarketsMapMutableFlow.value = participatingInMarketsMapHolder
+        println("Participating in markets map: ${participatingInMarketsMapStateFlow.value}")
+    }
+
     private fun checkIfSufficientFunds(betInformation: BetInformation, c: Context) {
+        println("ATTEMPTING TO CHECK SUFFICIENT FUNDS... on user ${_activeUser.value.email}")
         db.collection("users")
-            .document(activeUser.value.email)
+            .document(_activeUser.value.email)
             .get()
             .addOnSuccessListener { doc ->
                 println(
@@ -397,6 +429,7 @@ class MainViewModel : ViewModel() {
             )
         }
     }
+
     private fun generateRankingsUserList() {
         println("generateRankingsUSerList")
         for (i in 0..200) {
@@ -471,6 +504,7 @@ class MainViewModel : ViewModel() {
             eloScore = 100
         )
     }
+
     private fun updateSignInStatus(value: SignInStatus) {
         _signInStatus.value = value
     }
@@ -486,7 +520,7 @@ class MainViewModel : ViewModel() {
             userBalance = doc.get("balance_available") as Long,
             profileImage = _activeUser.value.profileImage,
             rank = _activeUser.value.rank,
-            email = _activeUser.value.email
+            email = doc.get("email") as String
         )
     }
 

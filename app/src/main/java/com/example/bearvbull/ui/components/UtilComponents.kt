@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bearvbull.R
@@ -113,7 +114,10 @@ fun BetScreenStatusTitle(
                 .background(DeepPurple)
                 .padding(8.dp)
             ) {
-                Text(text = if (activeMarketData.ticker == "") "..." else activeMarketData.ticker , color = Color.White)
+                Text(
+                    text = if (activeMarketData.ticker == "") "..." else activeMarketData.ticker,
+                    color = Color.White
+                )
                 Icon(imageVector = icon, contentDescription = null)
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     activeMarketsList.activeMarkets.forEach { market ->
@@ -156,7 +160,7 @@ fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, activeMarketData: Acti
 }
 
 @Composable
-fun BearVBullTitle () {
+fun BearVBullTitle() {
     Text(
         text = BEAR_V_BULL_TITLE,
         fontFamily = poppinsFontFamily,
@@ -312,6 +316,14 @@ fun BottomNavBarItem(
             color = if (selectedScreen == navBarItem) Color.White else Color.Gray
         )
     }
+}
+
+@Composable
+fun LoadingSpinner(color: Color, size: Dp) {
+    CircularProgressIndicator(
+        modifier = Modifier.size(size),
+        color = color
+    )
 }
 
 @Composable
