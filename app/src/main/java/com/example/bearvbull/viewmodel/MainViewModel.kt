@@ -160,6 +160,11 @@ class MainViewModel : ViewModel() {
     }
 
     fun beginUserBetFlow(betInformation: BetInformation, contextForToast: Context) {
+        if (betTxnStatus.value == BetTransactionStatus.SENDING_BET) {
+            println("Bet transaction already taking place")
+            return
+        }
+        _betTxnStatus.value = BetTransactionStatus.SENDING_BET
         println("Beginning User bet flow...")
         // first get the current user from database and check the balance
         checkIfAlreadyParticipatingInMarket(betInformation, contextForToast)
@@ -178,12 +183,15 @@ class MainViewModel : ViewModel() {
                         .show()
                     println("Already participating in market")
                     checkIfSufficientFunds(betInformation, c) // REMOVE THIS LATER
+//                    _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
+                    // ADD ABOVE LINE LATER
                 } else {
                     checkIfSufficientFunds(betInformation, c)
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("MainViewModel.kt", "Error checking if in market $e")
+                _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
             }
     }
 
@@ -203,10 +211,12 @@ class MainViewModel : ViewModel() {
                     Toast.makeText(c, "Insufficient funds", Toast.LENGTH_LONG)
                         .show()
                     println("Insufficient funds")
+                    _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("MainViewModel.kt", "Error getting funds info $e")
+                _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
             }
     }
 
@@ -237,6 +247,7 @@ class MainViewModel : ViewModel() {
                 Log.i("MainViewModel.kt", "Error adding document, $e")
                 Toast.makeText(c, "Bet failed to send. Funds are safe.", Toast.LENGTH_LONG)
                     .show()
+                _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
             }
     }
 
@@ -251,18 +262,20 @@ class MainViewModel : ViewModel() {
             .update("balance_available", FieldValue.increment(amount))
             .addOnSuccessListener {
                 println("updateUserBalance success. ")
+                _activeUser.value = UserAccountInformation(
+                    userId = _activeUser.value.userId,
+                    userName = _activeUser.value.userName,
+                    userBalance = _activeUser.value.userBalance.plus(amount),
+                    profileImage = _activeUser.value.profileImage,
+                    rank = _activeUser.value.rank,
+                    email = _activeUser.value.email
+                )
+                _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
             }
             .addOnFailureListener { e ->
                 Log.e("MainViewModel", "updateUserBalance() failed with error: $e")
+                _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
             }
-        _activeUser.value = UserAccountInformation(
-            userId = _activeUser.value.userId,
-            userName = _activeUser.value.userName,
-            userBalance = _activeUser.value.userBalance.plus(amount),
-            profileImage = _activeUser.value.profileImage,
-            rank = _activeUser.value.rank,
-            email = _activeUser.value.email
-        )
     }
 
     private fun getActiveMarkets() {
