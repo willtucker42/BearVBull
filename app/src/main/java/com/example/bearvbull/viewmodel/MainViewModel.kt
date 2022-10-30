@@ -34,9 +34,9 @@ import kotlin.random.Random
 class MainViewModel : ViewModel() {
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
 
-    var participatingInMarketsMapHolder = mutableMapOf<String, Boolean>()
-    var _participatingInMarketsMapMutableFlow = MutableStateFlow(mutableMapOf<String, Boolean>())
-    val participatingInMarketsMapStateFlow: StateFlow<MutableMap<String, Boolean>> =
+    var participatingInMarketsMapHolder = mutableMapOf<String, BetInformation>()
+    var _participatingInMarketsMapMutableFlow = MutableStateFlow(mutableMapOf<String, BetInformation>())
+    val participatingInMarketsMapStateFlow: StateFlow<MutableMap<String, BetInformation>> =
         _participatingInMarketsMapMutableFlow
 
     var _betTxnStatus = MutableStateFlow(BetTransactionStatus.NOT_SENDING_BET)
@@ -165,6 +165,7 @@ class MainViewModel : ViewModel() {
         checkIfAlreadyParticipatingInMarket(marketId)
     }
 
+
     fun beginUserBetFlow(betInformation: BetInformation, contextForToast: Context) {
         if (betTxnStatus.value == BetTransactionStatus.SENDING_BET) {
             println("Bet transaction already taking place")
@@ -184,12 +185,14 @@ class MainViewModel : ViewModel() {
             .get()
             .addOnSuccessListener {
                 if (it.size() > 0) {
-                    // already participating do
+                    it.forEach { doc ->
+                        addMarketToMap(betInformation.marketId, doc)
+                    }
+                    // already participating
                     Toast.makeText(c, "You have already bet in this market", Toast.LENGTH_LONG)
                         .show()
                     println("Already participating in market ${betInformation.marketId}")
                     checkIfSufficientFunds(betInformation, c) // REMOVE THIS LATER
-                    addMarketToMap(betInformation.marketId)
 //                    _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
                     // ADD ABOVE LINE LATER
                 } else {
@@ -207,23 +210,41 @@ class MainViewModel : ViewModel() {
             .whereEqualTo("market_id", marketId)
             .whereEqualTo("user_id", activeUser.value.userId)
             .get()
-            .addOnSuccessListener {
-                if (it.size() > 0) {
+            .addOnSuccessListener { docs ->
+                if (docs.size() > 0) {
+                    docs.forEach { doc ->
+                        addMarketToMap(marketId, doc)
+                    }
                     println("Already participating in the market $marketId")
-                    addMarketToMap(marketId)
                 } else {
                     println("Not participating in market $marketId")
                 }
+
             }
             .addOnFailureListener { e ->
                 Log.e("checkIfAlreadyParticipatingInMarket(marketId: String)", "Error $e")
             }
     }
 
-    private fun addMarketToMap(marketId: String) {
-        participatingInMarketsMapHolder[marketId] = true
+    private fun addMarketToMap(marketId: String, doc: DocumentSnapshot) {
+        participatingInMarketsMapHolder[marketId] = BetInformation(
+            tickerSymbol = doc.get("ticker_symbol") as String,
+            initialBetAmount = doc.get("bet_amount") as Long,
+            betSide = doc.get("bet_side") as String,
+            winMultiplier = doc.get("win_multiplier") as Double,
+            userId = doc.get("user_id") as String,
+            betStatus = doc.get("bet_status") as String,
+            didWin = doc.get("did_win") as Boolean,
+            odds = doc.get("odds") as Double,
+            marketId = doc.get("market_id") as String,
+            timestamp = doc.get("timestamp") as Timestamp
+        )
         _participatingInMarketsMapMutableFlow.value = participatingInMarketsMapHolder
-        println("Participating in markets map: ${participatingInMarketsMapStateFlow.value}")
+        println("Participating in markets keys: ${participatingInMarketsMapStateFlow.value.keys}")
+    }
+
+    private fun addTickerToParticipatingMarketDict() {
+
     }
 
     private fun checkIfSufficientFunds(betInformation: BetInformation, c: Context) {

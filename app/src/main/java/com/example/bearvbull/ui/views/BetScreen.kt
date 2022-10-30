@@ -23,23 +23,25 @@ fun BetScreen(
     val activeMarkets by viewModel.activeMarkets.collectAsState()
     val countDownTime by viewModel.countDownTime.collectAsState()
     val liveOrderBookData by viewModel.liveOrderBook.collectAsState()
+    val liveParticipatingMarketsMap by viewModel.participatingInMarketsMapStateFlow.collectAsState()
+
     Surface {
         Box(
             modifier = Modifier
                 .background(DeepPurple)
         ) {
-            Column() {
+            Column {
                 TopBar()
                 BetScreenStatusTitle(
                     activeMarketsList = activeMarkets,
-                    viewModel = viewModel,
                     activeMarketData = activeMarketData,
                     changeMarket = { marketId: String -> viewModel.onSelectedTickerChanged(marketId) }
                 )
                 BetWindow(
                     countDownTime = countDownTime,
                     activeMarketData = activeMarketData,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    liveParticipatingMarketsMap = liveParticipatingMarketsMap
                 )
                 Spacer(Modifier.height(12.dp))
                 OrderBook(liveOrderBook = liveOrderBookData)

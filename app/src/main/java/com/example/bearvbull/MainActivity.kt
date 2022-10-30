@@ -137,12 +137,17 @@ fun BottomNavBar(modifier: Modifier, viewModel: MainViewModel, selectedScreen: N
 fun BetWindow(
     countDownTime: String,
     activeMarketData: ActiveMarket,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    liveParticipatingMarketsMap : Map<String, BetInformation>
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        MainBetPromptTitle(countDownTime_ = countDownTime, activeMarket = activeMarketData)
+        MainBetPromptTitle(
+            countDownTime_ = countDownTime,
+            activeMarket = activeMarketData,
+            liveParticipatingMarketsMap = liveParticipatingMarketsMap
+        )
         Spacer(modifier = Modifier.height(16.dp))
         BetButtonRow(activeMarketData = activeMarketData, viewModel = viewModel)
     }
@@ -416,7 +421,8 @@ fun TopBar(title: String = "BearVBull") {
 @Composable
 fun MainBetPromptTitle(
     activeMarket: ActiveMarket,
-    countDownTime_: String = ""
+    countDownTime_: String = "",
+    liveParticipatingMarketsMap: Map<String, BetInformation>
 ) {
     val betPrompt = "Will $${activeMarket.ticker} open red or green tomorrow?"
     Box(

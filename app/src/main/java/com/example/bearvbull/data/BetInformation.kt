@@ -15,7 +15,3 @@ data class BetInformation(
     val marketId: String = "SPY-10_2_2022",
     val timestamp: Timestamp = Timestamp(123123, 123123)
 )
-
-data class UserBetHistory(
-    val betHistoryList: List<BetInformation>
-)
