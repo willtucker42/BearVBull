@@ -138,7 +138,7 @@ fun BetWindow(
     countDownTime: String,
     activeMarketData: ActiveMarket,
     viewModel: MainViewModel,
-    liveParticipatingMarketsMap : Map<String, BetInformation>
+    liveParticipatingMarketsMap: Map<String, BetInformation>
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -400,9 +400,11 @@ fun UserTotalBalance(balance: Double = 1123.44, viewModel: MainViewModel) {
     }
 }
 
-@Preview
+
 @Composable
-fun TopBar(title: String = "BearVBull") {
+fun TopBar(
+    txnStatus: BetTransactionStatus,
+) {
     Row(
         modifier = Modifier
             .wrapContentWidth()
@@ -413,7 +415,12 @@ fun TopBar(title: String = "BearVBull") {
         Spacer(modifier = Modifier.weight(1.0f))
         BearVBullTitle()
         Spacer(modifier = Modifier.weight(1.0f))
-        TopBarIcon(icon = R.drawable.money_bag_icon)
+        Row {
+            if (txnStatus == BetTransactionStatus.SENDING_BET) {
+                LoadingSpinner(color = Color.LightGray, size = 30.dp)
+            }
+            TopBarIcon(icon = R.drawable.money_bag_icon)
+        }
     }
 }
 

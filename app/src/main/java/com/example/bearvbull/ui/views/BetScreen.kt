@@ -24,6 +24,7 @@ fun BetScreen(
     val countDownTime by viewModel.countDownTime.collectAsState()
     val liveOrderBookData by viewModel.liveOrderBook.collectAsState()
     val liveParticipatingMarketsMap by viewModel.participatingInMarketsMapStateFlow.collectAsState()
+    val transactionStatus by viewModel.betTxnStatus.collectAsState()
 
     Surface {
         Box(
@@ -31,7 +32,7 @@ fun BetScreen(
                 .background(DeepPurple)
         ) {
             Column {
-                TopBar()
+                TopBar(txnStatus = transactionStatus)
                 BetScreenStatusTitle(
                     activeMarketsList = activeMarkets,
                     activeMarketData = activeMarketData,
