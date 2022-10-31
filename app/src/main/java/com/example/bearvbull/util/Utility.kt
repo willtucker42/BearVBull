@@ -21,15 +21,15 @@ import kotlin.random.Random
 
 object Utility {
 
-    //time to countdown - 1hr - 60secs
+    // time to countdown - 1hr - 60secs
     const val TIME_COUNTDOWN: Long = 60000L
     private const val TIME_FORMAT = "%02d:%02d"
     private const val ORDER_BOOK_ENTRY_TIME_FORMAT = "HH:mm:ss.SS"
 
     @SuppressLint("SimpleDateFormat")
     val simpleDateFormat: SimpleDateFormat = SimpleDateFormat(ORDER_BOOK_ENTRY_TIME_FORMAT)
-    val UP_ARROW = R.drawable.arrow_up
-    val DOWN_ARROW = R.drawable.arrow_down
+    const val UP_ARROW = R.drawable.arrow_up
+    const val DOWN_ARROW = R.drawable.arrow_down
 
 
     //convert time to milli seconds

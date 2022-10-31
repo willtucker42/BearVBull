@@ -293,10 +293,10 @@ fun BetButtonContainer(
                                         ), context
                                     )
                                     focusManager.clearFocus()
+//                                    text = ""
                                 } else {
                                     inputError = true
                                 }
-                                text = ""
                             },
                         colorFilter = ColorFilter.tint(color = Color.White)
                     )
@@ -415,9 +415,11 @@ fun TopBar(
         Spacer(modifier = Modifier.weight(1.0f))
         BearVBullTitle()
         Spacer(modifier = Modifier.weight(1.0f))
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             if (txnStatus == BetTransactionStatus.SENDING_BET) {
-                LoadingSpinner(color = Color.LightGray, size = 30.dp)
+                LoadingSpinner(color = Color.LightGray, size = 15.dp)
             }
             TopBarIcon(icon = R.drawable.money_bag_icon)
         }

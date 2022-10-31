@@ -243,10 +243,6 @@ class MainViewModel : ViewModel() {
         println("Participating in markets keys: ${participatingInMarketsMapStateFlow.value.keys}")
     }
 
-    private fun addTickerToParticipatingMarketDict() {
-
-    }
-
     private fun checkIfSufficientFunds(betInformation: BetInformation, c: Context) {
         println("ATTEMPTING TO CHECK SUFFICIENT FUNDS... on user ${_activeUser.value.email}")
         db.collection("users")
@@ -334,7 +330,7 @@ class MainViewModel : ViewModel() {
     private fun getActiveMarkets() {
 //        println("in getActiveMarkets")
         db.collection("live_prediction_market_info")
-//            .whereEqualTo("bet_status", "live")
+            .whereEqualTo("bet_status", "live")
             .get()
             .addOnSuccessListener { mDoc ->
                 /** This for loop adds the markets to the list of markets for the dropdown */
@@ -497,6 +493,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun addNewUserToDb(account: GoogleSignInAccount) {
+        _signInStatus.value = SignInStatus.ADDING_NEW_USER
         println("User not found... adding new user... ${account.email}")
         val user = hashMapOf(
             "balance_available" to 1000000,
@@ -511,19 +508,21 @@ class MainViewModel : ViewModel() {
             .set(user)
             .addOnSuccessListener { docRef ->
                 Log.i("MainViewModel.kt", "Added user id $docRef")
+                _activeUser.value = UserAccountInformation(
+                    userId = account.id.toString(),
+                    userName = account.displayName.toString(),
+                    userBalance = 1000000,
+                    profileImage = _activeUser.value.profileImage,
+                    rank = _activeUser.value.rank,
+                    email = account.email.toString(),
+                    eloScore = 100
+                )
+                _signInStatus.value = SignInStatus.SIGNED_IN
             }
             .addOnFailureListener { e ->
+                _signInStatus.value = SignInStatus.NOT_SIGNED_IN
                 Log.e("MainViewModel.kt", "Error adding user, $e")
             }
-        _activeUser.value = UserAccountInformation(
-            userId = account.id.toString(),
-            userName = account.displayName.toString(),
-            userBalance = 1000000,
-            profileImage = _activeUser.value.profileImage,
-            rank = _activeUser.value.rank,
-            email = account.email.toString(),
-            eloScore = 100
-        )
     }
 
     private fun updateSignInStatus(value: SignInStatus) {

@@ -12,6 +12,7 @@ app = cnm.app
 
 db = firestore.client()
 
+
 # new_market_tickers = ["SPY", "TSLA", "MSFT", "AAPL", "GOOG"]
 # new_market_tickers = ["asfd", "54h54", "ffdg", "sdafg", "2435t", "gabababa"]
 
@@ -37,7 +38,7 @@ def getTodaysOpen(ticker):
 
 
 def update(open_color, ticker):
-    print("Starting green open update process")
+    print("Starting ", open_color, " open update process for ticker", ticker)
     user_winnings_dict = {}
     docs = db.collection(u'all_user_bets').where(u'bet_status', u'==', "active").where(u'ticker_symbol', u'==',
                                                                                        ticker).stream()
@@ -45,16 +46,17 @@ def update(open_color, ticker):
     for doc in docs:
         bet_dict = doc.to_dict()
         if bet_dict['bet_side'] == 'BULL' and open_color == 'green':
+            print("user is a bull")
             winnings = bet_dict['win_multiplier'] * bet_dict['bet_amount']
             # print("User ", bet_dict['user_id'], " won ", winnings, "(", bet_dict['win_multiplier'], " * ",
             #       bet_dict['bet_amount'], ")")
         elif bet_dict['bet_side'] == 'BEAR' and open_color == 'red':
+            print("user is a bear")
             winnings = bet_dict['win_multiplier'] * bet_dict['bet_amount']
             # print("User ", bet_dict['user_id'], " won ", winnings, "(", bet_dict['win_multiplier'], " * ",
             #       bet_dict['bet_amount'], ")")
         else:
-            pass
-            # print("User", bet_dict['user_id'], " lost ", bet_dict['bet_amount'])
+            pass  # This means that they lost
         user_winnings_dict[bet_dict['user_id']] = winnings
 
     updateUserAccounts(user_winnings_dict=user_winnings_dict)
@@ -64,7 +66,6 @@ def updateUserAccounts(user_winnings_dict):
     # user_id in user_bet document == username in users document
     i = 0
     batch = db.batch()
-
     for thing in user_winnings_dict:
         print(thing)
 
@@ -74,13 +75,22 @@ def updateUserAccounts(user_winnings_dict):
         for doc in user_doc:
             user_dict = doc.to_dict()
             og_balance_avail = user_dict['balance_available']
+            og_elo_score = user_dict['elo_score']
+            marketPoints = -10
+            if user_winnings_dict[user] != 0:
+                # if the winnings is not zero that means they won and get marketPoints
+                marketPoints = 15
             # user_doc.reference.update()
-            batch.update(doc.reference, {u'balance_available': round(og_balance_avail + user_winnings_dict[user])})
+            batch.update(doc.reference, {
+                u'balance_available': round(og_balance_avail + user_winnings_dict[user]),
+                u'elo_score': (og_elo_score + marketPoints)
+            })
             print("Their balance is:", round(og_balance_avail + user_winnings_dict[user]))
+            print("Their elo score is:", (og_elo_score + marketPoints))
 
         i += 1
         if i == 499:
-            # right here we commit the batch and create a new instance of a batch
+            # right here we commit the batch and create a new instance of a batch, because max batch size is 500
             print("committing and resetting batch...")
             batch.commit()
             batch = db.batch()

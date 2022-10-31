@@ -10,6 +10,8 @@ app = firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
+new_market_tickers = ["META", "TSLA", "MSFT", "AAPL", "GOOG", "UBER", "PLTR", "NFLX", "AMZN", "SBUX", "DIS", "NVDA"]
+
 
 def createDocumentNameForMarket(tkr):
     next_trading_day = str(datetime.date.today() + datetime.timedelta(days=1)).replace('-', '_')
@@ -33,4 +35,5 @@ def createNewMarket(ticker):
     })
 
 
-createNewMarket("META")
+for market in new_market_tickers:
+    createNewMarket(market)
