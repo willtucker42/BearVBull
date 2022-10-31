@@ -1,5 +1,4 @@
 import yfinance as yf
-import firebase_admin
 import datetime
 from firebase_admin import credentials
 from firebase_admin import firestore

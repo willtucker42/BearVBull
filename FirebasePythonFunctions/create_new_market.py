@@ -21,7 +21,8 @@ def createDocumentNameForMarket(tkr):
 
 
 def createNewMarket(ticker):
-    doc_ref = db.collection(u'live_prediction_market_info').document(createDocumentNameForMarket(ticker))
+    doc_name = createDocumentNameForMarket(ticker)
+    doc_ref = db.collection(u'live_prediction_market_info').document(doc_name)
     doc_ref.set({
         u'bear_headcount': 0,
         u'bear_total': 0,
@@ -31,7 +32,8 @@ def createNewMarket(ticker):
         u'bull_headcount': 0,
         u'bull_total': 0,
         u'end_time': datetime.datetime.now(),
-        u'ticker': ticker
+        u'ticker': ticker,
+        u'market_id': doc_name
     })
 
 
