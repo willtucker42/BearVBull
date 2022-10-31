@@ -103,10 +103,10 @@ def finishMarkets():
     current_live_markets = db.collection(u'live_prediction_market_info').where(u'bet_status', u'==', 'live')
 
 
-def getActiveMarkets():
+def getWaitingMarkets():
     # Returns a list of the active market tickers
     tickers = []
-    active_markets = db.collection(u'live_prediction_market_info').where(u'bet_status', u'==', "live").stream()
+    active_markets = db.collection(u'live_prediction_market_info').where(u'bet_status', u'==', "waiting").stream()
     for market in active_markets:
         market_dict = market.to_dict()
         ticker = market_dict['ticker']
@@ -129,7 +129,7 @@ def isTodayAValidStockMarketDay():
 
 
 # First update the existing markets, bets
-for tikr in getActiveMarkets():
+for tikr in getWaitingMarkets():
     getTodaysOpen(tikr)
 
 # Then add the new markets for the day
