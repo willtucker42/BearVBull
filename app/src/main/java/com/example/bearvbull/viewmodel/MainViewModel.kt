@@ -330,7 +330,7 @@ class MainViewModel : ViewModel() {
     private fun getActiveMarkets() {
 //        println("in getActiveMarkets")
         db.collection("live_prediction_market_info")
-            .whereEqualTo("bet_status", "live")
+            .whereEqualTo("bet_status", "waiting")
             .get()
             .addOnSuccessListener { mDoc ->
                 /** This for loop adds the markets to the list of markets for the dropdown */
@@ -351,18 +351,20 @@ class MainViewModel : ViewModel() {
                     )
                 }
                 _activeMarkets.value = activeMarketsHolder
-                mDoc.last().let {
-                    activeMarketData.value = ActiveMarket(
-                        marketId = it.id,
-                        bearHeadCount = it.get("bear_headcount") as Long,
-                        bearTotal = it.get("bear_total") as Long,
-                        marketStatus = it.get("bet_status") as String,
-                        biggestBearBet = it.get("biggest_bear_bet") as Long,
-                        biggestBullBet = it.get("biggest_bull_bet") as Long,
-                        bullHeadCount = it.get("bull_headcount") as Long,
-                        bullTotal = it.get("bull_total") as Long,
-                        ticker = it.get("ticker") as String
-                    )
+                if (!mDoc.isEmpty) {
+                    mDoc.last().let {
+                        activeMarketData.value = ActiveMarket(
+                            marketId = it.id,
+                            bearHeadCount = it.get("bear_headcount") as Long,
+                            bearTotal = it.get("bear_total") as Long,
+                            marketStatus = it.get("bet_status") as String,
+                            biggestBearBet = it.get("biggest_bear_bet") as Long,
+                            biggestBullBet = it.get("biggest_bull_bet") as Long,
+                            bullHeadCount = it.get("bull_headcount") as Long,
+                            bullTotal = it.get("bull_total") as Long,
+                            ticker = it.get("ticker") as String
+                        )
+                    }
                 }
                 viewModelScope.launch {
                     launch { getActiveMarketData() }

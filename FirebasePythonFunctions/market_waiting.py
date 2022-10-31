@@ -14,7 +14,7 @@ win_mult_dict = {}  # {String: Pair} | Ex. { "market_id": (40,60) }
 
 def updateMarketsAndGetMarketIds():
     market_ids = []
-    markets = db.collection(u'live_prediction_market_info').where(u'bet_status', u'==', "live").stream()
+    markets = db.collection(u'live_prediction_market_info').where(u'bet_status', u'==', "waiting").stream()
     for market in markets:
         market_dict = market.to_dict()
         mkt_id = market.id
