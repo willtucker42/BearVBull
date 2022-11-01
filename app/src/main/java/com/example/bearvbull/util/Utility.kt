@@ -1,23 +1,20 @@
 package com.example.bearvbull.util
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.core.*
 import androidx.compose.ui.graphics.Color
 import com.example.bearvbull.R
-import com.example.bearvbull.data.ActiveMarket
-import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.ui.theme.PodiumBronze
 import com.example.bearvbull.ui.theme.PodiumGold
 import com.example.bearvbull.ui.theme.PodiumSilver
-import kotlinx.coroutines.delay
 import java.math.RoundingMode
+import java.sql.Timestamp
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.ln
 import kotlin.math.pow
-import kotlin.random.Random
 
 object Utility {
 
@@ -96,6 +93,18 @@ fun Double.getFormattedNumber(): String {
     if (this < 1000) return "" + this
     val exp = (ln(this) / ln(1000.0)).toInt()
     return String.format("%.1f%c", this / 1000.0.pow(exp.toDouble()), "kMGTPE"[exp - 1])
+}
+
+fun getTimeUntilPredictionMarketClose(): Long {
+    val calInstance = Calendar.getInstance()
+    val marketCloseDateTime = LocalDate.of(
+        calInstance.get(Calendar.YEAR),
+        calInstance.get(Calendar.MONTH),
+        calInstance.get(Calendar.DAY_OF_MONTH)
+    )
+    val closeTimestamp: Long = Timestamp.valueOf(marketCloseDateTime.toString()).time
+    println("The timestamp ${closeTimestamp - System.currentTimeMillis()}")
+    return closeTimestamp - System.currentTimeMillis()
 }
 
 fun Double.formatBigNumberWithCommas(): String {

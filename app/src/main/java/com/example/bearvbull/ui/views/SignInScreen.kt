@@ -25,6 +25,7 @@ import com.example.bearvbull.ui.theme.DeepPurple
 import com.example.bearvbull.ui.theme.poppinsFontFamily
 import com.example.bearvbull.viewmodel.MainViewModel
 import com.example.bearvbull.R
+import com.example.bearvbull.util.getTimeUntilPredictionMarketClose
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -33,6 +34,7 @@ import com.google.android.gms.tasks.Task
 
 @Composable
 fun SignInScreen(mainViewModel: MainViewModel, gsc: GoogleSignInClient) {
+    getTimeUntilPredictionMarketClose()
     val startForResult =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
