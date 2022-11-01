@@ -433,7 +433,7 @@ fun MainBetPromptTitle(
     countDownTime_: String = "",
     liveParticipatingMarketsMap: Map<String, BetInformation>
 ) {
-    val betPrompt = "Will $${activeMarket.ticker} open red or green tomorrow?"
+    val betPrompt = "Will  $${activeMarket.ticker}  open red or green tomorrow?"
     Box(
         modifier = Modifier
             .wrapContentWidth()

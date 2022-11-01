@@ -547,7 +547,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun startTimer() {
-        countDownTimer = object : CountDownTimer(Utility.TIME_COUNTDOWN, 1) {
+        countDownTimer = object : CountDownTimer(getTimeUntilPredictionMarketClose(), 1) {
             override fun onTick(millisRemaining: Long) {
 //                val progressValue = millisRemaining.toFloat() / Utility.TIME_COUNTDOWN
                 _countDownTime.value = millisRemaining.formatTime()

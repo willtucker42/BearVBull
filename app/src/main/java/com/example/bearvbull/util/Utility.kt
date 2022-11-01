@@ -10,7 +10,9 @@ import java.math.RoundingMode
 import java.sql.Timestamp
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
-import java.time.LocalDate
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.ln
@@ -20,7 +22,7 @@ object Utility {
 
     // time to countdown - 1hr - 60secs
     const val TIME_COUNTDOWN: Long = 60000L
-    private const val TIME_FORMAT = "%02d:%02d"
+    private const val TIME_FORMAT = "%02d:%02d:%02d"
     private const val ORDER_BOOK_ENTRY_TIME_FORMAT = "HH:mm:ss.SS"
 
     @SuppressLint("SimpleDateFormat")
@@ -32,12 +34,15 @@ object Utility {
     //convert time to milli seconds
     fun Long.formatTime(): String = String.format(
         TIME_FORMAT,
-        TimeUnit.MILLISECONDS.toMinutes(this),
+        TimeUnit.MILLISECONDS.toHours(this),
+        TimeUnit.MILLISECONDS.toMinutes(this) % 60,
         TimeUnit.MILLISECONDS.toSeconds(this) % 60
     )
 
 
 }
+
+val TIMEZONE_ET: ZoneId = ZoneId.of("America/New_York")
 
 enum class BetSide(val bearOrBull: String) {
     BEAR(com.example.bearvbull.util.BEAR), BULL(com.example.bearvbull.util.BULL)
@@ -96,15 +101,40 @@ fun Double.getFormattedNumber(): String {
 }
 
 fun getTimeUntilPredictionMarketClose(): Long {
-    val calInstance = Calendar.getInstance()
-    val marketCloseDateTime = LocalDate.of(
-        calInstance.get(Calendar.YEAR),
-        calInstance.get(Calendar.MONTH),
-        calInstance.get(Calendar.DAY_OF_MONTH)
+    val cal = GregorianCalendar.getInstance()
+    val ldt = LocalDateTime.of(
+        cal.get(GregorianCalendar.YEAR),
+        cal.get(GregorianCalendar.MONTH) + 1,
+        cal.get(GregorianCalendar.DAY_OF_MONTH),
+        23,
+        59,
+        0
     )
-    val closeTimestamp: Long = Timestamp.valueOf(marketCloseDateTime.toString()).time
-    println("The timestamp ${closeTimestamp - System.currentTimeMillis()}")
-    return closeTimestamp - System.currentTimeMillis()
+    val marketEndTime = Timestamp.from(
+        ldt.toInstant(
+            TIMEZONE_ET.rules.getOffset(Instant.now())
+        )
+    )
+    val curTime = Calendar.getInstance().time
+
+    return marketEndTime.time - curTime.time
+
+//    println("future time $marketEndTime")
+//    println("New Timestamp ${marketEndTime.time.milliseconds.inWholeMilliseconds}")
+//    println("Now Timestamp ${System.currentTimeMillis()}")
+//    println("Time millis diff ${marketEndTime.time.milliseconds.inWholeMilliseconds - System.currentTimeMillis()} \n\n")
+//    println("future time $marketEndTime ")
+//    println("The current time is $curTime")
+    //    val seconds = dif / 1000
+//    val minutes = seconds / 60
+//    val hours = minutes / 60
+//    val days = hours / 24
+//
+//    println("formatted: ${dif.formatTime()}")
+//    val closeTimestamp = Timestamp.valueOf(marketCloseDateTime.toString())
+//    println("closeTimestamp $closeTimestamp")
+//    println("The timestamp ${closeTimestamp - System.currentTimeMillis()}")
+//    return closeTimestamp - System.currentTimeMillis()
 }
 
 fun Double.formatBigNumberWithCommas(): String {
