@@ -3,9 +3,8 @@ package com.example.bearvbull.util
 import android.annotation.SuppressLint
 import androidx.compose.ui.graphics.Color
 import com.example.bearvbull.R
-import com.example.bearvbull.ui.theme.PodiumBronze
-import com.example.bearvbull.ui.theme.PodiumGold
-import com.example.bearvbull.ui.theme.PodiumSilver
+import com.example.bearvbull.data.users.UserAccountInformation
+import com.example.bearvbull.ui.theme.*
 import java.math.RoundingMode
 import java.sql.Timestamp
 import java.text.DecimalFormat
@@ -62,6 +61,29 @@ enum class BetInfoType(val icon: Int) {
     TOTAL_USERS(R.drawable.user_group_icon),
     BIGGEST_BET(R.drawable.money_bag_icon)
 }
+
+enum class EloRank(val starIcon: Int, val color: Color) {
+    BRONZE(R.drawable.low_rank_star, PodiumBronze),
+    SILVER(R.drawable.low_rank_star, PodiumSilver),
+    GOLD(R.drawable.low_rank_star, PodiumGold),
+    PLATINUM(R.drawable.low_rank_star, PlatinumRank),
+    DIAMOND(R.drawable.high_rank_star, DiamondRank),
+    MASTER(R.drawable.high_rank_star, MasterRank),
+    GRAND_MASTER(R.drawable.high_rank_star, GrandMasterRank)
+}
+
+fun getEloRank(eloScore: Int): EloRank {
+    return when (eloScore) {
+        in 0..110 -> EloRank.BRONZE
+        in 111..145 -> EloRank.SILVER
+        in 146..190 -> EloRank.GOLD
+        in 191..235 -> EloRank.PLATINUM
+        in 236..280 -> EloRank.DIAMOND
+        in 281..325 -> EloRank.MASTER
+        else -> EloRank.GRAND_MASTER
+    }
+}
+
 
 val betInfoTypeList = listOf(
     BetInfoType.TOTAL_WAGERED,
@@ -173,6 +195,7 @@ fun Double.round(): Double {
 enum class State {
     LOADING, LOADED
 }
+
 
 //private suspend fun generateAndUpdateLiveBetDataData() {
 //    while (true) {

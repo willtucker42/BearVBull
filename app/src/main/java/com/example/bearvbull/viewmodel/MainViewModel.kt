@@ -136,6 +136,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun onSelectedTickerChanged(marketId: String) {
+        if (changingTicker) { return }
         changingTicker = true
         println("onSelectedTickerChanged market id: $marketId")
         orderBookHolder.clear()
@@ -174,6 +175,7 @@ class MainViewModel : ViewModel() {
         _betTxnStatus.value = BetTransactionStatus.SENDING_BET
         println("Beginning User bet flow...")
         // first get the current user from database and check the balance
+        /** User Bet flow starts... **/
         checkIfAlreadyParticipatingInMarket(betInformation, contextForToast)
     }
 
@@ -183,19 +185,20 @@ class MainViewModel : ViewModel() {
             .whereEqualTo("market_id", betInformation.marketId)
             .whereEqualTo("user_id", activeUser.value.userId)
             .get()
-            .addOnSuccessListener {
-                if (it.size() > 0) {
-                    it.forEach { doc ->
+            .addOnSuccessListener { marketsDoc ->
+                if (marketsDoc.size() > 0) {
+                    marketsDoc.forEach { doc ->
                         addMarketToMap(betInformation.marketId, doc)
                     }
                     // already participating
                     Toast.makeText(c, "You have already bet in this market", Toast.LENGTH_LONG)
                         .show()
                     println("Already participating in market ${betInformation.marketId}")
-                    checkIfSufficientFunds(betInformation, c) // REMOVE THIS LATER
-//                    _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
+//                    checkIfSufficientFunds(betInformation, c) // REMOVE THIS LATER
+                    _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
                     // ADD ABOVE LINE LATER
                 } else {
+                    /** User Bet flow continues... **/
                     checkIfSufficientFunds(betInformation, c)
                 }
             }
@@ -255,6 +258,7 @@ class MainViewModel : ViewModel() {
                 )
                 println(doc)
                 if (doc.get("balance_available") as Long >= betInformation.initialBetAmount) {
+                    /** User Bet flow continues... **/
                     addUserBet(betInformation, c)
                 } else {
                     Toast.makeText(c, "Insufficient funds", Toast.LENGTH_LONG)
@@ -285,9 +289,11 @@ class MainViewModel : ViewModel() {
             "bet_id" to UUID.randomUUID()
         )
 
+        /** User Bet flow ends... **/
         db.collection("all_user_bets")
             .add(userBet)
             .addOnSuccessListener { docRef ->
+
                 Log.i("MainViewModel.kt", "addUserBet DocumentSnapshot added with ID: ${docRef.id}")
                 Toast.makeText(c, "Bet sent. Good luck!", Toast.LENGTH_LONG).show()
                 updateUserBalance(-betInformation.initialBetAmount)
@@ -384,7 +390,7 @@ class MainViewModel : ViewModel() {
             delay(1000)
             db.collection("all_user_bets")
                 .whereEqualTo("bet_status", "active")
-                .whereEqualTo("ticker_symbol", liveMarketDataFlow.value.ticker)
+                .whereEqualTo("market_id", liveMarketDataFlow.value.marketId)
                 .limit(ORDERBOOK_QUERY_LIMIT)
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .get()
@@ -393,10 +399,8 @@ class MainViewModel : ViewModel() {
 //                        println("order book result size is ${result.size()} for ticker: ${liveMarketDataFlow.value.ticker}")
                         result.forEach { tradeDoc ->
                             // Only add the bet if it's not already in the bet list
-                            if (!orderBookIdHashMap.containsKey(
-                                    tradeDoc.get("bet_id").toString()
-                                )
-                            ) {
+                            if (!orderBookIdHashMap.containsKey(tradeDoc.get("bet_id").toString()))
+                            {
                                 orderBookIdHashMap[tradeDoc.get("bet_id").toString()] = true
                                 orderBookHolder.add(
                                     OrderBookEntry(

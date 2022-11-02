@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.bearvbull.ui.components.ProfileBetHistoryContainer
@@ -21,6 +22,7 @@ fun ProfileScreen(viewModel: MainViewModel) {
             .fillMaxSize()
             .background(DeepPurple),
     ) {
+        val activeUser = viewModel.activeUser.collectAsState()
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -28,7 +30,7 @@ fun ProfileScreen(viewModel: MainViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ProfileTopBar()
-            ProfilePictureAndInfo(userAccountInformation = viewModel.fakeUser)
+            ProfilePictureAndInfo(userAccountInformation = activeUser.value)
             ProfileBetHistoryContainer(viewModel = viewModel)
         }
     }

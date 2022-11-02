@@ -29,6 +29,7 @@ import com.example.bearvbull.ui.theme.NotSoDeepPurple
 import com.example.bearvbull.ui.theme.poppinsFontFamily
 import com.example.bearvbull.util.Utility
 import com.example.bearvbull.util.formatBigLong
+import com.example.bearvbull.util.getEloRank
 import com.example.bearvbull.viewmodel.MainViewModel
 
 
@@ -134,22 +135,54 @@ fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
             fontSize = 18.sp,
             color = Color.White
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.cash_icon),
-                contentDescription = "Cash",
-                modifier = Modifier.size(12.dp)
-            )
-            Text(
-                text = userAccountInformation.userBalance.formatBigLong(),
-                fontFamily = poppinsFontFamily,
-                fontSize = 12.sp,
-                color = Color.White
-            )
+            EloWithRankImage(userAccountInformation.eloScore)
+            BalanceWithCashImage(userAccountInformation.userBalance)
         }
+    }
+}
+
+@Composable
+fun EloWithRankImage(userEloScore: Int) {
+    val eloRank = getEloRank(userEloScore)
+//    Row(
+//        verticalAlignment = Alignment.CenterVertically,
+//        horizontalArrangement = Arrangement.spacedBy(4.dp)
+//    ) {
+        Image(
+            painter = painterResource(id = eloRank.starIcon),
+            contentDescription = "high rank star",
+            modifier = Modifier.size(24.dp),
+            colorFilter = ColorFilter.tint(color = eloRank.color)
+        )
+//        Text(
+//            text = userEloScore.toString(),
+//            fontFamily = poppinsFontFamily,
+//            fontSize = 12.sp,
+//            color = Color.White
+//        )
+//    }
+}
+
+@Composable
+fun BalanceWithCashImage(userBalance: Long) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.cash_icon),
+            contentDescription = "Cash",
+            modifier = Modifier.size(12.dp)
+        )
+        Text(
+            text = userBalance.formatBigLong(),
+            fontFamily = poppinsFontFamily,
+            fontSize = 12.sp,
+            color = Color.White
+        )
     }
 }
 

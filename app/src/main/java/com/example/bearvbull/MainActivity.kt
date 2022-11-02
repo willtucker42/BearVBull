@@ -293,7 +293,7 @@ fun BetButtonContainer(
                                         ), context
                                     )
                                     focusManager.clearFocus()
-//                                    text = ""
+                                    text = ""
                                 } else {
                                     inputError = true
                                 }
