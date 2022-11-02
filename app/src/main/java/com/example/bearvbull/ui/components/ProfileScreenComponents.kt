@@ -139,6 +139,7 @@ fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             EloWithRankImage(userAccountInformation.eloScore)
+            Spacer(Modifier.height(8.dp))
             BalanceWithCashImage(userAccountInformation.userBalance)
         }
     }
@@ -151,12 +152,12 @@ fun EloWithRankImage(userEloScore: Int) {
 //        verticalAlignment = Alignment.CenterVertically,
 //        horizontalArrangement = Arrangement.spacedBy(4.dp)
 //    ) {
-        Image(
-            painter = painterResource(id = eloRank.starIcon),
-            contentDescription = "high rank star",
-            modifier = Modifier.size(24.dp),
-            colorFilter = ColorFilter.tint(color = eloRank.color)
-        )
+    Image(
+        painter = painterResource(id = eloRank.starIcon),
+        contentDescription = "high rank star",
+        modifier = Modifier.size(24.dp),
+        colorFilter = ColorFilter.tint(color = eloRank.color)
+    )
 //        Text(
 //            text = userEloScore.toString(),
 //            fontFamily = poppinsFontFamily,

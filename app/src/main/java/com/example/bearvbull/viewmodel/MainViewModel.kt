@@ -35,7 +35,8 @@ class MainViewModel : ViewModel() {
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
 
     var participatingInMarketsMapHolder = mutableMapOf<String, BetInformation>()
-    var _participatingInMarketsMapMutableFlow = MutableStateFlow(mutableMapOf<String, BetInformation>())
+    var _participatingInMarketsMapMutableFlow =
+        MutableStateFlow(mutableMapOf<String, BetInformation>())
     val participatingInMarketsMapStateFlow: StateFlow<MutableMap<String, BetInformation>> =
         _participatingInMarketsMapMutableFlow
 
@@ -99,12 +100,12 @@ class MainViewModel : ViewModel() {
     var changingTicker = false
     fun manualInit() {
         println("MainViewModel init")
+        startTimer()
         generateRankingsUserList()
         generateBetHistory()
-
+        getActiveMarkets()
         viewModelScope.launch {
-            launch { startTimer() }
-            launch { getActiveMarkets() }
+            updateUserInfo()
         }
     }
 
@@ -136,7 +137,9 @@ class MainViewModel : ViewModel() {
     }
 
     fun onSelectedTickerChanged(marketId: String) {
-        if (changingTicker) { return }
+        if (changingTicker) {
+            return
+        }
         changingTicker = true
         println("onSelectedTickerChanged market id: $marketId")
         orderBookHolder.clear()
@@ -373,8 +376,8 @@ class MainViewModel : ViewModel() {
                     }
                 }
                 viewModelScope.launch {
-                    launch { getActiveMarketData() }
-                    launch { getMarketBookData() }
+                    getActiveMarketData()
+                    getMarketBookData()
                 }
             }
             .addOnFailureListener { e ->
@@ -399,8 +402,10 @@ class MainViewModel : ViewModel() {
 //                        println("order book result size is ${result.size()} for ticker: ${liveMarketDataFlow.value.ticker}")
                         result.forEach { tradeDoc ->
                             // Only add the bet if it's not already in the bet list
-                            if (!orderBookIdHashMap.containsKey(tradeDoc.get("bet_id").toString()))
-                            {
+                            if (!orderBookIdHashMap.containsKey(
+                                    tradeDoc.get("bet_id").toString()
+                                )
+                            ) {
                                 orderBookIdHashMap[tradeDoc.get("bet_id").toString()] = true
                                 orderBookHolder.add(
                                     OrderBookEntry(
@@ -485,9 +490,9 @@ class MainViewModel : ViewModel() {
             .addOnSuccessListener { doc ->
                 println("the user doc.size ${doc.size()}")
                 if (doc.size() > 0) {
-                    println("User found. Signing in... ${account.id.toString()}")
-                    updateSignInStatus(SignInStatus.SIGNED_IN)
+                    println("User found. Signing in... ${account.email.toString()}")
                     updateUserFromDbDoc(doc.first())
+                    updateSignInStatus(SignInStatus.SIGNED_IN)
 //                    addNewUserToDb(account) // remove this later
                 } else {
                     addNewUserToDb(account)
@@ -539,6 +544,27 @@ class MainViewModel : ViewModel() {
         _userId.value = id
     }
 
+    private suspend fun updateUserInfo() {
+        while (signInStatus.value == SignInStatus.SIGNED_IN) {
+            delay(5000)
+            println("Updating user info...")
+            db.collection("users")
+                .whereEqualTo("user_id", activeUser.value.userId)
+                .get()
+                .addOnSuccessListener { doc ->
+                    if (doc.size() > 0) {
+                        updateUserFromDbDoc(doc.first())
+                        println(doc.first())
+                    } else {
+                        Log.e("MainViewModel", "Really unexpected error")
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.e("MainViewModel.kt", "Error updating user info: $e")
+                }
+        }
+    }
+
     private fun updateUserFromDbDoc(doc: DocumentSnapshot) {
         _activeUser.value = UserAccountInformation(
             userId = doc.get("user_id") as String,
@@ -546,7 +572,8 @@ class MainViewModel : ViewModel() {
             userBalance = doc.get("balance_available") as Long,
             profileImage = _activeUser.value.profileImage,
             rank = _activeUser.value.rank,
-            email = doc.get("email") as String
+            email = doc.get("email") as String,
+            eloScore = (doc.get("elo_score") as Long).toInt()
         )
     }
 
