@@ -250,7 +250,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun checkIfSufficientFunds(betInformation: BetInformation, c: Context) {
-        println("ATTEMPTING TO CHECK SUFFICIENT FUNDS... on user ${_activeUser.value.email}")
+//        println("ATTEMPTING TO CHECK SUFFICIENT FUNDS... on user ${_activeUser.value.email}")
         db.collection("users")
             .document(_activeUser.value.email)
             .get()
@@ -376,8 +376,8 @@ class MainViewModel : ViewModel() {
                     }
                 }
                 viewModelScope.launch {
-                    getActiveMarketData()
-                    getMarketBookData()
+                    launch { getActiveMarketData() }
+                    launch { getMarketBookData() }
                 }
             }
             .addOnFailureListener { e ->
@@ -390,10 +390,11 @@ class MainViewModel : ViewModel() {
     private suspend fun getMarketBookData() {
         while (!changingTicker) {
 //            println("getMarketBookData1, ticker: ${liveMarketDataFlow.value.ticker}")
+            println("getting marketbook data")
             delay(1000)
             db.collection("all_user_bets")
                 .whereEqualTo("bet_status", "active")
-                .whereEqualTo("market_id", liveMarketDataFlow.value.marketId)
+//                .whereEqualTo("market_id", liveMarketDataFlow.value.marketId)
                 .limit(ORDERBOOK_QUERY_LIMIT)
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .get()
@@ -413,7 +414,8 @@ class MainViewModel : ViewModel() {
                                         amountWagered = tradeDoc.get("bet_amount") as Long,
                                         betSide = tradeDoc.get("bet_side") as String,
                                         time = (tradeDoc.get("timestamp") as Timestamp).toDate(),
-                                        betPercent = tradeDoc.get("odds") as Double
+                                        betPercent = tradeDoc.get("odds") as Double,
+                                        ticker = tradeDoc.get("ticker_symbol") as String
                                     )
                                 )
                             }

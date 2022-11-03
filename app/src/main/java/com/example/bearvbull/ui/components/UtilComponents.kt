@@ -198,7 +198,7 @@ fun OrderBookLabelRow() {
                 .weight(1F)
         )
         OrderBookLabel(
-            text = "Side", modifier = Modifier
+            text = "Stock", modifier = Modifier
                 .fillMaxWidth()
                 .weight(1F)
         ) // Betside and percent are combined here
@@ -262,11 +262,16 @@ fun OrderBookEntryRow(orderBookEntry: OrderBookEntry) {
         )
         OrderBookEntryPercentText(
             betside = orderBookEntry.betSide,
-            percent = orderBookEntry.betPercent.toString(),
+            percent = orderBookEntry.ticker,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1F)
         )
+//        OrderBookEntryText(
+//            orderBookEntry.ticker, modifier = Modifier
+//                .fillMaxWidth()
+//                .weight(1F)
+//        )
         OrderBookEntryText(
             orderBookEntry.amountWagered.formatBigLong(), modifier = Modifier
                 .fillMaxWidth()

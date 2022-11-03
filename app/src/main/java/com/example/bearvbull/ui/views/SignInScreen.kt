@@ -51,7 +51,18 @@ fun SignInScreen(mainViewModel: MainViewModel, gsc: GoogleSignInClient) {
                 task.addOnFailureListener { e ->
                     println("Login FAILURE $e")
                 }
+                task.addOnCanceledListener {
+                    println("addOnCanceledListener")
+                }
+                task.addOnCompleteListener {
+                    println("addoncompletelistener")
+                }
+            } else {
+                println("result code: ${it.resultCode}")
+                println("data ${it.data}")
             }
+        } else {
+            println(it.resultCode)
         }
     }
     Surface {

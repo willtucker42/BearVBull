@@ -7,5 +7,6 @@ data class OrderBookEntry(
     val amountWagered: Long = 100,
     val betSide: String = "bear",
     val time: Date = Calendar.getInstance().time,
-    val betPercent: Double = 50.0
+    val betPercent: Double = 50.0,
+    val ticker : String = "---"
 )
