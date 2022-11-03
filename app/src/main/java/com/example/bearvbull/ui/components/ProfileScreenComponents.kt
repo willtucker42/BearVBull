@@ -148,23 +148,23 @@ fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
 @Composable
 fun EloWithRankImage(userEloScore: Int) {
     val eloRank = getEloRank(userEloScore)
-//    Row(
-//        verticalAlignment = Alignment.CenterVertically,
-//        horizontalArrangement = Arrangement.spacedBy(4.dp)
-//    ) {
-    Image(
-        painter = painterResource(id = eloRank.starIcon),
-        contentDescription = "high rank star",
-        modifier = Modifier.size(24.dp),
-        colorFilter = ColorFilter.tint(color = eloRank.color)
-    )
-//        Text(
-//            text = userEloScore.toString(),
-//            fontFamily = poppinsFontFamily,
-//            fontSize = 12.sp,
-//            color = Color.White
-//        )
-//    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = "Rank: ",
+            fontFamily = poppinsFontFamily,
+            fontSize = 14.sp,
+            color = Color.White
+        )
+        Image(
+            painter = painterResource(id = eloRank.starIcon),
+            contentDescription = "high rank star",
+            modifier = Modifier.size(16.dp),
+            colorFilter = ColorFilter.tint(color = eloRank.color)
+        )
+    }
 }
 
 @Composable

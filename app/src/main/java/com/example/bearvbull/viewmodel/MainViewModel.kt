@@ -100,10 +100,10 @@ class MainViewModel : ViewModel() {
     var changingTicker = false
     fun manualInit() {
         println("MainViewModel init")
+        getActiveMarkets()
         startTimer()
         generateRankingsUserList()
         generateBetHistory()
-        getActiveMarkets()
         viewModelScope.launch {
             updateUserInfo()
         }
@@ -111,7 +111,8 @@ class MainViewModel : ViewModel() {
 
     private suspend fun getActiveMarketData() {
         while (true) {
-//            println("getting activeMarketData for ${activeMarketData.value.marketId}")
+            delay(1000)
+            println("getting activeMarketData for ${activeMarketData.value.marketId}")
             if (activeMarketData.value.marketId != "") {
                 db.collection("live_prediction_market_info")
                     .document(activeMarketData.value.marketId)
@@ -132,7 +133,6 @@ class MainViewModel : ViewModel() {
                         }
                     }
             }
-            delay(1000)
         }
     }
 
@@ -375,6 +375,7 @@ class MainViewModel : ViewModel() {
                         )
                     }
                 }
+                println("Launching")
                 viewModelScope.launch {
                     launch { getActiveMarketData() }
                     launch { getMarketBookData() }
