@@ -62,14 +62,24 @@ enum class BetInfoType(val icon: Int) {
     BIGGEST_BET(R.drawable.money_bag_icon)
 }
 
-enum class EloRank(val starIcon: Int, val color: Color) {
-    BRONZE(R.drawable.low_rank_star, PodiumBronze),
-    SILVER(R.drawable.low_rank_star, PodiumSilver),
-    GOLD(R.drawable.low_rank_star, PodiumGold),
-    PLATINUM(R.drawable.low_rank_star, PlatinumRank),
-    DIAMOND(R.drawable.high_rank_star, DiamondRank),
-    MASTER(R.drawable.high_rank_star, MasterRank),
-    GRAND_MASTER(R.drawable.high_rank_star, GrandMasterRank)
+enum class EloRank(val starIcon: Int, val color: Color, amountOfStars: Int, title: String) {
+    SCRUB(R.drawable.low_rank_star, PodiumBronze,1, "Scrub"),
+    AMATEUR(R.drawable.low_rank_star, PodiumBronze, 2, "Amateur"),
+    TRADER(R.drawable.low_rank_star, PodiumBronze, 3, "Trader"),
+    ANALYST(R.drawable.low_rank_star, PodiumSilver,1, "Analyst"),
+    SENIOR_ANALYST(R.drawable.low_rank_star, PodiumSilver,2, "Sr. Analyst"),
+    BROKER(R.drawable.low_rank_star, PodiumSilver,3, "Broker"),
+    SENIOR_BROKER(R.drawable.low_rank_star, PodiumGold,1, "Sr. Broker"),
+    INSIDER(R.drawable.low_rank_star, PodiumGold, 2,"Financier"),
+    FINANCIER(R.drawable.low_rank_star, PodiumGold, 2,"Financier"),
+    VENTURE_CAPITALIST(R.drawable.low_rank_star, PodiumGold, 3,"Financier"),
+    CEO(R.drawable.low_rank_star, PodiumGold, 3,"Financier"),
+    PRESIDENT(R.drawable.low_rank_star, PodiumGold, 3,"Financier"),
+    HEDGE_FUND_MANAGER(R.drawable.low_rank_star, GreenRank,1, "Hedge Fund Manager"),
+    PROFITEER(R.drawable.low_rank_star, GreenRank, 2,"Profiteer"),
+    DARK_MONEY_MANAGER(R.drawable.high_rank_star, GreenRank, 3, "Dark Money Manager"),
+    LORD_PRESIDENT(R.drawable.high_rank_star, GrandMasterRank)
+    PROPHET(R.drawable.high_rank_star, GrandMasterRank)
 }
 
 fun getEloRank(eloScore: Int): EloRank {

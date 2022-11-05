@@ -87,7 +87,9 @@ class MainActivity : ComponentActivity() {
                             .align(Alignment.TopCenter)
                     ) {
                         if (signInStatus == SignInStatus.SIGNED_IN) {
-                            mainViewModel.manualInit()
+                            if (!mainViewModel.manualInitComplete) {
+                                mainViewModel.manualInit()
+                            }
                             when (selectedScreen) {
                                 NavBarItems.BET_SCREEN ->
                                     BetScreen(

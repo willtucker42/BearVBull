@@ -43,7 +43,7 @@ class MainViewModel : ViewModel() {
     var _betTxnStatus = MutableStateFlow(BetTransactionStatus.NOT_SENDING_BET)
     val betTxnStatus: StateFlow<BetTransactionStatus> = _betTxnStatus
 
-    var _signInStatus = MutableStateFlow(SignInStatus.NOT_SIGNED_IN)
+    private var _signInStatus = MutableStateFlow(SignInStatus.NOT_SIGNED_IN)
     val signInStatus: StateFlow<SignInStatus> = _signInStatus
 
     var _activeUser = MutableStateFlow(UserAccountInformation())
@@ -89,15 +89,10 @@ class MainViewModel : ViewModel() {
     // ActiveMarket
 
     val fakeRankingsUserList = mutableListOf<UserAccountInformation>()
-    val fakeUser = UserAccountInformation(
-        userId = "123",
-        userName = "willTucker42",
-        70198817,
-        R.drawable.green_wojak,
-        1
-    )
     val fakeBetHistory = mutableListOf<BetInformation>()
     var changingTicker = false
+    var manualInitComplete = false
+
     fun manualInit() {
         println("MainViewModel init")
         getActiveMarkets()
@@ -107,6 +102,7 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             updateUserInfo()
         }
+        manualInitComplete = true
     }
 
     private suspend fun getActiveMarketData() {
@@ -404,11 +400,9 @@ class MainViewModel : ViewModel() {
 //                        println("order book result size is ${result.size()} for ticker: ${liveMarketDataFlow.value.ticker}")
                         result.forEach { tradeDoc ->
                             // Only add the bet if it's not already in the bet list
-                            if (!orderBookIdHashMap.containsKey(
-                                    tradeDoc.get("bet_id").toString()
-                                )
-                            ) {
-                                orderBookIdHashMap[tradeDoc.get("bet_id").toString()] = true
+                            val betId = tradeDoc.get("bet_id").toString()
+                            if (!orderBookIdHashMap.containsKey(betId)) {
+                                orderBookIdHashMap[betId] = true
                                 orderBookHolder.add(
                                     OrderBookEntry(
                                         userName = "willTucker42",
@@ -507,7 +501,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun addNewUserToDb(account: GoogleSignInAccount) {
-        _signInStatus.value = SignInStatus.ADDING_NEW_USER
+        updateSignInStatus(SignInStatus.ADDING_NEW_USER)
         println("User not found... adding new user... ${account.email}")
         val user = hashMapOf(
             "balance_available" to 1000000,
@@ -531,20 +525,16 @@ class MainViewModel : ViewModel() {
                     email = account.email.toString(),
                     eloScore = 100
                 )
-                _signInStatus.value = SignInStatus.SIGNED_IN
+                updateSignInStatus(SignInStatus.SIGNED_IN)
             }
             .addOnFailureListener { e ->
-                _signInStatus.value = SignInStatus.NOT_SIGNED_IN
+                updateSignInStatus(SignInStatus.NOT_SIGNED_IN)
                 Log.e("MainViewModel.kt", "Error adding user, $e")
             }
     }
 
     private fun updateSignInStatus(value: SignInStatus) {
         _signInStatus.value = value
-    }
-
-    private fun updateUserId(id: String) {
-        _userId.value = id
     }
 
     private suspend fun updateUserInfo() {
