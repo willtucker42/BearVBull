@@ -63,37 +63,59 @@ enum class BetInfoType(val icon: Int) {
 }
 
 enum class EloRank(val starIcon: Int, val color: Color, amountOfStars: Int, title: String) {
+    // Bronze
     SCRUB(R.drawable.low_rank_star, PodiumBronze,1, "Scrub"),
     AMATEUR(R.drawable.low_rank_star, PodiumBronze, 2, "Amateur"),
-    STOCK_JUNKIE(R.drawable.low_rank_star, PodiumBronze, 2, "Stock Junkie"),
-    TRADER(R.drawable.low_rank_star, PodiumBronze, 3, "Trader"),
-    JUNIOR_ANALYST(R.drawable.low_rank_star, PodiumSilver,1, "Jr. Analyst"),
-    SENIOR_ANALYST(R.drawable.low_rank_star, PodiumSilver,2, "Sr. Analyst"),
-    BROKER(R.drawable.low_rank_star, PodiumSilver,3, "Broker"),
-    SENIOR_BROKER(R.drawable.low_rank_star, PodiumGold,1, "Sr. Broker"),
-    INVESTMENT_BANKER(R.drawable.low_rank_star, PodiumGold,1, "Investment Banker"),
-    INSIDER(R.drawable.low_rank_star, PodiumGold, 2,"Insider"),
-    FINANCIER(R.drawable.low_rank_star, PodiumGold, 2,"Financier"),
-    VENTURE_CAPITALIST(R.drawable.low_rank_star, PodiumGold, 3,"Venture Capitalist"),
-    CHAIRMAN_OF_THE_BOARD(R.drawable.low_rank_star, PodiumGold, 3,"Chairman of the board"),
-    CEO(R.drawable.low_rank_star, PodiumGold, 3,"C.E.O"),
-    THE_PRESIDENT(R.drawable.low_rank_star, PodiumGold, 3,"The President"),
-    HEDGE_FUND_MANAGER(R.drawable.low_rank_star, GreenRank,1, "Hedge Fund Manager"),
-    PROFITEER(R.drawable.low_rank_star, GreenRank, 2,"Profiteer"),
-    DARK_MONEY_MANAGER(R.drawable.high_rank_star, GreenRank, 3, "Dark Money Manager"),
-    LORD_PRESIDENT(R.drawable.high_rank_star, GrandMasterRank,4,"Lord President"),
-    PROPHET(R.drawable.high_rank_star, GrandMasterRank, 1, "Prophet")
+    STOCK_JUNKIE(R.drawable.low_rank_star, PodiumBronze, 3, "Stock Junkie"),
+    // Silver
+    DAY_TRADER(R.drawable.low_rank_star, PodiumSilver, 1, "Day Trader"),
+    JUNIOR_ANALYST(R.drawable.low_rank_star, PodiumSilver,2, "Jr. Analyst"),
+    SENIOR_ANALYST(R.drawable.low_rank_star, PodiumSilver,3, "Sr. Analyst"),
+    // Gold
+    STOCK_BROKER(R.drawable.low_rank_star, PodiumGold,1, "Stock Broker"),
+    SENIOR_BROKER(R.drawable.low_rank_star, PodiumGold,2, "Sr. Broker"),
+    INVESTMENT_BANKER(R.drawable.low_rank_star, PodiumGold,3, "Investment Banker"),
+    // Platinum
+    MARKET_MAKER(R.drawable.low_rank_star, PlatinumRankColor,1, "Market Maker"),
+    INSIDER(R.drawable.low_rank_star, PlatinumRankColor, 2,"Insider"),
+    FINANCIER(R.drawable.low_rank_star, PlatinumRankColor, 3,"Financier"),
+    // Diamond
+    VENTURE_CAPITALIST(R.drawable.low_rank_star, DiamondRankColor, 1,"Venture Capitalist"),
+    CHAIRMAN_OF_THE_BOARD(R.drawable.low_rank_star, DiamondRankColor, 2,"Chairman of the board"),
+    CEO(R.drawable.low_rank_star, DiamondRankColor, 3,"C.E.O"),
+    // Master red
+    THE_PRESIDENT(R.drawable.low_rank_star, MasterRankColor, 1,"The President"),
+    HEDGE_FUND_MANAGER(R.drawable.low_rank_star, MasterRankColor,2, "Hedge Fund Manager"),
+    PROFITEER(R.drawable.low_rank_star, MasterRankColor, 3,"Profiteer"),
+    // GM Purple
+    DARK_MONEY_MANAGER(R.drawable.high_rank_star, GrandMasterRankColor, 1, "Dark Money Manager"),
+    LORD_PRESIDENT(R.drawable.high_rank_star, GrandMasterRankColor,2,"Lord President"),
+    PROPHET(R.drawable.high_rank_star, GrandMasterRankColor, 3, "Prophet")
 }
 
 fun getEloRank(eloScore: Int): EloRank {
     return when (eloScore) {
-        in 0..110 -> EloRank.BRONZE
-        in 111..145 -> EloRank.SILVER
-        in 146..190 -> EloRank.GOLD
-        in 191..235 -> EloRank.PLATINUM
-        in 236..280 -> EloRank.DIAMOND
-        in 281..325 -> EloRank.MASTER
-        else -> EloRank.GRAND_MASTER
+        in 0..110 -> EloRank.SCRUB
+        in 111.. 125 -> EloRank.AMATEUR
+        in 126..140 -> EloRank.STOCK_JUNKIE
+        in 141..155 -> EloRank.DAY_TRADER
+        in 156..170 -> EloRank.JUNIOR_ANALYST
+        in 171..185 -> EloRank.SENIOR_ANALYST
+        in 186..200 -> EloRank.STOCK_BROKER
+        in 201..215 -> EloRank.SENIOR_BROKER
+        in 216..230 -> EloRank.INVESTMENT_BANKER
+        in 231..245 -> EloRank.MARKET_MAKER
+        in 246..260 -> EloRank.INSIDER
+        in 261..275 -> EloRank.FINANCIER
+        in 276..290 -> EloRank.VENTURE_CAPITALIST
+        in 291..305 -> EloRank.CHAIRMAN_OF_THE_BOARD
+        in 306..320 -> EloRank.CEO
+        in 321..335 -> EloRank.THE_PRESIDENT
+        in 336..350 -> EloRank.HEDGE_FUND_MANAGER
+        in 351..365 -> EloRank.PROFITEER
+        in 366..380 -> EloRank.DARK_MONEY_MANAGER
+        in 366..395 -> EloRank.LORD_PRESIDENT
+        else -> EloRank.PROPHET
     }
 }
 
