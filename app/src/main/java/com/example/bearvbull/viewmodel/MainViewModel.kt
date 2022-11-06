@@ -89,6 +89,12 @@ class MainViewModel : ViewModel() {
     // ActiveMarket
 
     val fakeRankingsUserList = mutableListOf<UserAccountInformation>()
+
+    private var rankingsListHolder: MutableList<UserAccountInformation> =
+        mutableListOf(UserAccountInformation())
+    private var _userRankingsList = MutableStateFlow<List<UserAccountInformation>>(listOf())
+    val liveUserRankingsList: StateFlow<List<UserAccountInformation>> = _userRankingsList
+
     val fakeBetHistory = mutableListOf<BetInformation>()
     var changingTicker = false
     var manualInitComplete = false
@@ -383,6 +389,28 @@ class MainViewModel : ViewModel() {
 
     }
 
+    fun getUserRankingsList() {
+        db.collection("users")
+            .orderBy("elo_rank", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { result ->
+                rankingsListHolder.clear()
+                result.forEach { userDoc ->
+                    rankingsListHolder.add(UserAccountInformation(
+                        userId = userDoc.get("user_id") as String,
+                        userName = userDoc.get("username") as String,
+                        userBalance = userDoc.get("balance_available") as Long,
+                        eloScore = userDoc.get("elo_score") as Int,
+                        email = userDoc.get("email") as String
+                    ))
+                }
+                _userRankingsList.value = rankingsListHolder
+            }
+            .addOnFailureListener { e ->
+                Log.e("MainViewModel", "Error getting userRankings list $e")
+            }
+    }
+
     @SuppressLint("LogNotTimber")
     private suspend fun getMarketBookData() {
         while (!changingTicker) {
@@ -454,6 +482,7 @@ class MainViewModel : ViewModel() {
             )
         }
     }
+
 
     private fun generateRankingsUserList() {
         println("generateRankingsUSerList")

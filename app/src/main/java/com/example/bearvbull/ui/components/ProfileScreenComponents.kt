@@ -2,6 +2,7 @@ package com.example.bearvbull.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +18,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bearvbull.R
@@ -152,18 +155,37 @@ fun EloWithRankImage(userEloScore: Int) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(
-            text = "Rank: ",
-            fontFamily = poppinsFontFamily,
-            fontSize = 14.sp,
-            color = Color.White
-        )
-        Image(
-            painter = painterResource(id = eloRank.starIcon),
-            contentDescription = "high rank star",
-            modifier = Modifier.size(16.dp),
-            colorFilter = ColorFilter.tint(color = eloRank.color)
-        )
+        Column(
+            modifier = Modifier.width(100.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = "Rank: ",
+                fontFamily = poppinsFontFamily,
+                fontSize = 12.sp,
+                color = Color.White,
+                fontStyle = FontStyle.Italic,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = eloRank.title,
+                fontFamily = poppinsFontFamily,
+                fontSize = 14.sp,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium
+            )
+        }
+        Row {
+            for (i in 0 until eloRank.amountOfStars) {
+                Image(
+                    painter = painterResource(id = eloRank.starIcon),
+                    contentDescription = "star",
+                    modifier = Modifier.size(18.dp).padding(2.dp),
+                    colorFilter = ColorFilter.tint(color = eloRank.color)
+                )
+            }
+        }
     }
 }
 

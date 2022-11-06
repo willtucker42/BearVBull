@@ -62,41 +62,48 @@ enum class BetInfoType(val icon: Int) {
     BIGGEST_BET(R.drawable.money_bag_icon)
 }
 
-enum class EloRank(val starIcon: Int, val color: Color, amountOfStars: Int, title: String) {
+enum class EloRank(val starIcon: Int, val color: Color, val amountOfStars: Int, val title: String) {
+
     // Bronze
-    SCRUB(R.drawable.low_rank_star, PodiumBronze,1, "Scrub"),
+    SCRUB(R.drawable.low_rank_star, PodiumBronze, 1, "Scrub"),
     AMATEUR(R.drawable.low_rank_star, PodiumBronze, 2, "Amateur"),
     STOCK_JUNKIE(R.drawable.low_rank_star, PodiumBronze, 3, "Stock Junkie"),
+
     // Silver
     DAY_TRADER(R.drawable.low_rank_star, PodiumSilver, 1, "Day Trader"),
-    JUNIOR_ANALYST(R.drawable.low_rank_star, PodiumSilver,2, "Jr. Analyst"),
-    SENIOR_ANALYST(R.drawable.low_rank_star, PodiumSilver,3, "Sr. Analyst"),
+    JUNIOR_ANALYST(R.drawable.low_rank_star, PodiumSilver, 2, "Jr. Analyst"),
+    SENIOR_ANALYST(R.drawable.low_rank_star, PodiumSilver, 3, "Sr. Analyst"),
+
     // Gold
-    STOCK_BROKER(R.drawable.low_rank_star, PodiumGold,1, "Stock Broker"),
-    SENIOR_BROKER(R.drawable.low_rank_star, PodiumGold,2, "Sr. Broker"),
-    INVESTMENT_BANKER(R.drawable.low_rank_star, PodiumGold,3, "Investment Banker"),
+    STOCK_BROKER(R.drawable.low_rank_star, PodiumGold, 1, "Stock Broker"),
+    SENIOR_BROKER(R.drawable.low_rank_star, PodiumGold, 2, "Sr. Broker"),
+    INVESTMENT_BANKER(R.drawable.low_rank_star, PodiumGold, 3, "Investment Banker"),
+
     // Platinum
-    MARKET_MAKER(R.drawable.low_rank_star, PlatinumRankColor,1, "Market Maker"),
-    INSIDER(R.drawable.low_rank_star, PlatinumRankColor, 2,"Insider"),
-    FINANCIER(R.drawable.low_rank_star, PlatinumRankColor, 3,"Financier"),
+    MARKET_MAKER(R.drawable.low_rank_star, PlatinumRankColor, 1, "Market Maker"),
+    INSIDER(R.drawable.low_rank_star, PlatinumRankColor, 2, "Insider"),
+    FINANCIER(R.drawable.low_rank_star, PlatinumRankColor, 3, "Financier"),
+
     // Diamond
-    VENTURE_CAPITALIST(R.drawable.low_rank_star, DiamondRankColor, 1,"Venture Capitalist"),
-    CHAIRMAN_OF_THE_BOARD(R.drawable.low_rank_star, DiamondRankColor, 2,"Chairman of the board"),
-    CEO(R.drawable.low_rank_star, DiamondRankColor, 3,"C.E.O"),
+    VENTURE_CAPITALIST(R.drawable.high_rank_star, DiamondRankColor, 1, "Venture Capitalist"),
+    CHAIRMAN_OF_THE_BOARD(R.drawable.high_rank_star, DiamondRankColor, 2, "Chairman of the board"),
+    CEO(R.drawable.high_rank_star, DiamondRankColor, 3, "C.E.O"),
+
     // Master red
-    THE_PRESIDENT(R.drawable.low_rank_star, MasterRankColor, 1,"The President"),
-    HEDGE_FUND_MANAGER(R.drawable.low_rank_star, MasterRankColor,2, "Hedge Fund Manager"),
-    PROFITEER(R.drawable.low_rank_star, MasterRankColor, 3,"Profiteer"),
+    THE_PRESIDENT(R.drawable.high_rank_star, MasterRankColor, 1, "The President"),
+    HEDGE_FUND_MANAGER(R.drawable.high_rank_star, MasterRankColor, 2, "Hedge Fund Manager"),
+    PROFITEER(R.drawable.high_rank_star, MasterRankColor, 3, "Profiteer"),
+
     // GM Purple
     DARK_MONEY_MANAGER(R.drawable.high_rank_star, GrandMasterRankColor, 1, "Dark Money Manager"),
-    LORD_PRESIDENT(R.drawable.high_rank_star, GrandMasterRankColor,2,"Lord President"),
-    PROPHET(R.drawable.high_rank_star, GrandMasterRankColor, 3, "Prophet")
+    LORD_PRESIDENT(R.drawable.high_rank_star, GrandMasterRankColor, 2, "Lord President"),
+    PROPHET(R.drawable.high_rank_star, GrandMasterRankColor, 3, "Prophet");
 }
 
 fun getEloRank(eloScore: Int): EloRank {
     return when (eloScore) {
         in 0..110 -> EloRank.SCRUB
-        in 111.. 125 -> EloRank.AMATEUR
+        in 111..125 -> EloRank.AMATEUR
         in 126..140 -> EloRank.STOCK_JUNKIE
         in 141..155 -> EloRank.DAY_TRADER
         in 156..170 -> EloRank.JUNIOR_ANALYST
