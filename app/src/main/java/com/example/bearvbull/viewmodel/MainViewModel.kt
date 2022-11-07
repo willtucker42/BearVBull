@@ -32,7 +32,9 @@ import kotlin.math.roundToLong
 import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
-    private var changingUserName: Boolean = false
+    private var _changingUserName = MutableStateFlow(false)
+    val changingUserName: StateFlow<Boolean> = _changingUserName
+
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
 
     var participatingInMarketsMapHolder = mutableMapOf<String, BetInformation>()
@@ -391,7 +393,8 @@ class MainViewModel : ViewModel() {
     }
 
     fun checkNewUserName(newUserName: String, c: Context) {
-        if (changingUserName) return
+        if (changingUserName.value) return
+        _changingUserName.value = true
         db.collection("users")
             .whereEqualTo("username", newUserName)
             .get()
@@ -403,22 +406,22 @@ class MainViewModel : ViewModel() {
                 }
             }
             .addOnFailureListener {
-                changingUserName = false
+                _changingUserName.value = false
                 Log.e("MainViewModel", "Error checking username $it")
             }
     }
 
     private fun changeUserName(newUserName: String) {
-        if (changingUserName) return
+        if (changingUserName.value) return
         val ref = db.collection("users").document(activeUser.value.email)
 
         ref.update("username", newUserName)
             .addOnSuccessListener {
-                changingUserName = false
+                _changingUserName.value = false
                 Log.i("MainViewModel", "Change username success")
             }
             .addOnFailureListener { e ->
-                changingUserName = false
+                _changingUserName.value = false
                 Log.e("MainViewModel", "Change username fail $e")
             }
     }
