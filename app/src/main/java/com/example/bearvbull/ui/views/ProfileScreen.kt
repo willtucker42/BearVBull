@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.example.bearvbull.ui.components.ProfileBetHistoryContainer
 import com.example.bearvbull.ui.components.ProfilePictureAndInfo
 import com.example.bearvbull.ui.components.ProfileTopBar
@@ -17,6 +18,7 @@ import com.example.bearvbull.viewmodel.MainViewModel
 
 @Composable
 fun ProfileScreen(viewModel: MainViewModel) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -30,7 +32,15 @@ fun ProfileScreen(viewModel: MainViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ProfileTopBar()
-            ProfilePictureAndInfo(userAccountInformation = activeUser.value)
+            ProfilePictureAndInfo(
+                userAccountInformation = activeUser.value,
+                editNameFunction = { newUserName: String ->
+                    viewModel.checkNewUserName(
+                        newUserName,
+                        context
+                    )
+                }
+            )
             ProfileBetHistoryContainer(viewModel = viewModel)
         }
     }

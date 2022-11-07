@@ -1,5 +1,7 @@
 package com.example.bearvbull.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,8 +11,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.TextField
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -120,7 +125,10 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
 }
 
 @Composable
-fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
+fun ProfilePictureAndInfo(
+    userAccountInformation: UserAccountInformation,
+    editNameFunction: (String) -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -132,11 +140,9 @@ fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
                 .size(92.dp)
         )
         Spacer(Modifier.height(8.dp))
-        Text(
-            text = userAccountInformation.userName,
-            fontFamily = poppinsFontFamily,
-            fontSize = 18.sp,
-            color = Color.White
+        UserNameWithEditButton(
+            editNameFunction = editNameFunction,
+            userAccountInformation = userAccountInformation
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -149,20 +155,80 @@ fun ProfilePictureAndInfo(userAccountInformation: UserAccountInformation) {
 }
 
 @Composable
-fun EloWithRankImage(userEloScore: Int) {
-    val eloRank = getEloRank(userEloScore)
+fun UserNameWithEditButton(
+    editNameFunction: (String) -> Unit,
+    userAccountInformation: UserAccountInformation
+) {
+    val originalUserNameText = userAccountInformation.userName
+    var userNameText by rememberSaveable { mutableStateOf(userAccountInformation.userName) }
+    var textFieldEnabled by remember { mutableStateOf(false) }
+    val buttonColor: Color by animateColorAsState(targetValue = if (textFieldEnabled) Color.Green else Color.White)
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        if (textFieldEnabled) {
+            TextField(
+                value = userNameText,
+                onValueChange = {
+                    userNameText = it
+                },
+                modifier = Modifier.width(250.dp).height(50.dp)
+            )
+        } else {
+            Text(
+                text = userNameText,
+                fontFamily = poppinsFontFamily,
+                color =  Color.White,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+        Image(
+            painter = if (textFieldEnabled) painterResource(id = R.drawable.checkmark_icon) else painterResource(
+                id = R.drawable.edit_pencil_icon
+            ),
+            contentDescription = "Edit name",
+            colorFilter = ColorFilter.tint(color = buttonColor),
+            modifier = Modifier.size(18.dp).clickable {
+                if (textFieldEnabled) {
+                    editNameFunction(userNameText)
+                }
+                textFieldEnabled = true
+
+            }
+        )
+        AnimatedVisibility(visible = textFieldEnabled) {
+            Image(
+                painter = painterResource(id = R.drawable.cancel_icon),
+                contentDescription = "cancel name edit",
+                colorFilter = ColorFilter.tint(color = Color.Red),
+                modifier = Modifier
+                    .size(14.dp)
+                    .clickable {
+                        textFieldEnabled = false
+                        userNameText = originalUserNameText
+                    }
+            )
+        }
+    }
+}
+
+@Composable
+fun EloWithRankImage(userEloScore: Int) {
+    val eloRank = getEloRank(userEloScore)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Column(
-            modifier = Modifier.width(100.dp),
+            modifier = Modifier.width(300.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Rank: ",
+                text = "Rank:",
                 fontFamily = poppinsFontFamily,
-                fontSize = 12.sp,
+                fontSize = 10.sp,
                 color = Color.White,
                 fontStyle = FontStyle.Italic,
                 textAlign = TextAlign.Center
@@ -181,7 +247,9 @@ fun EloWithRankImage(userEloScore: Int) {
                 Image(
                     painter = painterResource(id = eloRank.starIcon),
                     contentDescription = "star",
-                    modifier = Modifier.size(18.dp).padding(2.dp),
+                    modifier = Modifier
+                        .size(22.dp)
+                        .padding(2.dp),
                     colorFilter = ColorFilter.tint(color = eloRank.color)
                 )
             }

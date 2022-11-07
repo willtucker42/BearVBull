@@ -32,6 +32,7 @@ import kotlin.math.roundToLong
 import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
+    private var changingUserName: Boolean = false
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
 
     var participatingInMarketsMapHolder = mutableMapOf<String, BetInformation>()
@@ -389,6 +390,39 @@ class MainViewModel : ViewModel() {
 
     }
 
+    fun checkNewUserName(newUserName: String, c: Context) {
+        if (changingUserName) return
+        db.collection("users")
+            .whereEqualTo("username", newUserName)
+            .get()
+            .addOnSuccessListener {
+                if (it.size() > 0) {
+                    Toast.makeText(c, "UserName is already taken", Toast.LENGTH_LONG).show()
+                } else {
+                    changeUserName(newUserName)
+                }
+            }
+            .addOnFailureListener {
+                changingUserName = false
+                Log.e("MainViewModel", "Error checking username $it")
+            }
+    }
+
+    private fun changeUserName(newUserName: String) {
+        if (changingUserName) return
+        val ref = db.collection("users").document(activeUser.value.email)
+
+        ref.update("username", newUserName)
+            .addOnSuccessListener {
+                changingUserName = false
+                Log.i("MainViewModel", "Change username success")
+            }
+            .addOnFailureListener { e ->
+                changingUserName = false
+                Log.e("MainViewModel", "Change username fail $e")
+            }
+    }
+
     fun getUserRankingsList() {
         db.collection("users")
             .orderBy("elo_rank", Query.Direction.DESCENDING)
@@ -396,13 +430,15 @@ class MainViewModel : ViewModel() {
             .addOnSuccessListener { result ->
                 rankingsListHolder.clear()
                 result.forEach { userDoc ->
-                    rankingsListHolder.add(UserAccountInformation(
-                        userId = userDoc.get("user_id") as String,
-                        userName = userDoc.get("username") as String,
-                        userBalance = userDoc.get("balance_available") as Long,
-                        eloScore = userDoc.get("elo_score") as Int,
-                        email = userDoc.get("email") as String
-                    ))
+                    rankingsListHolder.add(
+                        UserAccountInformation(
+                            userId = userDoc.get("user_id") as String,
+                            userName = userDoc.get("username") as String,
+                            userBalance = userDoc.get("balance_available") as Long,
+                            eloScore = userDoc.get("elo_score") as Int,
+                            email = userDoc.get("email") as String
+                        )
+                    )
                 }
                 _userRankingsList.value = rankingsListHolder
             }
