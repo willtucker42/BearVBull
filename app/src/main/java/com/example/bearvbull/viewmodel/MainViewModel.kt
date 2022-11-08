@@ -14,6 +14,7 @@ import com.example.bearvbull.data.BetInformation
 import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.util.*
+import com.example.bearvbull.util.ChangeUserNameValue.*
 import com.example.bearvbull.util.Utility.formatTime
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.Timestamp
@@ -35,6 +36,8 @@ class MainViewModel : ViewModel() {
     private var _changingUserName = MutableStateFlow(false)
     val changingUserName: StateFlow<Boolean> = _changingUserName
 
+    private var _changeUserNameValue = MutableStateFlow(NOT_CHANGED)
+    val changeUserNameValue: StateFlow<ChangeUserNameValue> = _changeUserNameValue
 
     private var _badUserName = MutableStateFlow(false)
     val badUserName: StateFlow<Boolean> = _badUserName
@@ -397,15 +400,17 @@ class MainViewModel : ViewModel() {
     }
 
     fun checkNewUserName(newUserName: String, c: Context) {
-        if (changingUserName.value) return
+        if (changeUserNameValue.value == CHANGE_IN_PROGRESS ) { return }
         _badUserName.value = false
         _changingUserName.value = true
+        _changeUserNameValue.value = CHANGE_IN_PROGRESS
         db.collection("users")
             .whereEqualTo("username", newUserName)
             .get()
             .addOnSuccessListener {
                 if (it.size() > 0) {
                     _badUserName.value = true
+                    _changeUserNameValue.value = CHANGE_FAILED
                     Toast.makeText(c, "UserName is already taken", Toast.LENGTH_LONG).show()
                 } else {
                     changeUserName(newUserName)
@@ -413,6 +418,8 @@ class MainViewModel : ViewModel() {
             }
             .addOnFailureListener {
                 _changingUserName.value = false
+                _changeUserNameValue.value = CHANGE_FAILED
+
                 Log.e("MainViewModel", "Error checking username $it")
             }
     }
@@ -424,10 +431,12 @@ class MainViewModel : ViewModel() {
         ref.update("username", newUserName)
             .addOnSuccessListener {
                 _changingUserName.value = false
+                _changeUserNameValue.value = CHANGED
                 Log.i("MainViewModel", "Change username success")
             }
             .addOnFailureListener { e ->
                 _changingUserName.value = false
+                _changeUserNameValue.value = CHANGE_FAILED
                 Log.e("MainViewModel", "Change username fail $e")
             }
     }

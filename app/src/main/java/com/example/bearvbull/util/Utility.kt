@@ -134,6 +134,10 @@ val betInfoTypeList = listOf(
     BetInfoType.BIGGEST_BET,
 )
 
+enum class ChangeUserNameValue {
+    CHANGED, CHANGE_IN_PROGRESS, CHANGE_FAILED, NOT_CHANGED
+}
+
 enum class NavBarItems(val icon: Int, val title: String) {
     BET_SCREEN(R.drawable.bet_chips_icon, "Home"),
     RANKINGS_SCREEN(R.drawable.trophy_icon_2, "Rankings"),
