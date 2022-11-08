@@ -26,6 +26,7 @@ fun ProfileScreen(viewModel: MainViewModel) {
     ) {
         val activeUser = viewModel.activeUser.collectAsState()
         val changingUserName = viewModel.changingUserName.collectAsState()
+        val badUserName = viewModel.badUserName.collectAsState()
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -41,7 +42,8 @@ fun ProfileScreen(viewModel: MainViewModel) {
                         context
                     )
                 },
-                changingUserName = changingUserName.value
+                changingUserName = changingUserName.value,
+                badUserName = badUserName.value
             )
             ProfileBetHistoryContainer(viewModel = viewModel)
         }

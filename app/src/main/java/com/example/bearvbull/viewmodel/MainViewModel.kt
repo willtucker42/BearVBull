@@ -35,6 +35,10 @@ class MainViewModel : ViewModel() {
     private var _changingUserName = MutableStateFlow(false)
     val changingUserName: StateFlow<Boolean> = _changingUserName
 
+
+    private var _badUserName = MutableStateFlow(false)
+    val badUserName: StateFlow<Boolean> = _badUserName
+
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
 
     var participatingInMarketsMapHolder = mutableMapOf<String, BetInformation>()
@@ -394,12 +398,14 @@ class MainViewModel : ViewModel() {
 
     fun checkNewUserName(newUserName: String, c: Context) {
         if (changingUserName.value) return
+        _badUserName.value = false
         _changingUserName.value = true
         db.collection("users")
             .whereEqualTo("username", newUserName)
             .get()
             .addOnSuccessListener {
                 if (it.size() > 0) {
+                    _badUserName.value = true
                     Toast.makeText(c, "UserName is already taken", Toast.LENGTH_LONG).show()
                 } else {
                     changeUserName(newUserName)
@@ -412,7 +418,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun changeUserName(newUserName: String) {
-        if (changingUserName.value) return
+//        if (changingUserName.value) return
         val ref = db.collection("users").document(activeUser.value.email)
 
         ref.update("username", newUserName)

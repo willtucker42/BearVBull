@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -126,7 +127,8 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
 fun ProfilePictureAndInfo(
     userAccountInformation: UserAccountInformation,
     editNameFunction: (String) -> Unit,
-    changingUserName: Boolean
+    changingUserName: Boolean,
+    badUserName: Boolean
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -142,7 +144,8 @@ fun ProfilePictureAndInfo(
         UserNameWithEditButton(
             editNameFunction = editNameFunction,
             userAccountInformation = userAccountInformation,
-            changingUserName
+            changingUserName,
+            badUserName
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -158,7 +161,8 @@ fun ProfilePictureAndInfo(
 fun UserNameWithEditButton(
     editNameFunction: (String) -> Unit,
     userAccountInformation: UserAccountInformation,
-    changingUserName: Boolean
+    changingUserName: Boolean,
+    badUserName: Boolean
 ) {
     val originalUserNameText = userAccountInformation.userName
     var userNameText by rememberSaveable { mutableStateOf(userAccountInformation.userName) }
@@ -169,15 +173,14 @@ fun UserNameWithEditButton(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (textFieldEnabled) {
-            TextField(
+            BasicTextField(
                 value = userNameText,
                 onValueChange = {
                     userNameText = it
                 },
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(40.dp),
-                colors = TextFieldDefaults.textFieldColors(textColor = Color.White)
+                modifier = Modifier.width(IntrinsicSize.Min),
+                textStyle = LocalTextStyle.current.copy(color = Color.White)
+
             )
         } else {
             Text(
@@ -188,22 +191,26 @@ fun UserNameWithEditButton(
                 fontWeight = FontWeight.Medium
             )
         }
-        Image(
-            painter = if (textFieldEnabled) painterResource(id = R.drawable.checkmark_icon) else painterResource(
-                id = R.drawable.edit_pencil_icon
-            ),
-            contentDescription = "Edit name",
-            colorFilter = ColorFilter.tint(color = buttonColor),
-            modifier = Modifier
-                .size(18.dp)
-                .clickable {
-                    if (textFieldEnabled) {
-                        editNameFunction(userNameText)
-                    }
-                    textFieldEnabled = true
+        if (!changingUserName) {
+            Image(
+                painter = if (textFieldEnabled) painterResource(id = R.drawable.checkmark_icon) else painterResource(
+                    id = R.drawable.edit_pencil_icon
+                ),
+                contentDescription = "Edit name",
+                colorFilter = ColorFilter.tint(color = buttonColor),
+                modifier = Modifier
+                    .size(18.dp)
+                    .clickable {
+                        if (textFieldEnabled) {
+                            editNameFunction(userNameText)
+                        }
+                        textFieldEnabled = true
 
-                }
-        )
+                    }
+            )
+        } else {
+            LoadingSpinner(color = Color.Gray, size = 18.dp)
+        }
         AnimatedVisibility(visible = textFieldEnabled) {
             Image(
                 painter = painterResource(id = R.drawable.cancel_icon),
