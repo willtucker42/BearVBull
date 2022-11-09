@@ -34,6 +34,8 @@ import com.example.bearvbull.ui.theme.BetGreen
 import com.example.bearvbull.ui.theme.BetRed
 import com.example.bearvbull.ui.theme.NotSoDeepPurple
 import com.example.bearvbull.ui.theme.poppinsFontFamily
+import com.example.bearvbull.util.ChangeUserNameValue
+import com.example.bearvbull.util.ChangeUserNameValue.*
 import com.example.bearvbull.util.Utility
 import com.example.bearvbull.util.formatBigLong
 import com.example.bearvbull.util.getEloRank
@@ -127,8 +129,7 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
 fun ProfilePictureAndInfo(
     userAccountInformation: UserAccountInformation,
     editNameFunction: (String) -> Unit,
-    changingUserName: Boolean,
-    badUserName: Boolean
+    changeUserNameValue: ChangeUserNameValue
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -144,8 +145,7 @@ fun ProfilePictureAndInfo(
         UserNameWithEditButton(
             editNameFunction = editNameFunction,
             userAccountInformation = userAccountInformation,
-            changingUserName,
-            badUserName
+            changeUserNameValue = changeUserNameValue
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -161,18 +161,25 @@ fun ProfilePictureAndInfo(
 fun UserNameWithEditButton(
     editNameFunction: (String) -> Unit,
     userAccountInformation: UserAccountInformation,
-    changingUserName: Boolean,
-    badUserName: Boolean
+    changeUserNameValue: ChangeUserNameValue
+
 ) {
     val originalUserNameText = userAccountInformation.userName
     var userNameText by rememberSaveable { mutableStateOf(userAccountInformation.userName) }
     var textFieldEnabled by remember { mutableStateOf(false) }
-    val buttonColor: Color by animateColorAsState(targetValue = if (textFieldEnabled) Color.Green else Color.White)
+    val buttonColor: Color by animateColorAsState(targetValue = if (textFieldEnabled && changeUserNameValue != CHANGED) Color.Green else Color.White)
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (textFieldEnabled) {
+        Image(
+            painter = painterResource(id = R.drawable.checkmark_icon),
+            contentDescription = "Edit name",
+            modifier = Modifier
+                .size(18.dp).padding(end = 8.dp).alpha(0f)
+        )
+        if (textFieldEnabled && changeUserNameValue != CHANGED) {
             BasicTextField(
                 value = userNameText,
                 onValueChange = {
@@ -180,43 +187,45 @@ fun UserNameWithEditButton(
                 },
                 modifier = Modifier.width(IntrinsicSize.Min),
                 textStyle = LocalTextStyle.current.copy(color = Color.White)
-
             )
         } else {
             Text(
                 text = userNameText,
                 fontFamily = poppinsFontFamily,
-                color =  Color.White,
+                color = Color.White,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
             )
         }
-        if (!changingUserName) {
+        if (changeUserNameValue == CHANGED || changeUserNameValue == NOT_CHANGED) {
             Image(
-                painter = if (textFieldEnabled) painterResource(id = R.drawable.checkmark_icon) else painterResource(
-                    id = R.drawable.edit_pencil_icon
+                painter = if (textFieldEnabled && changeUserNameValue != CHANGED) painterResource(id = R.drawable.checkmark_icon) else painterResource(
+                    id = R.drawable.edit_icon
                 ),
                 contentDescription = "Edit name",
                 colorFilter = ColorFilter.tint(color = buttonColor),
                 modifier = Modifier
-                    .size(18.dp)
+                    .padding(start = 8.dp)
+                    .size(14.dp)
                     .clickable {
                         if (textFieldEnabled) {
                             editNameFunction(userNameText)
                         }
                         textFieldEnabled = true
-
                     }
             )
         } else {
-            LoadingSpinner(color = Color.Gray, size = 18.dp)
+            if (changeUserNameValue != CHANGE_FAILED) {
+                LoadingSpinner(color = Color.Gray, size = 18.dp)
+            }
         }
-        AnimatedVisibility(visible = textFieldEnabled) {
+        AnimatedVisibility(visible = (textFieldEnabled && changeUserNameValue != CHANGED)) {
             Image(
                 painter = painterResource(id = R.drawable.cancel_icon),
                 contentDescription = "cancel name edit",
                 colorFilter = ColorFilter.tint(color = Color.Red),
                 modifier = Modifier
+                    .padding(start = 8.dp)
                     .size(18.dp)
                     .clickable {
                         textFieldEnabled = false

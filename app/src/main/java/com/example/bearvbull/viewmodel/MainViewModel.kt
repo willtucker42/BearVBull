@@ -33,9 +33,6 @@ import kotlin.math.roundToLong
 import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
-    private var _changingUserName = MutableStateFlow(false)
-    val changingUserName: StateFlow<Boolean> = _changingUserName
-
     private var _changeUserNameValue = MutableStateFlow(NOT_CHANGED)
     val changeUserNameValue: StateFlow<ChangeUserNameValue> = _changeUserNameValue
 
@@ -402,7 +399,6 @@ class MainViewModel : ViewModel() {
     fun checkNewUserName(newUserName: String, c: Context) {
         if (changeUserNameValue.value == CHANGE_IN_PROGRESS ) { return }
         _badUserName.value = false
-        _changingUserName.value = true
         _changeUserNameValue.value = CHANGE_IN_PROGRESS
         db.collection("users")
             .whereEqualTo("username", newUserName)
@@ -417,7 +413,6 @@ class MainViewModel : ViewModel() {
                 }
             }
             .addOnFailureListener {
-                _changingUserName.value = false
                 _changeUserNameValue.value = CHANGE_FAILED
 
                 Log.e("MainViewModel", "Error checking username $it")
@@ -430,12 +425,13 @@ class MainViewModel : ViewModel() {
 
         ref.update("username", newUserName)
             .addOnSuccessListener {
-                _changingUserName.value = false
                 _changeUserNameValue.value = CHANGED
+                viewModelScope.launch {
+                    updateUserInfo()
+                }
                 Log.i("MainViewModel", "Change username success")
             }
             .addOnFailureListener { e ->
-                _changingUserName.value = false
                 _changeUserNameValue.value = CHANGE_FAILED
                 Log.e("MainViewModel", "Change username fail $e")
             }
