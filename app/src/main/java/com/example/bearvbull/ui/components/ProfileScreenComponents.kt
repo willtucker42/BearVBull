@@ -186,7 +186,16 @@ fun UserNameWithEditButton(
                     userNameText = it
                 },
                 modifier = Modifier.width(IntrinsicSize.Min),
-                textStyle = LocalTextStyle.current.copy(color = Color.White)
+                textStyle = LocalTextStyle.current.copy(color = Color.White),
+                decorationBox = {
+                    Box(
+                        modifier =
+                        Modifier.background(Color.LightGray, RoundedCornerShape(percent = 30))
+                            .padding(16.dp)
+                    ) {
+
+                    }
+                }
             )
         } else {
             Text(
