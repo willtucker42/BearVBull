@@ -246,7 +246,7 @@ fun UserNameWithEditButton(
 }
 
 @Composable
-fun EloWithRankImage(userEloScore: Int) {
+fun EloWithRankImage(userEloScore: Long) {
     val eloRank = getEloRank(userEloScore)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

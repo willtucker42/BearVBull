@@ -7,5 +7,5 @@ data class UserAccountInformation(
     val profileImage: Int = 0,
     val rank: Int = 0,
     val email: String = "",
-    val eloScore: Int = 100
+    val eloScore: Long = 100
 )

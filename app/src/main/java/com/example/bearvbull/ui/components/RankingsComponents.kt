@@ -21,12 +21,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bearvbull.R
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.formatBigLong
-import com.example.bearvbull.R.drawable
+import com.example.bearvbull.R.drawable.*
+import com.example.bearvbull.util.trimName
 
 
 @Composable
@@ -37,16 +40,19 @@ fun PodiumRow(podiumUsers: List<UserAccountInformation>) {
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        val reorderedListForPodium = podiumUsers.let {
-            listOf(it[1], it[0], it[2])
+        if (podiumUsers.size >= 3) {
+            val reorderedListForPodium = podiumUsers.let {
+                listOf(it[1], it[0], it[2])
+            }
+            reorderedListForPodium.forEachIndexed { index, userAccountInformation ->
+                RankingsPodiumBox(
+                    user = userAccountInformation,
+                    rank = index,
+                    profileImage = green_wojak
+                )
+            }
         }
-        reorderedListForPodium.forEachIndexed { index, userAccountInformation ->
-            RankingsPodiumBox(
-                user = userAccountInformation,
-                rank = index,
-                profileImage = userAccountInformation.profileImage
-            )
-        }
+
     }
 }
 
@@ -87,10 +93,11 @@ fun RankingsUserRow(user: UserAccountInformation) {
                     text = (user.rank + 1).toString(),
                     fontFamily = poppinsFontFamily,
                     fontSize = 18.sp,
-                    color = Color.White
+                    color = Color.White,
+
                 )
                 Image(
-                    painter = painterResource(user.profileImage),
+                    painter = painterResource(green_wojak),
                     contentDescription = "${user.userName}, rank: ${user.rank}",
                     modifier = Modifier
                         .size(40.dp)
@@ -98,29 +105,29 @@ fun RankingsUserRow(user: UserAccountInformation) {
                         .background(Purple200)
                 )
                 Text(
-                    text = user.userName,
+                    text = user.userName.trimName(),
                     fontFamily = poppinsFontFamily, fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                     color = Color.White
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-                Row(
-                    verticalAlignment = CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = drawable.cash_icon),
-                        contentDescription = "Amount of cash",
-                        Modifier
-                            .size(16.dp)
-                            .padding(end = 2.dp)
-                    )
-                    Text(
-                        text = user.userBalance.formatBigLong(),
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
-                }
+            Row(
+                verticalAlignment = CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = cash_icon),
+                    contentDescription = "Amount of cash",
+                    Modifier
+                        .size(16.dp)
+                        .padding(end = 2.dp)
+                )
+                Text(
+                    text = user.userBalance.formatBigLong(),
+                    color = Color.White,
+                    fontSize = 16.sp
+                )
+            }
         }
     }
 }
@@ -142,7 +149,7 @@ fun RankingsPodiumBox(
     ) {
         Column(modifier = Modifier.align(if (rank == 1) Alignment.TopCenter else Alignment.Center)) {
             Image(
-                painter = painterResource(id = drawable.gold_crown_icon),
+                painter = painterResource(id = gold_crown_icon),
                 contentDescription = "Leader",
                 Modifier
                     .size(28.dp)
@@ -160,7 +167,7 @@ fun RankingsPodiumBox(
                     .background(Purple200)
             )
             Text(
-                text = user.userName,
+                text = user.userName.trimName(),
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontStyle = FontStyle.Italic,
@@ -174,7 +181,7 @@ fun RankingsPodiumBox(
                 verticalAlignment = CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = drawable.cash_icon),
+                    painter = painterResource(id = cash_icon),
                     contentDescription = "Amount of cash",
                     Modifier
                         .size(12.dp)

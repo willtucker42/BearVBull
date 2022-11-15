@@ -1,9 +1,13 @@
 package com.example.bearvbull.ui.views
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +35,8 @@ fun RankingsScreen(viewModel: MainViewModel) {
             PodiumUsers(list)
         }
     viewModel.fakeRankingsUserList.subList(fromIndex = 0, toIndex = 3).clear()
+    val userRankingsList by viewModel.liveUserRankingsList.collectAsState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -45,8 +51,8 @@ fun RankingsScreen(viewModel: MainViewModel) {
         ) {
             RankingsTopBar()
             Spacer(Modifier.height(12.dp))
-            PodiumRow(podiumUsers.users)
-            RankingsUserList(viewModel.fakeRankingsUserList)
+            PodiumRow(userRankingsList)
+            RankingsUserList(userRankingsList)
         }
     }
 }

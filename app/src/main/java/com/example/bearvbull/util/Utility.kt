@@ -100,7 +100,7 @@ enum class EloRank(val starIcon: Int, val color: Color, val amountOfStars: Int, 
     PROPHET(R.drawable.high_rank_star, GrandMasterRankColor, 3, "Prophet");
 }
 
-fun getEloRank(eloScore: Int): EloRank {
+fun getEloRank(eloScore: Long): EloRank {
     return when (eloScore) {
         in 0..110 -> EloRank.SCRUB
         in 111..125 -> EloRank.AMATEUR
@@ -240,6 +240,18 @@ fun Double.round(): Double {
 
 enum class State {
     LOADING, LOADED
+}
+
+
+fun String.trimName(): String {
+    val returnString = StringBuilder()
+    for ((i, c) in this.withIndex()) {
+        if (i == 10) {
+            break
+        }
+        returnString.append(c)
+    }
+    return returnString.toString()
 }
 
 

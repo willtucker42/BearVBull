@@ -437,11 +437,13 @@ class MainViewModel : ViewModel() {
             }
     }
 
-    fun getUserRankingsList() {
+    private fun getUserRankingsList() {
+        println("Getting user rankings list")
         db.collection("users")
-            .orderBy("elo_rank", Query.Direction.DESCENDING)
+            .orderBy("elo_score", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
+                println("user rankings list result: ${result.size()}")
                 rankingsListHolder.clear()
                 result.forEach { userDoc ->
                     rankingsListHolder.add(
@@ -449,7 +451,7 @@ class MainViewModel : ViewModel() {
                             userId = userDoc.get("user_id") as String,
                             userName = userDoc.get("username") as String,
                             userBalance = userDoc.get("balance_available") as Long,
-                            eloScore = userDoc.get("elo_score") as Int,
+                            eloScore = userDoc.get("elo_score") as Long,
                             email = userDoc.get("email") as String
                         )
                     )
@@ -555,6 +557,7 @@ class MainViewModel : ViewModel() {
 
 
     fun navToDiffScreen(screen: NavBarItems) {
+        if (screen == NavBarItems.RANKINGS_SCREEN) { getUserRankingsList() }
         _selectedNavItem.value = screen
     }
 
@@ -645,7 +648,7 @@ class MainViewModel : ViewModel() {
             profileImage = _activeUser.value.profileImage,
             rank = _activeUser.value.rank,
             email = doc.get("email") as String,
-            eloScore = (doc.get("elo_score") as Long).toInt()
+            eloScore = doc.get("elo_score") as Long
         )
     }
 
