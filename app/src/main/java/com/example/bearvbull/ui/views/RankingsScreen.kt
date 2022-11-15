@@ -12,8 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bearvbull.data.users.PodiumUsers
-import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.components.PodiumRow
 import com.example.bearvbull.ui.components.RankingsUserList
 import com.example.bearvbull.ui.theme.DeepPurple

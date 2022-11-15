@@ -1,8 +1,7 @@
 package com.example.bearvbull.data
 
-import com.example.bearvbull.util.round
-import com.google.firebase.Timestamp
 import com.example.bearvbull.util.*
+import com.google.firebase.Timestamp
 import timber.log.Timber
 
 data class ActiveMarket(

@@ -3,7 +3,6 @@ package com.example.bearvbull.util
 import android.annotation.SuppressLint
 import androidx.compose.ui.graphics.Color
 import com.example.bearvbull.R
-import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.theme.*
 import java.math.RoundingMode
 import java.sql.Timestamp
