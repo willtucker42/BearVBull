@@ -21,14 +21,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bearvbull.R
+import com.example.bearvbull.R.drawable.*
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.formatBigLong
-import com.example.bearvbull.R.drawable.*
 import com.example.bearvbull.util.trimName
 
 
