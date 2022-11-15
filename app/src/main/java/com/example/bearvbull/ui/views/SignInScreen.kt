@@ -15,21 +15,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bearvbull.data.users.UserAccountInformation
+import com.example.bearvbull.R
 import com.example.bearvbull.ui.components.BearVBullTitle
 import com.example.bearvbull.ui.theme.DeepPurple
 import com.example.bearvbull.ui.theme.poppinsFontFamily
-import com.example.bearvbull.viewmodel.MainViewModel
-import com.example.bearvbull.R
 import com.example.bearvbull.util.getTimeUntilPredictionMarketClose
+import com.example.bearvbull.viewmodel.MainViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
 
 @Composable
