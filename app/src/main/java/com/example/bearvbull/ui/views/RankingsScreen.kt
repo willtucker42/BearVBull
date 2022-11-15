@@ -1,13 +1,11 @@
 package com.example.bearvbull.ui.views
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,16 +23,6 @@ import com.example.bearvbull.viewmodel.MainViewModel
 
 @Composable
 fun RankingsScreen(viewModel: MainViewModel) {
-    // Get the first 3 users from the list of RankingsUsers, transform to a Triple for PodiumUsers.kt
-    val podiumUsers: PodiumUsers =
-        viewModel.fakeRankingsUserList.subList(fromIndex = 0, toIndex = 3).let {
-            val list = mutableListOf<UserAccountInformation>()
-            it.forEach { i ->
-                list.add(i)
-            }
-            PodiumUsers(list)
-        }
-    viewModel.fakeRankingsUserList.subList(fromIndex = 0, toIndex = 3).clear()
     val userRankingsList by viewModel.liveUserRankingsList.collectAsState()
 
     Box(
