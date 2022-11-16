@@ -44,6 +44,7 @@ import com.example.bearvbull.viewmodel.MainViewModel
 
 @Composable
 fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
+    val userBetHistory by viewModel.userBetHistory.collectAsState()
     Column() {
         Row(Modifier.padding(8.dp)) {
             Text(
@@ -59,7 +60,7 @@ fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 8.dp)
         ) {
-            items(viewModel.fakeBetHistory) { bet ->
+            items(userBetHistory) { bet ->
                 ProfileBetHistoryRow(betInformation = bet)
             }
         }
@@ -177,7 +178,9 @@ fun UserNameWithEditButton(
             painter = painterResource(id = R.drawable.checkmark_icon),
             contentDescription = "Edit name",
             modifier = Modifier
-                .size(18.dp).padding(end = 8.dp).alpha(0f)
+                .size(18.dp)
+                .padding(end = 8.dp)
+                .alpha(0f)
         )
         if (textFieldEnabled && changeUserNameValue != CHANGED) {
             BasicTextField(
@@ -190,7 +193,8 @@ fun UserNameWithEditButton(
                 decorationBox = {
                     Box(
                         modifier =
-                        Modifier.background(Color.LightGray, RoundedCornerShape(percent = 30))
+                        Modifier
+                            .background(Color.LightGray, RoundedCornerShape(percent = 30))
                             .padding(16.dp)
                     ) {
 

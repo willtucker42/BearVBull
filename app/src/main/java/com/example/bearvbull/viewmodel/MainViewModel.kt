@@ -97,10 +97,18 @@ class MainViewModel : ViewModel() {
 
     val fakeRankingsUserList = mutableListOf<UserAccountInformation>()
 
+    // User Bet history list
+    private var userBetHistoryHolder: MutableList<BetInformation> =
+        mutableListOf(BetInformation())
+    private var _userBetHistoryList = MutableStateFlow<List<BetInformation>>(listOf())
+    val userBetHistory: StateFlow<List<BetInformation>> = _userBetHistoryList
+
+    // Rankings list
     private var rankingsListHolder: MutableList<UserAccountInformation> =
         mutableListOf(UserAccountInformation())
     private var _userRankingsList = MutableStateFlow<List<UserAccountInformation>>(listOf())
     val liveUserRankingsList: StateFlow<List<UserAccountInformation>> = _userRankingsList
+
 
     val fakeBetHistory = mutableListOf<BetInformation>()
     var changingTicker = false
@@ -504,6 +512,37 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    private fun getUserBetHistory() {
+        db.collection("all_user_bets")
+            .whereEqualTo("user_id", activeUser.value.userId)
+            .get()
+            .addOnSuccessListener { result ->
+                println("Received getUserBetHistory result. size: ${result.size()}")
+                userBetHistoryHolder.clear()
+                 if (!result.isEmpty) {
+                     result.forEach { betInfo ->
+                         userBetHistoryHolder.add(BetInformation(
+                             tickerSymbol = betInfo.get("ticker_symbol") as String,
+                             initialBetAmount = betInfo.get("bet_amount") as Long,
+                             betSide = betInfo.get("bet_side") as String,
+                             winMultiplier = betInfo.get("win_multiplier") as Double,
+                             userId = betInfo.get("user_id") as String,
+                             betStatus = betInfo.get("bet_status") as String,
+                             winnings = 0,
+                             didWin = betInfo.get("did_win") as Boolean,
+                             odds = betInfo.get("odds") as Double,
+                             marketId = betInfo.get("market_id") as String,
+                             timestamp = betInfo.get("timestamp") as Timestamp
+                         ))
+                     }
+                     _userBetHistoryList.value = userBetHistoryHolder
+                 }
+            }
+            .addOnFailureListener { e ->
+                Log.e("MainViewModel", "Error getting userBetHistory $e")
+            }
+    }
+
     private fun generateBetHistory() {
         for (i in 0..200) {
             val initialBetAmount = Random.nextLong(0, 199999999)
@@ -557,7 +596,11 @@ class MainViewModel : ViewModel() {
 
 
     fun navToDiffScreen(screen: NavBarItems) {
-        if (screen == NavBarItems.RANKINGS_SCREEN) { getUserRankingsList() }
+        when(screen) {
+            NavBarItems.BET_SCREEN -> {}
+            NavBarItems.RANKINGS_SCREEN ->  getUserRankingsList()
+            NavBarItems.PROFILE_SCREEN -> getUserBetHistory()
+        }
         _selectedNavItem.value = screen
     }
 
