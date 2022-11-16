@@ -79,7 +79,7 @@ class MainViewModel : ViewModel() {
     private var orderBookIdHashMap: MutableMap<String, Boolean> =
         mutableMapOf("" to true)
 
-    private var orderBookHolder: MutableList<OrderBookEntry> = mutableListOf(OrderBookEntry())
+    private var orderBookHolder: MutableList<OrderBookEntry> = mutableListOf()
     private var _orderBookMutableStateFlow = MutableStateFlow<List<OrderBookEntry>>(listOf())
     val liveOrderBook: StateFlow<List<OrderBookEntry>> = _orderBookMutableStateFlow
 
@@ -110,7 +110,7 @@ class MainViewModel : ViewModel() {
     val liveUserRankingsList: StateFlow<List<UserAccountInformation>> = _userRankingsList
 
 
-    val fakeBetHistory = mutableListOf<BetInformation>()
+    private val fakeBetHistory = mutableListOf<BetInformation>()
     var changingTicker = false
     var manualInitComplete = false
 
@@ -121,7 +121,8 @@ class MainViewModel : ViewModel() {
         generateRankingsUserList()
         generateBetHistory()
         viewModelScope.launch {
-            updateUserInfo()
+            launch { updateUserInfo() }
+            launch { getMarketBookData() }
         }
         manualInitComplete = true
     }
@@ -155,13 +156,14 @@ class MainViewModel : ViewModel() {
 
     fun onSelectedTickerChanged(marketId: String) {
         if (changingTicker) {
+            println("Already changing ticker. Returning")
             return
         }
         changingTicker = true
         println("onSelectedTickerChanged market id: $marketId")
-        orderBookHolder.clear()
-        orderBookIdHashMap.clear()
-        _orderBookMutableStateFlow.value = orderBookHolder
+//        orderBookHolder.clear()
+//        orderBookIdHashMap.clear()
+//        _orderBookMutableStateFlow.value = orderBookHolder
         db.collection("live_prediction_market_info")
             .document(marketId)
             .get()
@@ -308,11 +310,11 @@ class MainViewModel : ViewModel() {
             "did_win" to betInformation.didWin,
             "bet_id" to UUID.randomUUID()
         )
-        val documentName = getTodayDate() + "-" + activeUser.value.userName + "-" + betInformation.tickerSymbol
+        val docName = createBetDocumentName(activeUser.value.userName, betInformation.tickerSymbol)
 
         /** User Bet flow ends... **/
         db.collection("all_user_bets")
-            .document(documentName)
+            .document(docName)
             .set(userBet)
             .addOnSuccessListener { docRef ->
                 Log.i("MainViewModel.kt", "addUserBet DocumentSnapshot added: $docRef")
@@ -321,7 +323,11 @@ class MainViewModel : ViewModel() {
             }
             .addOnFailureListener { e ->
                 Log.i("MainViewModel.kt", "Error adding document, $e")
-                Toast.makeText(c, "Bet failed to send. Funds are safe.", Toast.LENGTH_LONG)
+                Toast.makeText(
+                    c,
+                    "Bet failed to send. Funds are safe.",
+                    Toast.LENGTH_LONG
+                )
                     .show()
                 _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
             }
@@ -395,8 +401,7 @@ class MainViewModel : ViewModel() {
                 }
                 println("Launching")
                 viewModelScope.launch {
-                    launch { getActiveMarketData() }
-                    launch { getMarketBookData() }
+                    getActiveMarketData()
                 }
             }
             .addOnFailureListener { e ->

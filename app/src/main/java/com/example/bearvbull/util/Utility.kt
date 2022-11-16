@@ -224,7 +224,7 @@ enum class State {
 }
 
 fun getTodayDate(): String {
-    return SimpleDateFormat("dd-MM-yyyy", Locale.US).format(Calendar.getInstance().time)
+    return SimpleDateFormat("MM-dd-yyyy", Locale.US).format(Calendar.getInstance().time)
 }
 
 
@@ -237,6 +237,18 @@ fun String.trimName(): String {
         returnString.append(c)
     }
     return returnString.toString()
+}
+
+fun createBetDocumentName(userName: String, ticker: String): String =
+    "${userName.removeWhiteSpaces()}-$ticker-${getTodayDate()}"
+
+
+fun String.removeWhiteSpaces(): String = buildString {
+    this.forEach { c ->
+        if (c != ' ') {
+            append(c)
+        }
+    }
 }
 
 
