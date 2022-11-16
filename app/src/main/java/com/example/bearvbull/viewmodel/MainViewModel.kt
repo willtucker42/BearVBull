@@ -357,7 +357,7 @@ class MainViewModel : ViewModel() {
     private fun getActiveMarkets() {
 //        println("in getActiveMarkets")
         db.collection("live_prediction_market_info")
-            .whereEqualTo("bet_status", "waiting")
+            .whereEqualTo("bet_status", "live")
             .get()
             .addOnSuccessListener { mDoc ->
                 /** This for loop adds the markets to the list of markets for the dropdown */
