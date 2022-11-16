@@ -185,27 +185,9 @@ fun getTimeUntilPredictionMarketClose(): Long {
     val curTime = Calendar.getInstance().time
 
     return marketEndTime.time - curTime.time
-
-//    println("future time $marketEndTime")
-//    println("New Timestamp ${marketEndTime.time.milliseconds.inWholeMilliseconds}")
-//    println("Now Timestamp ${System.currentTimeMillis()}")
-//    println("Time millis diff ${marketEndTime.time.milliseconds.inWholeMilliseconds - System.currentTimeMillis()} \n\n")
-//    println("future time $marketEndTime ")
-//    println("The current time is $curTime")
-    //    val seconds = dif / 1000
-//    val minutes = seconds / 60
-//    val hours = minutes / 60
-//    val days = hours / 24
-//
-//    println("formatted: ${dif.formatTime()}")
-//    val closeTimestamp = Timestamp.valueOf(marketCloseDateTime.toString())
-//    println("closeTimestamp $closeTimestamp")
-//    println("The timestamp ${closeTimestamp - System.currentTimeMillis()}")
-//    return closeTimestamp - System.currentTimeMillis()
 }
 
 fun Double.formatBigNumberWithCommas(): String {
-//    Timber.i()
     val theInt = toString().substringBefore(PERIOD)
     val remainderAfterDecimal = toString().substringAfter(PERIOD)
     val postDecimalDigits = EMPTY_STRING
@@ -239,6 +221,10 @@ fun Double.round(): Double {
 
 enum class State {
     LOADING, LOADED
+}
+
+fun getTodayDate(): String {
+    return SimpleDateFormat("dd-MM-yyyy", Locale.US).format(Calendar.getInstance().time)
 }
 
 
