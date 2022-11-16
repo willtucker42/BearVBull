@@ -42,6 +42,8 @@ def update(open_color, ticker):
     docs = db.collection(u'all_user_bets').where(u'bet_status', u'==', "active").where(u'ticker_symbol', u'==',
                                                                                        ticker).stream()
     winnings = 0
+    i = 0
+    all_user_bet_batch = db.batch()
     for doc in docs:
         bet_dict = doc.to_dict()
         if bet_dict['bet_side'] == 'BULL' and open_color == 'green':
@@ -49,15 +51,31 @@ def update(open_color, ticker):
             winnings = bet_dict['win_multiplier'] * bet_dict['bet_amount']
             # print("User ", bet_dict['user_id'], " won ", winnings, "(", bet_dict['win_multiplier'], " * ",
             #       bet_dict['bet_amount'], ")")
+            all_user_bet_batch.update(doc.reference, {
+                u'bet_status': "won"
+            })
         elif bet_dict['bet_side'] == 'BEAR' and open_color == 'red':
             print("user is a bear")
             winnings = bet_dict['win_multiplier'] * bet_dict['bet_amount']
             # print("User ", bet_dict['user_id'], " won ", winnings, "(", bet_dict['win_multiplier'], " * ",
             #       bet_dict['bet_amount'], ")")
+            all_user_bet_batch.update(doc.reference, {
+                u'bet_status': "won"
+            })
         else:
-            pass  # This means that they lost
-        user_winnings_dict[bet_dict['user_id']] = winnings
+            all_user_bet_batch.update(doc.reference, {
+                u'bet_status': "lost"
+            })  # This means that they lost
+        i += 1
+        if i == 499:
+            # right here we commit the batch and create a new instance of a batch, because max batch size is 500
+            print("committing and resetting all_user_bet_batch...")
+            all_user_bet_batch.commit()
+            all_user_bet_batch = db.batch()
+            i = 0
 
+        user_winnings_dict[bet_dict['user_id']] = winnings
+    all_user_bet_batch.commit()
     updateUserAccounts(user_winnings_dict=user_winnings_dict)
 
 

@@ -308,13 +308,14 @@ class MainViewModel : ViewModel() {
             "did_win" to betInformation.didWin,
             "bet_id" to UUID.randomUUID()
         )
+        val documentName = getTodayDate() + "-" + activeUser.value.userName + "-" + betInformation.tickerSymbol
 
         /** User Bet flow ends... **/
         db.collection("all_user_bets")
-            .add(userBet)
+            .document(documentName)
+            .set(userBet)
             .addOnSuccessListener { docRef ->
-
-                Log.i("MainViewModel.kt", "addUserBet DocumentSnapshot added with ID: ${docRef.id}")
+                Log.i("MainViewModel.kt", "addUserBet DocumentSnapshot added: $docRef")
                 Toast.makeText(c, "Bet sent. Good luck!", Toast.LENGTH_LONG).show()
                 updateUserBalance(-betInformation.initialBetAmount)
             }
@@ -405,7 +406,9 @@ class MainViewModel : ViewModel() {
     }
 
     fun checkNewUserName(newUserName: String, c: Context) {
-        if (changeUserNameValue.value == CHANGE_IN_PROGRESS ) { return }
+        if (changeUserNameValue.value == CHANGE_IN_PROGRESS) {
+            return
+        }
         _badUserName.value = false
         _changeUserNameValue.value = CHANGE_IN_PROGRESS
         db.collection("users")
@@ -519,24 +522,26 @@ class MainViewModel : ViewModel() {
             .addOnSuccessListener { result ->
                 println("Received getUserBetHistory result. size: ${result.size()}")
                 userBetHistoryHolder.clear()
-                 if (!result.isEmpty) {
-                     result.forEach { betInfo ->
-                         userBetHistoryHolder.add(BetInformation(
-                             tickerSymbol = betInfo.get("ticker_symbol") as String,
-                             initialBetAmount = betInfo.get("bet_amount") as Long,
-                             betSide = betInfo.get("bet_side") as String,
-                             winMultiplier = betInfo.get("win_multiplier") as Double,
-                             userId = betInfo.get("user_id") as String,
-                             betStatus = betInfo.get("bet_status") as String,
-                             winnings = 0,
-                             didWin = betInfo.get("did_win") as Boolean,
-                             odds = betInfo.get("odds") as Double,
-                             marketId = betInfo.get("market_id") as String,
-                             timestamp = betInfo.get("timestamp") as Timestamp
-                         ))
-                     }
-                     _userBetHistoryList.value = userBetHistoryHolder
-                 }
+                if (!result.isEmpty) {
+                    result.forEach { betInfo ->
+                        userBetHistoryHolder.add(
+                            BetInformation(
+                                tickerSymbol = betInfo.get("ticker_symbol") as String,
+                                initialBetAmount = betInfo.get("bet_amount") as Long,
+                                betSide = betInfo.get("bet_side") as String,
+                                winMultiplier = betInfo.get("win_multiplier") as Double,
+                                userId = betInfo.get("user_id") as String,
+                                betStatus = betInfo.get("bet_status") as String,
+                                winnings = 0,
+                                didWin = betInfo.get("did_win") as Boolean,
+                                odds = betInfo.get("odds") as Double,
+                                marketId = betInfo.get("market_id") as String,
+                                timestamp = betInfo.get("timestamp") as Timestamp
+                            )
+                        )
+                    }
+                    _userBetHistoryList.value = userBetHistoryHolder
+                }
             }
             .addOnFailureListener { e ->
                 Log.e("MainViewModel", "Error getting userBetHistory $e")
@@ -596,9 +601,9 @@ class MainViewModel : ViewModel() {
 
 
     fun navToDiffScreen(screen: NavBarItems) {
-        when(screen) {
+        when (screen) {
             NavBarItems.BET_SCREEN -> {}
-            NavBarItems.RANKINGS_SCREEN ->  getUserRankingsList()
+            NavBarItems.RANKINGS_SCREEN -> getUserRankingsList()
             NavBarItems.PROFILE_SCREEN -> getUserBetHistory()
         }
         _selectedNavItem.value = screen
