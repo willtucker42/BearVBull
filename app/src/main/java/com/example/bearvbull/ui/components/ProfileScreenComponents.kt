@@ -30,10 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.example.bearvbull.R
 import com.example.bearvbull.data.BetInformation
 import com.example.bearvbull.data.users.UserAccountInformation
-import com.example.bearvbull.ui.theme.BetGreen
-import com.example.bearvbull.ui.theme.BetRed
-import com.example.bearvbull.ui.theme.NotSoDeepPurple
-import com.example.bearvbull.ui.theme.poppinsFontFamily
+import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.ChangeUserNameValue
 import com.example.bearvbull.util.ChangeUserNameValue.*
 import com.example.bearvbull.util.Utility
@@ -58,7 +55,7 @@ fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
         }
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(horizontal = 8.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             items(userBetHistory) { bet ->
                 ProfileBetHistoryRow(betInformation = bet)
@@ -107,20 +104,32 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
                 )
             }
             Spacer(Modifier.weight(1f))
-            if (betInformation.didWin) {
-                CashAmountAndIcon(
-                    color = BetGreen,
-                    textSize = 14,
-                    imageSize = 14,
-                    cashAmount = betInformation.winnings
-                )
-            } else {
-                Text(
-                    text = "Bet lost",
-                    fontFamily = poppinsFontFamily,
-                    color = BetRed,
-                    fontSize = 16.sp
-                )
+
+            when(betInformation.betStatus) {
+                "active" -> {
+                    Text(
+                        text = "Pending",
+                        fontFamily = poppinsFontFamily,
+                        color = BetOrange,
+                        fontSize = 16.sp
+                    )
+                }
+                "won" -> {
+                    CashAmountAndIcon(
+                        color = BetGreen,
+                        textSize = 14,
+                        imageSize = 14,
+                        cashAmount = betInformation.winnings
+                    )
+                }
+                "lost" -> {
+                    Text(
+                        text = "Bet lost",
+                        fontFamily = poppinsFontFamily,
+                        color = BetRed,
+                        fontSize = 16.sp
+                    )
+                }
             }
         }
     }
