@@ -22,6 +22,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Query.Direction.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
@@ -42,7 +43,7 @@ class MainViewModel : ViewModel() {
     private val ORDERBOOK_QUERY_LIMIT: Long = 1000
 
     var participatingInMarketsMapHolder = mutableMapOf<String, BetInformation>()
-    var _participatingInMarketsMapMutableFlow =
+    private var _participatingInMarketsMapMutableFlow =
         MutableStateFlow(mutableMapOf<String, BetInformation>())
     val participatingInMarketsMapStateFlow: StateFlow<MutableMap<String, BetInformation>> =
         _participatingInMarketsMapMutableFlow
@@ -53,7 +54,7 @@ class MainViewModel : ViewModel() {
     private var _signInStatus = MutableStateFlow(SignInStatus.NOT_SIGNED_IN)
     val signInStatus: StateFlow<SignInStatus> = _signInStatus
 
-    var _activeUser = MutableStateFlow(UserAccountInformation())
+    private var _activeUser = MutableStateFlow(UserAccountInformation())
     val activeUser: StateFlow<UserAccountInformation> = _activeUser
 
     var _userId = MutableStateFlow("")
@@ -456,7 +457,7 @@ class MainViewModel : ViewModel() {
     private fun getUserRankingsList() {
         println("Getting user rankings list")
         db.collection("users")
-            .orderBy("elo_score", Query.Direction.DESCENDING)
+            .orderBy("elo_score", DESCENDING)
             .get()
             .addOnSuccessListener { result ->
                 println("user rankings list result: ${result.size()}")
@@ -489,7 +490,7 @@ class MainViewModel : ViewModel() {
                 .whereEqualTo("bet_status", "active")
 //                .whereEqualTo("market_id", liveMarketDataFlow.value.marketId)
                 .limit(ORDERBOOK_QUERY_LIMIT)
-                .orderBy("timestamp", Query.Direction.ASCENDING)
+                .orderBy("timestamp", ASCENDING)
                 .get()
                 .addOnSuccessListener { result ->
                     if (!changingTicker) {
@@ -523,6 +524,7 @@ class MainViewModel : ViewModel() {
     private fun getUserBetHistory() {
         db.collection("all_user_bets")
             .whereEqualTo("user_id", activeUser.value.userId)
+            .orderBy("timestamp", DESCENDING)
             .get()
             .addOnSuccessListener { result ->
                 println("Received getUserBetHistory result. size: ${result.size()}")
@@ -534,7 +536,7 @@ class MainViewModel : ViewModel() {
                                 tickerSymbol = betInfo.get("ticker_symbol") as String,
                                 initialBetAmount = betInfo.get("bet_amount") as Long,
                                 betSide = betInfo.get("bet_side") as String,
-                                winMultiplier = betInfo.get("win_multiplier") as Double,
+                                winMultiplier = parseWinMultiplier(betInfo.get("win_multiplier")),
                                 userId = betInfo.get("user_id") as String,
                                 betStatus = betInfo.get("bet_status") as String,
                                 winnings = 0,

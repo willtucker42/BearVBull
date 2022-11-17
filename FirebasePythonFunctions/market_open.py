@@ -17,6 +17,7 @@ db = firestore.client()
 
 
 def getTodaysOpen(ticker):
+    print("Getting todays open for ticker: " + ticker)
     ticker_info = yf.Ticker(ticker).info
     try:
         todaysMarketOpen = ticker_info['regularMarketOpen']

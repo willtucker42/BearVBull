@@ -239,6 +239,14 @@ fun String.trimName(): String {
     return returnString.toString()
 }
 
+fun parseWinMultiplier(winMultiplier: Any?): Any {
+    return try {
+        winMultiplier as Double
+    } catch (e: Exception) {
+        winMultiplier as Long
+    }
+}
+
 fun createBetDocumentName(userName: String, ticker: String): String =
     "${userName.removeWhiteSpaces()}-$ticker-${getTodayDate()}"
 

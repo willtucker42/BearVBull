@@ -105,12 +105,12 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
             }
             Spacer(Modifier.weight(1f))
 
-            when(betInformation.betStatus) {
+            when (betInformation.betStatus) {
                 "active" -> {
                     Text(
                         text = "Pending",
                         fontFamily = poppinsFontFamily,
-                        color = BetOrange,
+                        color = BetYellow,
                         fontSize = 16.sp
                     )
                 }
@@ -191,7 +191,7 @@ fun UserNameWithEditButton(
                 .padding(end = 8.dp)
                 .alpha(0f)
         )
-        if (textFieldEnabled && changeUserNameValue != CHANGED) {
+        if (textFieldEnabled && changeUserNameValue != CHANGED && changeUserNameValue != CHANGE_FAILED) {
             BasicTextField(
                 value = userNameText,
                 onValueChange = {
@@ -260,7 +260,7 @@ fun EloWithRankImage(userEloScore: Long) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Rank:",
+                text = "Rank ${eloRank.ordinal}",
                 fontFamily = poppinsFontFamily,
                 fontSize = 10.sp,
                 color = Color.White,
@@ -273,7 +273,7 @@ fun EloWithRankImage(userEloScore: Long) {
                 fontSize = 14.sp,
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.SemiBold
             )
         }
         Row {

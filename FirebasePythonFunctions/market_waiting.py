@@ -14,11 +14,12 @@ win_mult_dict = {}  # {String: Pair} | Ex. { "market_id": (40,60) }
 
 def updateMarketsAndGetMarketIds():
     market_ids = []
-    markets = db.collection(u'live_prediction_market_info').where(u'bet_status', u'==', "waiting").stream()
+    markets = db.collection(u'live_prediction_market_info').where(u'bet_status', u'==', "live").stream()
     for market in markets:
         market_dict = market.to_dict()
         mkt_id = market.id
-        print("live market: ", mkt_id)
+        print("live market: ", mkt_id, "bear_total: ", market_dict['bear_total'], "-- bull_total: ",
+              market_dict['bull_total'])
         addToMultDict(calculateWinMultipliers(market_dict['bear_total'], market_dict['bull_total']), mkt_id)
         market_ids.append(mkt_id)
         market.reference.update({u'bet_status': 'waiting'})

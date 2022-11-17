@@ -6,7 +6,7 @@ data class BetInformation(
     val tickerSymbol: String = "SPY",
     val initialBetAmount: Long = 500000,
     val betSide: String = "Bear",
-    val winMultiplier: Double = 2.0,
+    val winMultiplier: Any = 2.0,
     val userId: String = "123",
     val betStatus: String = "active", // Status can be either active, won, lost
     val winnings: Long = 123123123,
