@@ -48,7 +48,7 @@ class MainViewModel : ViewModel() {
     val participatingInMarketsMapStateFlow: StateFlow<MutableMap<String, BetInformation>> =
         _participatingInMarketsMapMutableFlow
 
-    var _betTxnStatus = MutableStateFlow(BetTransactionStatus.NOT_SENDING_BET)
+    private var _betTxnStatus = MutableStateFlow(BetTransactionStatus.NOT_SENDING_BET)
     val betTxnStatus: StateFlow<BetTransactionStatus> = _betTxnStatus
 
     private var _signInStatus = MutableStateFlow(SignInStatus.NOT_SIGNED_IN)
@@ -162,9 +162,6 @@ class MainViewModel : ViewModel() {
         }
         changingTicker = true
         println("onSelectedTickerChanged market id: $marketId")
-//        orderBookHolder.clear()
-//        orderBookIdHashMap.clear()
-//        _orderBookMutableStateFlow.value = orderBookHolder
         db.collection("live_prediction_market_info")
             .document(marketId)
             .get()
@@ -710,7 +707,6 @@ class MainViewModel : ViewModel() {
     private fun startTimer() {
         countDownTimer = object : CountDownTimer(getTimeUntilPredictionMarketClose(), 1) {
             override fun onTick(millisRemaining: Long) {
-//                val progressValue = millisRemaining.toFloat() / Utility.TIME_COUNTDOWN
                 _countDownTime.value = millisRemaining.formatTime()
             }
 
@@ -720,35 +716,4 @@ class MainViewModel : ViewModel() {
         }.start()
     }
 
-//    fun onTapSignInWithGoogle() = flow {
-//        try {
-//            emit()
-//        } catch (e: Exception) {
-//
-//        }
-//    }
-
 }
-
-
-//    val liveUserAccountInformation = UserAccountInformation(
-//        userId = "123",
-//        userBalance = 1111111
-//    )
-
-
-//
-//}
-//
-//
-//
-//val countDownFlow = flow {
-//    val startingValue = 10
-//    var currentValue = startingValue
-//    emit(startingValue)
-//    while (currentValue > 0) {
-//        delay(1000L)
-//        currentValue--
-//        emit(currentValue)
-//    }
-//}

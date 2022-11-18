@@ -18,7 +18,6 @@ import kotlin.math.pow
 
 object Utility {
 
-    // time to countdown - 1hr - 60secs
     const val TIME_COUNTDOWN: Long = 60000L
     private const val TIME_FORMAT = "%02d:%02d:%02d"
     private const val ORDER_BOOK_ENTRY_TIME_FORMAT = "HH:mm:ss.SS"
