@@ -130,6 +130,7 @@ class MainViewModel : ViewModel() {
 
     private suspend fun getActiveMarketData() {
         while (true) {
+            if (checkIfProperNavBarItemAndDelayIfNecessary(NavBarItems.BET_SCREEN)) continue
             delay(1000)
             println("getting activeMarketData for ${activeMarketData.value.marketId}")
             if (activeMarketData.value.marketId != "") {
@@ -153,6 +154,15 @@ class MainViewModel : ViewModel() {
                     }
             }
         }
+    }
+
+    private suspend fun checkIfProperNavBarItemAndDelayIfNecessary(betScreen: NavBarItems): Boolean {
+        if (selectedNavItem.value != betScreen) {
+            println("Not on bet screen... waiting")
+            delay(3000)
+            return true
+        }
+        return false
     }
 
     fun onSelectedTickerChanged(marketId: String) {
@@ -480,12 +490,12 @@ class MainViewModel : ViewModel() {
     @SuppressLint("LogNotTimber")
     private suspend fun getMarketBookData() {
         while (!changingTicker) {
+            if (checkIfProperNavBarItemAndDelayIfNecessary(NavBarItems.BET_SCREEN)) continue
 //            println("getMarketBookData1, ticker: ${liveMarketDataFlow.value.ticker}")
-            println("getting marketbook data")
+            println("getting marketbook data of all markets")
             delay(1000)
             db.collection("all_user_bets")
                 .whereEqualTo("bet_status", "active")
-//                .whereEqualTo("market_id", liveMarketDataFlow.value.marketId)
                 .limit(ORDERBOOK_QUERY_LIMIT)
                 .orderBy("timestamp", ASCENDING)
                 .get()
