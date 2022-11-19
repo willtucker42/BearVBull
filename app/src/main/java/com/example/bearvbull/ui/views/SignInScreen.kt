@@ -1,6 +1,8 @@
 package com.example.bearvbull.ui.views
 
 import android.app.Activity
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -18,6 +20,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.example.bearvbull.R
 import com.example.bearvbull.ui.components.BearVBullTitle
 import com.example.bearvbull.ui.theme.DeepPurple
@@ -28,9 +34,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.tasks.Task
+import kotlinx.coroutines.flow.Flow
 
 @Composable
-fun SignInScreen(mainViewModel: MainViewModel, gsc: GoogleSignInClient) {
+fun SignInScreen(mainViewModel: MainViewModel, gsc: GoogleSignInClient, sp: SharedPreferences) {
     getTimeUntilPredictionMarketClose()
     val startForResult =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -43,7 +50,7 @@ fun SignInScreen(mainViewModel: MainViewModel, gsc: GoogleSignInClient) {
                 task.addOnSuccessListener { googleAccount ->
                     println("Login SUCCESS ${googleAccount.email} ${googleAccount.id}")
                     mainViewModel._userId.value = googleAccount.id.toString()
-                    mainViewModel.checkIfUserExistsInDb(googleAccount)
+                    mainViewModel.checkIfUserExistsInDb(googleAccount, sp)
                 }
                 task.addOnFailureListener { e ->
                     println("Login FAILURE $e")

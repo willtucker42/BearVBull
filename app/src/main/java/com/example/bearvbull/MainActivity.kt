@@ -1,5 +1,7 @@
 package com.example.bearvbull
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -51,7 +53,6 @@ import com.google.firebase.Timestamp
 import java.util.*
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fun getGoogleLoginAuth(): GoogleSignInClient {
@@ -63,6 +64,7 @@ class MainActivity : ComponentActivity() {
                 .build()
             return GoogleSignIn.getClient(this, gso)
         }
+        val sp: SharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
         setContent {
             BearVBullTheme {
                 val mainViewModel = viewModel<MainViewModel>()
@@ -70,6 +72,15 @@ class MainActivity : ComponentActivity() {
                 val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
 //                val userId by mainViewModel.userId.collectAsState()
                 val signInStatus by mainViewModel.signInStatus.collectAsState()
+
+                sp.getString("user_id","").let {
+                    if (it != "") {
+                        println("shared preferences has userid saved")
+                        mainViewModel.updateUserFromSharedPrefs(sp)
+                    } else {
+                        println("Shared preferences does NOT have userid")
+                    }
+                }
                 Box(
                     modifier = Modifier
                         .background(DeepPurple)
@@ -84,15 +95,12 @@ class MainActivity : ComponentActivity() {
                                 mainViewModel.manualInit()
                             }
                             when (selectedScreen) {
-                                NavBarItems.BET_SCREEN ->
-                                    BetScreen(
-                                        viewModel = mainViewModel
-                                    )
+                                NavBarItems.BET_SCREEN -> BetScreen(mainViewModel)
                                 NavBarItems.RANKINGS_SCREEN -> RankingsScreen(mainViewModel)
-                                NavBarItems.PROFILE_SCREEN -> ProfileScreen(viewModel = mainViewModel)
+                                NavBarItems.PROFILE_SCREEN -> ProfileScreen(mainViewModel)
                             }
                         } else {
-                            SignInScreen(mainViewModel = mainViewModel, getGoogleLoginAuth())
+                            SignInScreen(mainViewModel, getGoogleLoginAuth(), sp)
                         }
                     }
                     if (signInStatus == SignInStatus.SIGNED_IN) {

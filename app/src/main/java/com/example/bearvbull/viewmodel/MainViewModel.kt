@@ -2,6 +2,7 @@ package com.example.bearvbull.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.CountDownTimer
 import android.util.Log
 import android.widget.Toast
@@ -21,7 +22,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Query.Direction.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -33,7 +33,9 @@ import java.util.*
 import kotlin.math.roundToLong
 import kotlin.random.Random
 
+
 class MainViewModel : ViewModel() {
+
     private var _changeUserNameValue = MutableStateFlow(NOT_CHANGED)
     val changeUserNameValue: StateFlow<ChangeUserNameValue> = _changeUserNameValue
 
@@ -51,7 +53,7 @@ class MainViewModel : ViewModel() {
     private var _betTxnStatus = MutableStateFlow(BetTransactionStatus.NOT_SENDING_BET)
     val betTxnStatus: StateFlow<BetTransactionStatus> = _betTxnStatus
 
-    private var _signInStatus = MutableStateFlow(SignInStatus.NOT_SIGNED_IN)
+    var _signInStatus = MutableStateFlow(SignInStatus.NOT_SIGNED_IN)
     val signInStatus: StateFlow<SignInStatus> = _signInStatus
 
     private var _activeUser = MutableStateFlow(UserAccountInformation())
@@ -623,7 +625,7 @@ class MainViewModel : ViewModel() {
         _selectedNavItem.value = screen
     }
 
-    fun checkIfUserExistsInDb(account: GoogleSignInAccount) {
+    fun checkIfUserExistsInDb(account: GoogleSignInAccount, sp: SharedPreferences) {
         updateSignInStatus(SignInStatus.CHECKING_USER)
         db.collection("users")
             .whereEqualTo("user_id", account.id.toString())
@@ -634,6 +636,7 @@ class MainViewModel : ViewModel() {
                     println("User found. Signing in... ${account.email.toString()}")
                     updateUserFromDbDoc(doc.first())
                     updateSignInStatus(SignInStatus.SIGNED_IN)
+                    updateSharedPrefsWithUser(doc.first(), sp)
 //                    addNewUserToDb(account) // remove this later
                 } else {
                     addNewUserToDb(account)
@@ -714,6 +717,29 @@ class MainViewModel : ViewModel() {
         )
     }
 
+    private fun updateSharedPrefsWithUser(doc: DocumentSnapshot, sp: SharedPreferences) {
+        val editor = sp.edit()
+        editor.putString("user_id", doc.get("user_id") as String)
+        editor.putString("user_name", doc.get("username") as String)
+        editor.putString("email", doc.get("email") as String)
+        editor.putLong("user_balance", doc.get("balance_available") as Long)
+        editor.putLong("elo_score", doc.get("elo_score") as Long)
+        editor.apply()
+    }
+
+    fun updateUserFromSharedPrefs(sp: SharedPreferences) {
+        _activeUser.value = UserAccountInformation(
+            userId = sp.getString("user_id", "")!!,
+            userName = sp.getString("user_name","")!!,
+            userBalance = sp.getLong("user_balance",0),
+            profileImage = _activeUser.value.profileImage,
+            rank = _activeUser.value.rank,
+            email = sp.getString("email", "")!!,
+            eloScore = sp.getLong("elo_score", 0)
+        )
+        _signInStatus.value = SignInStatus.SIGNED_IN
+    }
+
     private fun startTimer() {
         countDownTimer = object : CountDownTimer(getTimeUntilPredictionMarketClose(), 1) {
             override fun onTick(millisRemaining: Long) {
@@ -725,5 +751,4 @@ class MainViewModel : ViewModel() {
             }
         }.start()
     }
-
 }
