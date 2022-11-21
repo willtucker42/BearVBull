@@ -40,22 +40,23 @@ import com.example.bearvbull.data.BetInformation
 import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.ui.components.*
 import com.example.bearvbull.ui.theme.*
-import com.example.bearvbull.ui.views.BetScreen
-import com.example.bearvbull.ui.views.ProfileScreen
-import com.example.bearvbull.ui.views.RankingsScreen
-import com.example.bearvbull.ui.views.SignInScreen
+import com.example.bearvbull.ui.views.*
 import com.example.bearvbull.util.*
+import com.example.bearvbull.util.NavBarItems.*
+import com.example.bearvbull.util.SignInStatus.*
 import com.example.bearvbull.viewmodel.MainViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Timestamp
+import kotlinx.coroutines.coroutineScope
 import java.util.*
+import kotlin.coroutines.coroutineContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fun getGoogleLoginAuth(): GoogleSignInClient {
+        fun googleLogin(): GoogleSignInClient {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .requestIdToken(resources.getString(R.string.SERVER_CLIENT_ID))
@@ -64,23 +65,16 @@ class MainActivity : ComponentActivity() {
                 .build()
             return GoogleSignIn.getClient(this, gso)
         }
+
         val sp: SharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
         setContent {
             BearVBullTheme {
-                val mainViewModel = viewModel<MainViewModel>()
+                val viewModel = viewModel<MainViewModel>()
+                val selectedScreen by viewModel.selectedNavItem.collectAsState()
+                val signInStatus by viewModel.signInStatus.collectAsState()
 
-                val selectedScreen by mainViewModel.selectedNavItem.collectAsState()
-//                val userId by mainViewModel.userId.collectAsState()
-                val signInStatus by mainViewModel.signInStatus.collectAsState()
+                viewModel.checkSharedPrefsForUserId()
 
-                sp.getString("user_id","").let {
-                    if (it != "") {
-                        println("shared preferences has userid saved")
-                        mainViewModel.updateUserFromSharedPrefs(sp)
-                    } else {
-                        println("Shared preferences does NOT have userid")
-                    }
-                }
                 Box(
                     modifier = Modifier
                         .background(DeepPurple)
@@ -90,23 +84,26 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .align(Alignment.TopCenter)
                     ) {
-                        if (signInStatus == SignInStatus.SIGNED_IN) {
-                            if (!mainViewModel.manualInitComplete) {
-                                mainViewModel.manualInit()
+                        when (signInStatus) {
+                            SIGNED_IN -> {
+                                if (!viewModel.manualInitComplete) {
+                                    viewModel.manualInit()
+                                }
+                                when (selectedScreen) {
+                                    BET_SCREEN -> BetScreen(viewModel)
+                                    RANKINGS_SCREEN -> RankingsScreen(viewModel)
+                                    PROFILE_SCREEN -> ProfileScreen(viewModel)
+                                }
                             }
-                            when (selectedScreen) {
-                                NavBarItems.BET_SCREEN -> BetScreen(mainViewModel)
-                                NavBarItems.RANKINGS_SCREEN -> RankingsScreen(mainViewModel)
-                                NavBarItems.PROFILE_SCREEN -> ProfileScreen(mainViewModel)
-                            }
-                        } else {
-                            SignInScreen(mainViewModel, getGoogleLoginAuth(), sp)
+                            NOT_SIGNED_IN -> SignInScreen(viewModel, googleLogin(), sp)
+                            CHECKING_SHARED_PREFS -> SplashScreen()
+                            else -> {}
                         }
                     }
-                    if (signInStatus == SignInStatus.SIGNED_IN) {
+                    if (signInStatus == SIGNED_IN) {
                         BottomNavBar(
                             modifier = Modifier.align(Alignment.BottomCenter),
-                            viewModel = mainViewModel,
+                            viewModel = viewModel,
                             selectedScreen = selectedScreen
                         )
                     }

@@ -75,7 +75,7 @@ def update(open_color, ticker):
             all_user_bet_batch = db.batch()
             i = 0
 
-        user_winnings_dict[bet_dict['user_id']] = winnings
+        user_winnings_dict[bet_dict['email']] = winnings
     all_user_bet_batch.commit()
     updateUserAccounts(user_winnings_dict=user_winnings_dict)
 

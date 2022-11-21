@@ -50,7 +50,7 @@ enum class BetTransactionStatus {
 }
 
 enum class SignInStatus {
-    NOT_SIGNED_IN, CHECKING_USER, SIGNED_IN, ADDING_NEW_USER
+    NOT_SIGNED_IN, CHECKING_USER, SIGNED_IN, ADDING_NEW_USER, CHECKING_SHARED_PREFS
 }
 
 enum class BetInfoType(val icon: Int) {
@@ -95,7 +95,7 @@ enum class EloRank(val starIcon: Int, val color: Color, val amountOfStars: Int, 
     // GM Purple
     DARK_MONEY_MANAGER(R.drawable.high_rank_star, GrandMasterRankColor, 1, "Dark Money Manager"),
     LORD_PRESIDENT(R.drawable.high_rank_star, GrandMasterRankColor, 2, "Lord President"),
-    PROPHET(R.drawable.high_rank_star, GrandMasterRankColor, 3, "Prophet");
+    FINANCE_PROPHET(R.drawable.high_rank_star, GrandMasterRankColor, 3, "Finance Prophet");
 }
 
 fun getEloRank(eloScore: Long): EloRank {
@@ -120,7 +120,7 @@ fun getEloRank(eloScore: Long): EloRank {
         in 351..365 -> EloRank.PROFITEER
         in 366..380 -> EloRank.DARK_MONEY_MANAGER
         in 366..395 -> EloRank.LORD_PRESIDENT
-        else -> EloRank.PROPHET
+        else -> EloRank.FINANCE_PROPHET
     }
 }
 
@@ -218,6 +218,17 @@ fun Double.round(): Double {
     return formattedVal
 }
 
+fun Double.roundToWhole(): Double {
+    val df = DecimalFormat("#")
+    df.roundingMode = RoundingMode.UP
+    val formattedVal: Double = try {
+        df.format(this).toDouble()
+    } catch (e: Exception) {
+        0.0
+    }
+    return formattedVal
+}
+
 enum class State {
     LOADING, LOADED
 }
@@ -243,6 +254,19 @@ fun parseWinMultiplier(winMultiplier: Any?): Any {
         winMultiplier as Double
     } catch (e: Exception) {
         winMultiplier as Long
+    }
+}
+
+fun calculateWinnings(betStatus: String, winMultiplier: Any, betAmount: Long): Long {
+    return if (betStatus != "won") {
+        0
+    } else {
+        try {
+            winMultiplier as Long * betAmount
+        } catch (e: Exception) {
+            println("Multiplying ${(winMultiplier as Double)} by $betAmount = ${(winMultiplier * betAmount).roundToWhole()}")
+            (winMultiplier * betAmount).roundToWhole().toLong()
+        }
     }
 }
 

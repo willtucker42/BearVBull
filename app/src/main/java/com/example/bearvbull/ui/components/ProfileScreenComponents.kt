@@ -19,8 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -49,7 +52,7 @@ fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 24.sp,
-                color = Color.White
+                color = White
             )
             Spacer(modifier = Modifier.weight(1f))
         }
@@ -76,61 +79,86 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
             .background(NotSoDeepPurple)
             .padding(12.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "$${betInformation.tickerSymbol}",
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp,
-                color = Color.White
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(
-                    text = "${betInformation.initialBetAmount.formatBigLong()} @${betInformation.odds}",
+                    text = "$${betInformation.tickerSymbol}",
                     fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                    color = Color.White
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    color = White
                 )
-                Spacer(Modifier.width(4.dp))
-                Image(
-                    painter = painterResource(imageResource),
-                    contentDescription = betInformation.betSide,
-                    modifier = Modifier.size(10.dp),
-                    colorFilter = ColorFilter.tint(betColor)
-                )
-            }
-            Spacer(Modifier.weight(1f))
 
-            when (betInformation.betStatus) {
-                "active" -> {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "Pending",
+                        text = betInformation.initialBetAmount.formatBigLong(),
                         fontFamily = poppinsFontFamily,
-                        color = BetYellow,
-                        fontSize = 16.sp
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        color = White
                     )
+                    Spacer(Modifier.width(4.dp))
+                    Image(
+                        painter = painterResource(imageResource),
+                        contentDescription = betInformation.betSide,
+                        modifier = Modifier.size(10.dp),
+                        colorFilter = ColorFilter.tint(betColor)
+                    )
+                    if (betInformation.betStatus== "won") {
+                        Text(
+                            "x ${betInformation.winMultiplier}",
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                            color = White,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
                 }
-                "won" -> {
-                    CashAmountAndIcon(
-                        color = BetGreen,
-                        textSize = 14,
-                        imageSize = 14,
-                        cashAmount = betInformation.winnings
-                    )
-                }
-                "lost" -> {
-                    Text(
-                        text = "Bet lost",
-                        fontFamily = poppinsFontFamily,
-                        color = BetRed,
-                        fontSize = 16.sp
-                    )
+                Spacer(Modifier.weight(1f))
+
+                when (betInformation.betStatus) {
+                    "active" -> {
+                        Text(
+                            text = "Pending",
+                            fontFamily = poppinsFontFamily,
+                            color = BetYellow,
+                            fontSize = 16.sp
+                        )
+                    }
+                    "won" -> {
+                        CashAmountAndIcon(
+                            color = BetGreen,
+                            textSize = 14,
+                            imageSize = 14,
+                            cashAmount = betInformation.winnings
+                        )
+                    }
+                    "lost" -> {
+                        Text(
+                            text = "Bet lost",
+                            fontFamily = poppinsFontFamily,
+                            color = BetRed,
+                            fontSize = 16.sp
+                        )
+                    }
                 }
             }
+            Text(
+                "Date ${betInformation.timestamp.toDate()}",
+                color = White,
+                fontSize = 12.sp,
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.Normal
+            )
         }
     }
 }
@@ -139,7 +167,8 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
 fun ProfilePictureAndInfo(
     userAccountInformation: UserAccountInformation,
     editNameFunction: (String) -> Unit,
-    changeUserNameValue: ChangeUserNameValue
+    changeUserNameValue: ChangeUserNameValue,
+    badUserName: Boolean
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -155,7 +184,8 @@ fun ProfilePictureAndInfo(
         UserNameWithEditButton(
             editNameFunction = editNameFunction,
             userAccountInformation = userAccountInformation,
-            changeUserNameValue = changeUserNameValue
+            changeUserNameValue = changeUserNameValue,
+            badUserName = badUserName
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -171,13 +201,14 @@ fun ProfilePictureAndInfo(
 fun UserNameWithEditButton(
     editNameFunction: (String) -> Unit,
     userAccountInformation: UserAccountInformation,
-    changeUserNameValue: ChangeUserNameValue
+    changeUserNameValue: ChangeUserNameValue,
+    badUserName: Boolean
 
 ) {
     val originalUserNameText = userAccountInformation.userName
     var userNameText by rememberSaveable { mutableStateOf(userAccountInformation.userName) }
     var textFieldEnabled by remember { mutableStateOf(false) }
-    val buttonColor: Color by animateColorAsState(targetValue = if (textFieldEnabled && changeUserNameValue != CHANGED) Color.Green else Color.White)
+    val buttonColor: Color by animateColorAsState(targetValue = if (textFieldEnabled && changeUserNameValue != CHANGED) Color.Green else White)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -191,33 +222,36 @@ fun UserNameWithEditButton(
                 .padding(end = 8.dp)
                 .alpha(0f)
         )
-        if (textFieldEnabled && changeUserNameValue != CHANGED && changeUserNameValue != CHANGE_FAILED) {
+        if (textFieldEnabled && changeUserNameValue != CHANGED || changeUserNameValue == CHANGE_FAILED) {
             BasicTextField(
                 value = userNameText,
                 onValueChange = {
                     userNameText = it
                 },
                 modifier = Modifier.width(IntrinsicSize.Min),
-                textStyle = LocalTextStyle.current.copy(color = Color.White)
+                textStyle = LocalTextStyle.current.copy(color = White),
+                cursorBrush = SolidColor(White)
             )
         } else {
             Text(
                 text = userNameText,
                 fontFamily = poppinsFontFamily,
-                color = Color.White,
+                color = White,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
             )
         }
-        if (changeUserNameValue == CHANGED || changeUserNameValue == NOT_CHANGED) {
+        if (changeUserNameValue != CHANGE_IN_PROGRESS) {
             Image(
-                painter = if (textFieldEnabled && changeUserNameValue != CHANGED) painterResource(id = R.drawable.checkmark_icon) else painterResource(
+                painter = if (textFieldEnabled && changeUserNameValue != CHANGED || changeUserNameValue == CHANGE_FAILED) painterResource(
+                    id = R.drawable.checkmark_icon
+                ) else painterResource(
                     id = R.drawable.edit_icon
                 ),
                 contentDescription = "Edit name",
                 colorFilter = ColorFilter.tint(color = buttonColor),
                 modifier = Modifier
-                    .padding(start = 8.dp)
+                    .padding(start = 10.dp)
                     .size(14.dp)
                     .clickable {
                         if (textFieldEnabled) {
@@ -227,9 +261,7 @@ fun UserNameWithEditButton(
                     }
             )
         } else {
-            if (changeUserNameValue != CHANGE_FAILED) {
-                LoadingSpinner(color = Color.Gray, size = 18.dp)
-            }
+            LoadingSpinner(color = Color.Gray, size = 18.dp)
         }
         AnimatedVisibility(visible = (textFieldEnabled && changeUserNameValue != CHANGED)) {
             Image(
@@ -260,10 +292,10 @@ fun EloWithRankImage(userEloScore: Long) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Rank ${eloRank.ordinal}",
+                text = "Rank ${eloRank.ordinal}:",
                 fontFamily = poppinsFontFamily,
                 fontSize = 10.sp,
-                color = Color.White,
+                color = White,
                 fontStyle = FontStyle.Italic,
                 textAlign = TextAlign.Center
             )
@@ -271,7 +303,7 @@ fun EloWithRankImage(userEloScore: Long) {
                 text = eloRank.title,
                 fontFamily = poppinsFontFamily,
                 fontSize = 14.sp,
-                color = Color.White,
+                color = White,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold
             )
@@ -306,7 +338,7 @@ fun BalanceWithCashImage(userBalance: Long) {
             text = userBalance.formatBigLong(),
             fontFamily = poppinsFontFamily,
             fontSize = 12.sp,
-            color = Color.White
+            color = White
         )
     }
 }
@@ -334,7 +366,7 @@ fun ProfileTopBar() {
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Bold,
             fontSize = 22.sp,
-            color = Color.White
+            color = White
         )
         Spacer(modifier = Modifier.weight(1f))
         TopBarIcon(icon = R.drawable.settings_gear_icon, contentDesc = "Settings")

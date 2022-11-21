@@ -1,12 +1,13 @@
 package com.example.bearvbull.viewmodel
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.CountDownTimer
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bearvbull.R
 import com.example.bearvbull.data.ActiveMarket
@@ -22,19 +23,24 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query.Direction.*
+import com.google.firebase.firestore.Query.Direction.ASCENDING
+import com.google.firebase.firestore.Query.Direction.DESCENDING
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.math.roundToLong
 import kotlin.random.Random
 
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    val sp: SharedPreferences =
+        getApplication<Application>().getSharedPreferences("user", Context.MODE_PRIVATE)
 
     private var _changeUserNameValue = MutableStateFlow(NOT_CHANGED)
     val changeUserNameValue: StateFlow<ChangeUserNameValue> = _changeUserNameValue
@@ -53,7 +59,7 @@ class MainViewModel : ViewModel() {
     private var _betTxnStatus = MutableStateFlow(BetTransactionStatus.NOT_SENDING_BET)
     val betTxnStatus: StateFlow<BetTransactionStatus> = _betTxnStatus
 
-    var _signInStatus = MutableStateFlow(SignInStatus.NOT_SIGNED_IN)
+    private var _signInStatus = MutableStateFlow(SignInStatus.CHECKING_SHARED_PREFS)
     val signInStatus: StateFlow<SignInStatus> = _signInStatus
 
     private var _activeUser = MutableStateFlow(UserAccountInformation())
@@ -195,7 +201,7 @@ class MainViewModel : ViewModel() {
                 println("Error in onSelectedTickerChanged $e")
                 changingTicker = false
             }
-        checkIfAlreadyParticipatingInMarket(marketId)
+//        checkIfAlreadyParticipatingInMarket(marketId)
     }
 
 
@@ -226,9 +232,9 @@ class MainViewModel : ViewModel() {
                     Toast.makeText(c, "You have already bet in this market", Toast.LENGTH_LONG)
                         .show()
                     println("Already participating in market ${betInformation.marketId}")
-//                    checkIfSufficientFunds(betInformation, c) // REMOVE THIS LATER
-                    _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
-                    // ADD ABOVE LINE LATER
+                    checkIfSufficientFunds(betInformation, c) // REMOVE THIS LATER
+//                    _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
+//                     ADD ABOVE LINE LATER
                 } else {
                     /** User Bet flow continues... **/
                     checkIfSufficientFunds(betInformation, c)
@@ -540,15 +546,18 @@ class MainViewModel : ViewModel() {
                 userBetHistoryHolder.clear()
                 if (!result.isEmpty) {
                     result.forEach { betInfo ->
+                        val winMult = parseWinMultiplier(betInfo.get("win_multiplier"))
+                        val betAmount = betInfo.get("bet_amount") as Long
+                        val betStatus = betInfo.get("bet_status") as String
                         userBetHistoryHolder.add(
                             BetInformation(
                                 tickerSymbol = betInfo.get("ticker_symbol") as String,
-                                initialBetAmount = betInfo.get("bet_amount") as Long,
+                                initialBetAmount = betAmount,
                                 betSide = betInfo.get("bet_side") as String,
-                                winMultiplier = parseWinMultiplier(betInfo.get("win_multiplier")),
+                                winMultiplier = winMult,
                                 userId = betInfo.get("user_id") as String,
-                                betStatus = betInfo.get("bet_status") as String,
-                                winnings = 0,
+                                betStatus = betStatus,
+                                winnings = calculateWinnings(betStatus, winMult, betAmount) as Long,
                                 didWin = betInfo.get("did_win") as Boolean,
                                 odds = betInfo.get("odds") as Double,
                                 marketId = betInfo.get("market_id") as String,
@@ -636,7 +645,7 @@ class MainViewModel : ViewModel() {
                     println("User found. Signing in... ${account.email.toString()}")
                     updateUserFromDbDoc(doc.first())
                     updateSignInStatus(SignInStatus.SIGNED_IN)
-                    updateSharedPrefsWithUser(doc.first(), sp)
+                    updateSharedPrefsWithUser(doc.first() )
 //                    addNewUserToDb(account) // remove this later
                 } else {
                     addNewUserToDb(account)
@@ -717,7 +726,8 @@ class MainViewModel : ViewModel() {
         )
     }
 
-    private fun updateSharedPrefsWithUser(doc: DocumentSnapshot, sp: SharedPreferences) {
+    private fun updateSharedPrefsWithUser(doc: DocumentSnapshot) {
+        println("Adding user to shared prefs")
         val editor = sp.edit()
         editor.putString("user_id", doc.get("user_id") as String)
         editor.putString("user_name", doc.get("username") as String)
@@ -727,15 +737,32 @@ class MainViewModel : ViewModel() {
         editor.apply()
     }
 
-    fun updateUserFromSharedPrefs(sp: SharedPreferences) {
+    fun checkSharedPrefsForUserId() {
+        viewModelScope.launch {
+            delay(2000)
+
+
+            sp.getString("user_id", "").let {
+                if (it != "") {
+                    println("shared preferences has userid saved")
+                    updateUserFromSharedPrefs()
+                } else {
+                    println("Shared preferences does NOT have userid")
+                }
+            }
+        }
+    }
+
+    private fun updateUserFromSharedPrefs() {
+        println("updating user from shared prefs")
         _activeUser.value = UserAccountInformation(
-            userId = sp.getString("user_id", "")!!,
-            userName = sp.getString("user_name","")!!,
-            userBalance = sp.getLong("user_balance",0),
+            userId = this.sp.getString("user_id", "")!!,
+            userName = this.sp.getString("user_name", "")!!,
+            userBalance = this.sp.getLong("user_balance", 0),
             profileImage = _activeUser.value.profileImage,
             rank = _activeUser.value.rank,
-            email = sp.getString("email", "")!!,
-            eloScore = sp.getLong("elo_score", 0)
+            email = this.sp.getString("email", "")!!,
+            eloScore = this.sp.getLong("elo_score", 0)
         )
         _signInStatus.value = SignInStatus.SIGNED_IN
     }
