@@ -270,8 +270,7 @@ fun calculateWinnings(betStatus: String, winMultiplier: Any, betAmount: Long): L
     }
 }
 
-fun createBetDocumentName(userName: String, ticker: String): String =
-    "${userName.removeWhiteSpaces()}-$ticker-${getTodayDate()}"
+fun createBetDocumentName(userName: String, marketId: String): String = "$marketId-${userName}"
 
 
 fun String.removeWhiteSpaces(): String = buildString {

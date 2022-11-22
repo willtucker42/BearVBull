@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
@@ -72,6 +73,7 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
     val imageResource =
         if (betInformation.betSide == "Bear") Utility.DOWN_ARROW else Utility.UP_ARROW
     val betColor = if (betInformation.betSide == "Bear") BetRed else BetGreen
+    println("BET INFORMATION SIDE?? ${betInformation.betSide}")
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
@@ -79,86 +81,99 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
             .background(NotSoDeepPurple)
             .padding(12.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            Column(
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "$${betInformation.tickerSymbol}",
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp,
-                    color = White
-                )
-
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = betInformation.initialBetAmount.formatBigLong(),
+                        text = "$${betInformation.tickerSymbol}",
                         fontFamily = poppinsFontFamily,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
                         color = White
                     )
-                    Spacer(Modifier.width(4.dp))
-                    Image(
-                        painter = painterResource(imageResource),
-                        contentDescription = betInformation.betSide,
-                        modifier = Modifier.size(10.dp),
-                        colorFilter = ColorFilter.tint(betColor)
-                    )
-                    if (betInformation.betStatus== "won") {
-                        Text(
-                            "x ${betInformation.winMultiplier}",
-                            fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 14.sp,
-                            color = White,
-                            modifier = Modifier.padding(start = 4.dp)
-                        )
-                    }
-                }
-                Spacer(Modifier.weight(1f))
 
-                when (betInformation.betStatus) {
-                    "active" -> {
-                        Text(
-                            text = "Pending",
-                            fontFamily = poppinsFontFamily,
-                            color = BetYellow,
-                            fontSize = 16.sp
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Spacer(Modifier.width(4.dp))
+                        Image(
+                            painter = painterResource(imageResource),
+                            contentDescription = betInformation.betSide,
+                            modifier = Modifier.size(10.dp),
+                            colorFilter = ColorFilter.tint(betColor)
                         )
                     }
-                    "won" -> {
-                        CashAmountAndIcon(
-                            color = BetGreen,
-                            textSize = 14,
-                            imageSize = 14,
-                            cashAmount = betInformation.winnings
-                        )
-                    }
-                    "lost" -> {
-                        Text(
-                            text = "Bet lost",
-                            fontFamily = poppinsFontFamily,
-                            color = BetRed,
-                            fontSize = 16.sp
-                        )
-                    }
+//                    Spacer(Modifier.weight(1f))
+                }
+                Row {
+                    Text(
+                        "Bet amount: ",
+                        color = White,
+                        fontSize = 14.sp,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        betInformation.initialBetAmount.formatBigLong(),
+                        color = White,
+                        fontSize = 14.sp,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Normal
+                    )
+                }
+                if (betInformation.betStatus == "won") {
+                    Text(
+                        "Win Multiplier -> ${betInformation.winMultiplier}",
+                        color = White,
+                        fontSize = 14.sp,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Normal,
+                        fontStyle = FontStyle.Italic
+                    )
+                }
+                Text(
+                    "Date ${betInformation.timestamp.toDate()}",
+                    color = Gray,
+                    fontSize = 10.sp,
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Normal
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            when (betInformation.betStatus) {
+                "active" -> {
+                    Text(
+                        text = "Pending",
+                        fontFamily = poppinsFontFamily,
+                        color = BetYellow,
+                        fontSize = 16.sp
+                    )
+                }
+                "won" -> {
+                    CashAmountAndIcon(
+                        color = BetGreen,
+                        textSize = 14,
+                        imageSize = 14,
+                        cashAmount = betInformation.winnings
+                    )
+                }
+                "lost" -> {
+                    Text(
+                        text = "Bet lost",
+                        fontFamily = poppinsFontFamily,
+                        color = BetRed,
+                        fontSize = 16.sp
+                    )
                 }
             }
-            Text(
-                "Date ${betInformation.timestamp.toDate()}",
-                color = White,
-                fontSize = 12.sp,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Normal
-            )
         }
     }
 }
