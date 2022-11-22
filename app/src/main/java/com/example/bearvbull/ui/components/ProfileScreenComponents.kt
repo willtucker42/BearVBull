@@ -71,9 +71,8 @@ fun ProfileBetHistoryContainer(viewModel: MainViewModel) {
 @Composable
 fun ProfileBetHistoryRow(betInformation: BetInformation) {
     val imageResource =
-        if (betInformation.betSide == "Bear") Utility.DOWN_ARROW else Utility.UP_ARROW
-    val betColor = if (betInformation.betSide == "Bear") BetRed else BetGreen
-    println("BET INFORMATION SIDE?? ${betInformation.betSide}")
+        if (betInformation.betSide == "BEAR") Utility.DOWN_ARROW else Utility.UP_ARROW
+    val betColor = if (betInformation.betSide == "BEAR") BetRed else BetGreen
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
