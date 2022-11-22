@@ -15,6 +15,7 @@ import com.example.bearvbull.data.ActiveMarkets
 import com.example.bearvbull.data.BetInformation
 import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.data.users.UserAccountInformation
+import com.example.bearvbull.interfaces.RandomInterface
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.ChangeUserNameValue.*
 import com.example.bearvbull.util.Utility.formatTime
@@ -37,7 +38,7 @@ import kotlin.math.roundToLong
 import kotlin.random.Random
 
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(application: Application) : AndroidViewModel(application), RandomInterface {
 
     val sp: SharedPreferences =
         getApplication<Application>().getSharedPreferences("user", Context.MODE_PRIVATE)
@@ -134,6 +135,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             launch { getMarketBookData() }
         }
         manualInitComplete = true
+        printSomething()
     }
 
     private suspend fun getActiveMarketData() {
@@ -326,7 +328,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             "did_win" to betInformation.didWin,
             "bet_id" to UUID.randomUUID()
         )
-        val docName = createBetDocumentName(activeUser.value.userName, betInformation.tickerSymbol)
+        val docName = createBetDocumentName(activeUser.value.userName, betInformation.marketId)
 
         /** User Bet flow ends... **/
         db.collection("all_user_bets")
@@ -501,7 +503,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             if (checkIfProperNavBarItemAndDelayIfNecessary(NavBarItems.BET_SCREEN)) continue
 //            println("getMarketBookData1, ticker: ${liveMarketDataFlow.value.ticker}")
             println("getting marketbook data of all markets")
-            delay(1000)
+            delay(3000)
             db.collection("all_user_bets")
                 .whereEqualTo("bet_status", "active")
                 .limit(ORDERBOOK_QUERY_LIMIT)
@@ -740,9 +742,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun checkSharedPrefsForUserId() {
         viewModelScope.launch {
             delay(2000)
-
-
-            sp.getString("user_id", "").let {
+             sp.getString("user_id", "").let {
                 if (it != "") {
                     println("shared preferences has userid saved")
                     updateUserFromSharedPrefs()
@@ -777,5 +777,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 _countDownTime.value = "00:00:00"
             }
         }.start()
+    }
+
+    override fun printSomething() {
+//        super.printSomething()
+        println("BearVBull")
     }
 }
