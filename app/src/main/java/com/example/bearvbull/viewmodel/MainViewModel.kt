@@ -216,37 +216,37 @@ class MainViewModel(application: Application) : AndroidViewModel(application), R
         println("Beginning User bet flow...")
         // first get the current user from database and check the balance
         /** User Bet flow starts... **/
-        checkIfAlreadyParticipatingInMarket(betInformation, contextForToast)
+        checkIfSufficientFunds(betInformation, contextForToast)
     }
 
-    private fun checkIfAlreadyParticipatingInMarket(betInformation: BetInformation, c: Context) {
-        println("Checking if user is already participating in market...")
-        db.collection("all_user_bets")
-            .whereEqualTo("market_id", betInformation.marketId)
-            .whereEqualTo("user_id", activeUser.value.userId)
-            .get()
-            .addOnSuccessListener { marketsDoc ->
-                if (marketsDoc.size() > 0) {
-                    marketsDoc.forEach { doc ->
-                        addMarketToMap(betInformation.marketId, doc)
-                    }
-                    // already participating
-                    Toast.makeText(c, "You have already bet in this market", Toast.LENGTH_LONG)
-                        .show()
-                    println("Already participating in market ${betInformation.marketId}")
-                    checkIfSufficientFunds(betInformation, c) // REMOVE THIS LATER
-//                    _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
-//                     ADD ABOVE LINE LATER
-                } else {
-                    /** User Bet flow continues... **/
-                    checkIfSufficientFunds(betInformation, c)
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("MainViewModel.kt", "Error checking if in market $e")
-                _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
-            }
-    }
+//    private fun checkIfAlreadyParticipatingInMarket(betInformation: BetInformation, c: Context) {
+//        println("Checking if user is already participating in market...")
+//        db.collection("all_user_bets")
+//            .whereEqualTo("market_id", betInformation.marketId)
+//            .whereEqualTo("user_id", activeUser.value.userId)
+//            .get()
+//            .addOnSuccessListener { marketsDoc ->
+//                if (marketsDoc.size() > 0) {
+//                    marketsDoc.forEach { doc ->
+//                        addMarketToMap(betInformation.marketId, doc)
+//                    }
+//                    // already participating
+//                    Toast.makeText(c, "You have already bet in this market", Toast.LENGTH_LONG)
+//                        .show()
+//                    println("Already participating in market ${betInformation.marketId}")
+//                    checkIfSufficientFunds(betInformation, c) // REMOVE THIS LATER
+////                    _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
+////                     ADD ABOVE LINE LATER
+//                } else {
+//                    /** User Bet flow continues... **/
+//                    checkIfSufficientFunds(betInformation, c)
+//                }
+//            }
+//            .addOnFailureListener { e ->
+//                Log.e("MainViewModel.kt", "Error checking if in market $e")
+//                _betTxnStatus.value = BetTransactionStatus.NOT_SENDING_BET
+//            }
+//    }
 
     private fun checkIfAlreadyParticipatingInMarket(marketId: String) {
         db.collection("all_user_bets")
@@ -386,6 +386,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), R
             .addOnSuccessListener { mDoc ->
                 /** This for loop adds the markets to the list of markets for the dropdown */
                 mDoc.forEach { doc ->
+                    println("The market is ${doc.get("market_id")}")
 //                    println("thedoc ${doc.id} => ${doc.data}")
                     activeMarketsHolder.activeMarkets.add(
                         ActiveMarket(

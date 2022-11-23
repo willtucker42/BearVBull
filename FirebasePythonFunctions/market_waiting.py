@@ -63,6 +63,7 @@ def updateUserBets(mkt_id):
     for bet in bets:
         bet_dict = bet.to_dict()
         bear_or_bull = bet_dict["bet_side"]
+        print("Bet amount:", bet_dict["bet_amount"], ". Bet ticker: ", bet_dict["ticker_symbol"])
         if bear_or_bull == "BEAR":
             print("updating bet bear")
             batch.update(bet.reference, {u'win_multiplier': bear_bull_mult_pair[0]})

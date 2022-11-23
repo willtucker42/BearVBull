@@ -1,3 +1,4 @@
+import firebase_admin
 import yfinance as yf
 import datetime
 from firebase_admin import credentials
@@ -7,6 +8,7 @@ import create_new_market as cnm
 # Use a service account.
 cred = credentials.Certificate('./bearvbull_service_account_key.json')
 
+# app = firebase_admin.initialize_app(cred)
 app = cnm.app
 
 db = firestore.client()
@@ -75,7 +77,7 @@ def update(open_color, ticker):
             all_user_bet_batch = db.batch()
             i = 0
 
-        user_winnings_dict[bet_dict['email']] = winnings
+        user_winnings_dict[bet_dict['user_id']] = winnings
     all_user_bet_batch.commit()
     updateUserAccounts(user_winnings_dict=user_winnings_dict)
 
@@ -128,7 +130,7 @@ def getWaitingMarkets():
     for market in active_markets:
         market_dict = market.to_dict()
         ticker = market_dict['ticker']
-        print(ticker)
+        print("Waiting ticker: ", ticker)
         tickers.append(ticker)
         market.reference.update({u'bet_status': 'finished'})
     return tickers
@@ -149,6 +151,7 @@ def isTodayAValidStockMarketDay():
 # First update the existing markets, bets
 for tikr in getWaitingMarkets():
     getTodaysOpen(tikr)
+cnm.createNewMarkets()
 
 # Then add the new markets for the day
 # for new_market in new_market_tickers:

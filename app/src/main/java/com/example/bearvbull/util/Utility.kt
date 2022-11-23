@@ -39,6 +39,71 @@ object Utility {
 
 }
 
+val characterList = listOf(
+    'a',
+    'b',
+    'c',
+    'd',
+    'e',
+    'f',
+    'g',
+    'h',
+    'i',
+    'j',
+    'k',
+    'l',
+    'm',
+    'n',
+    'o',
+    'p',
+    'q',
+    'r',
+    's',
+    't',
+    'u',
+    'v',
+    'w',
+    'x',
+    'y',
+    'z',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9'
+)
+
 val TIMEZONE_ET: ZoneId = ZoneId.of("America/New_York")
 
 enum class BetSide(val bearOrBull: String) {
@@ -270,7 +335,8 @@ fun calculateWinnings(betStatus: String, winMultiplier: Any, betAmount: Long): L
     }
 }
 
-fun createBetDocumentName(userName: String, marketId: String): String = "$marketId-${userName}"
+fun createBetDocumentName(userName: String, marketId: String): String =
+    "-$marketId-${userName}${createRandom8DigitString()}"
 
 
 fun String.removeWhiteSpaces(): String = buildString {
@@ -278,6 +344,16 @@ fun String.removeWhiteSpaces(): String = buildString {
         if (c != ' ') {
             append(c)
         }
+    }
+}
+
+fun createRandom8DigitString(): String {
+    return buildString {
+        append("~")
+        for (i in 0..6) {
+            append(characterList.random())
+        }
+        append("~")
     }
 }
 

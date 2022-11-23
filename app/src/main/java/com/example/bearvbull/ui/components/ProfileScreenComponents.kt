@@ -139,7 +139,7 @@ fun ProfileBetHistoryRow(betInformation: BetInformation) {
                     )
                 }
                 Text(
-                    "Date ${betInformation.timestamp.toDate()}",
+                    "${betInformation.timestamp.toDate()}",
                     color = Gray,
                     fontSize = 10.sp,
                     fontFamily = poppinsFontFamily,

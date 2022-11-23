@@ -37,5 +37,7 @@ def createNewMarket(ticker):
     })
 
 
-for market in new_market_tickers:
-    createNewMarket(market)
+def createNewMarkets():
+    print("Creating new markets")
+    for market in new_market_tickers:
+        createNewMarket(market)
