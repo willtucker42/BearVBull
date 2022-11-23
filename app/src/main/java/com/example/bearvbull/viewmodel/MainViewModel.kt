@@ -749,6 +749,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), R
                     updateUserFromSharedPrefs()
                 } else {
                     println("Shared preferences does NOT have userid")
+                    _signInStatus.value = SignInStatus.NOT_SIGNED_IN
                 }
             }
         }

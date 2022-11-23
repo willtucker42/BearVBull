@@ -167,15 +167,23 @@ fun BearVBullTitle() {
 }
 
 @Composable
-fun TopBarIcon(icon: Int, contentDesc: String = "Profile") {
+fun TopBarIcon(
+    icon: Int,
+    contentDesc: String = "Profile",
+    clickFunction: @Composable () -> Unit = {}
+) {
+    val openComposable = remember { mutableStateOf(false) }
     Image(
         painter = painterResource(id = icon),
         contentDescription = contentDesc,
         modifier = Modifier
             .size(24.dp)
-            .clickable { },
-        colorFilter = ColorFilter.tint(color = Color.White)
+            .clickable { openComposable.value = !openComposable.value },
+        colorFilter = ColorFilter.tint(color = Color.White),
     )
+    if (openComposable.value) {
+        clickFunction()
+    }
 }
 
 @Composable
@@ -350,6 +358,37 @@ fun CashAmountAndIcon(
             fontWeight = FontWeight.Normal,
             fontSize = textSize.sp,
             color = color
+        )
+    }
+}
+
+@Composable
+fun LogoutDialog() {
+    val openDialog = remember { mutableStateOf(true) }
+
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = { openDialog.value = false },
+            title = { Text("Sign out") },
+            buttons = {
+                Row(
+                    modifier = Modifier.padding(all = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { openDialog.value = false }
+                    ) {
+                        Text("Dismiss")
+                    }
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { openDialog.value = false }
+                    ) {
+                        Text("Dismiss")
+                    }
+                }
+            }
         )
     }
 }

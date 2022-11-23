@@ -366,13 +366,10 @@ fun ProfileTopBar() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         //Invisible icon to make for proper row spacing
-        Image(
-            painter = painterResource(id = R.drawable.settings_gear_icon),
-            contentDescription = "",
-            modifier = Modifier
-                .size(24.dp)
-                .focusable(false)
-                .alpha(0f)
+        TopBarIcon(
+            icon = R.drawable.sign_out_icon,
+            contentDesc = "Sign out button",
+            clickFunction = { LogoutDialog() }
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
@@ -386,3 +383,4 @@ fun ProfileTopBar() {
         TopBarIcon(icon = R.drawable.settings_gear_icon, contentDesc = "Settings")
     }
 }
+
