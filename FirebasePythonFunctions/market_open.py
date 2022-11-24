@@ -27,16 +27,14 @@ def getTodaysOpen(ticker):
     except:
         print("Error getting ticker info")
         return
-
+    print('todays market open: ' + str(todaysMarketOpen))
+    print('previous market open: ' + str(previousMarketClose))
     if todaysMarketOpen >= previousMarketClose:
         update('green', ticker)
     elif todaysMarketOpen < previousMarketClose:
         update('red', ticker)
     else:
         print('error1')
-
-    print('todays market open: ' + str(todaysMarketOpen))
-    print('previous market open: ' + str(previousMarketClose))
 
 
 def update(open_color, ticker):

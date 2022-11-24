@@ -33,7 +33,7 @@ fun ProfileScreen(viewModel: MainViewModel) {
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ProfileTopBar()
+            ProfileTopBar(viewModel = viewModel)
             ProfilePictureAndInfo(
                 userAccountInformation = activeUser.value,
                 editNameFunction = { newUserName: String ->

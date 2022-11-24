@@ -20,6 +20,7 @@ import com.example.bearvbull.util.*
 import com.example.bearvbull.util.ChangeUserNameValue.*
 import com.example.bearvbull.util.Utility.formatTime
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -38,9 +39,12 @@ import kotlin.math.roundToLong
 import kotlin.random.Random
 
 
-class MainViewModel(application: Application) : AndroidViewModel(application), RandomInterface {
+class MainViewModel(application: Application) :
+    AndroidViewModel(application), RandomInterface {
 
-    val sp: SharedPreferences =
+    var googleSignInClient: GoogleSignInClient? = null
+
+    private val sp: SharedPreferences =
         getApplication<Application>().getSharedPreferences("user", Context.MODE_PRIVATE)
 
     private var _changeUserNameValue = MutableStateFlow(NOT_CHANGED)
@@ -76,6 +80,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), R
 
     // End nav bar
     private var countDownTimer: CountDownTimer? = null
+
 
     private var activeMarketsHolder: ActiveMarkets = ActiveMarkets()
     private var _activeMarkets = MutableStateFlow(ActiveMarkets())
@@ -123,7 +128,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application), R
     private val fakeBetHistory = mutableListOf<BetInformation>()
     var changingTicker = false
     var manualInitComplete = false
-
     fun manualInit() {
         println("MainViewModel init")
         getActiveMarkets()
@@ -504,7 +508,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application), R
             if (checkIfProperNavBarItemAndDelayIfNecessary(NavBarItems.BET_SCREEN)) continue
 //            println("getMarketBookData1, ticker: ${liveMarketDataFlow.value.ticker}")
             println("getting marketbook data of all markets")
-            delay(3000)
             db.collection("all_user_bets")
                 .whereEqualTo("bet_status", "active")
                 .limit(ORDERBOOK_QUERY_LIMIT)
@@ -536,6 +539,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), R
                 .addOnFailureListener { e ->
                     Log.e("MainViewModel.kt", "Error getting trade history: $e")
                 }
+            delay(3000)
         }
     }
 
@@ -648,7 +652,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application), R
                     println("User found. Signing in... ${account.email.toString()}")
                     updateUserFromDbDoc(doc.first())
                     updateSignInStatus(SignInStatus.SIGNED_IN)
-                    updateSharedPrefsWithUser(doc.first() )
+                    navToDiffScreen(NavBarItems.BET_SCREEN)
+                    updateSharedPrefsWithUser(doc.first())
 //                    addNewUserToDb(account) // remove this later
                 } else {
                     addNewUserToDb(account)
@@ -685,6 +690,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), R
                     eloScore = 100
                 )
                 updateSignInStatus(SignInStatus.SIGNED_IN)
+                navToDiffScreen(NavBarItems.BET_SCREEN)
             }
             .addOnFailureListener { e ->
                 updateSignInStatus(SignInStatus.NOT_SIGNED_IN)
@@ -743,7 +749,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), R
     fun checkSharedPrefsForUserId() {
         viewModelScope.launch {
             delay(2000)
-             sp.getString("user_id", "").let {
+            sp.getString("user_id", "").let {
                 if (it != "") {
                     println("shared preferences has userid saved")
                     updateUserFromSharedPrefs()
@@ -779,6 +785,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application), R
                 _countDownTime.value = "00:00:00"
             }
         }.start()
+    }
+
+    fun signOut(c: Context) {
+        sp.edit().clear().apply()
+        _signInStatus.value = SignInStatus.NOT_SIGNED_IN
+        activeMarketsHolder.activeMarkets.clear()
+        _activeMarkets.value.activeMarkets.clear()
+        orderBookIdHashMap.clear()
+        _orderBookMutableStateFlow.value = listOf()
+        orderBookHolder.clear()
+        userBetHistoryHolder.clear()
+        _userBetHistoryList.value = listOf()
+        _activeUser = MutableStateFlow(UserAccountInformation())
+        _selectedNavItem.value = NavBarItems.SIGN_IN_SCREEN
+
+        googleSignInClient?.signOut()?.addOnCompleteListener {
+            println("Sign out completed")
+        } ?: Log.e("MainViewModel", "Sign out fail")
+        c.cacheDir.deleteRecursively()
     }
 
     override fun printSomething() {

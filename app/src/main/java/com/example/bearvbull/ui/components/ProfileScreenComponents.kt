@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +42,7 @@ import com.example.bearvbull.util.Utility
 import com.example.bearvbull.util.formatBigLong
 import com.example.bearvbull.util.getEloRank
 import com.example.bearvbull.viewmodel.MainViewModel
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -358,7 +360,10 @@ fun BalanceWithCashImage(userBalance: Long) {
 }
 
 @Composable
-fun ProfileTopBar() {
+fun ProfileTopBar(
+    viewModel: MainViewModel
+) {
+    val c = LocalContext.current
     Row(
         Modifier
             .wrapContentWidth()
@@ -369,7 +374,7 @@ fun ProfileTopBar() {
         TopBarIcon(
             icon = R.drawable.sign_out_icon,
             contentDesc = "Sign out button",
-            clickFunction = { LogoutDialog() }
+            logoutFunctionality = { viewModel.signOut(c) }
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(

@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -79,7 +80,7 @@ fun BetScreenStatusTitle(
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.SemiBold,
             fontSize = 24.sp,
-            color = Color.White
+            color = White
         )
         Text(
             text = marketStatus,
@@ -114,7 +115,7 @@ fun BetScreenStatusTitle(
             ) {
                 Text(
                     text = if (activeMarketData.ticker == "") "..." else activeMarketData.ticker,
-                    color = Color.White
+                    color = White
                 )
                 Icon(imageVector = icon, contentDescription = null)
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
@@ -141,7 +142,7 @@ fun BetInfoImage(infoType: BetInfoType) {
         modifier = Modifier
             .padding(4.dp)
             .size(15.dp),
-        colorFilter = ColorFilter.tint(color = Color.White)
+        colorFilter = ColorFilter.tint(color = White)
     )
 }
 
@@ -151,7 +152,7 @@ fun BetInfoLabel(infoType: BetInfoType, betSide: BetSide, activeMarketData: Acti
         text = activeMarketData.createBetInfoLabel(infoType, betSide),
         fontFamily = interFontFamily,
         fontSize = 12.sp,
-        color = Color.White
+        color = White
     )
 }
 
@@ -160,7 +161,7 @@ fun BearVBullTitle() {
     Text(
         text = BEAR_V_BULL_TITLE,
         fontFamily = poppinsFontFamily,
-        color = Color.White,
+        color = White,
         fontWeight = FontWeight.Bold,
         fontSize = 22.sp
     )
@@ -170,7 +171,7 @@ fun BearVBullTitle() {
 fun TopBarIcon(
     icon: Int,
     contentDesc: String = "Profile",
-    clickFunction: @Composable () -> Unit = {}
+    logoutFunctionality: () -> Unit = {}
 ) {
     val openComposable = remember { mutableStateOf(false) }
     Image(
@@ -179,10 +180,37 @@ fun TopBarIcon(
         modifier = Modifier
             .size(24.dp)
             .clickable { openComposable.value = !openComposable.value },
-        colorFilter = ColorFilter.tint(color = Color.White),
+        colorFilter = ColorFilter.tint(color = White),
     )
     if (openComposable.value) {
-        clickFunction()
+        AlertDialog(
+            onDismissRequest = { openComposable.value = false },
+            title = { Text("Sign out?", fontFamily = poppinsFontFamily) },
+            buttons = {
+                Row(
+                    modifier = Modifier.padding(all = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        onClick = { openComposable.value = false },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = BetGreen),
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Text("Don't sign out", fontFamily = poppinsFontFamily, color = White)
+                    }
+                    Button(
+                        onClick = {
+                            openComposable.value = false
+                            logoutFunctionality()
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = BetRed),
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Text("Sign out", color = White, fontFamily = poppinsFontFamily)
+                    }
+                }
+            }
+        )
     }
 }
 
@@ -193,7 +221,7 @@ fun OrderBookLabel(text: String, modifier: Modifier) {
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.SemiBold,
         modifier = modifier,
-        color = Color.White
+        color = White
     )
 }
 
@@ -231,7 +259,7 @@ fun OrderBookEntryText(orderBookEntryText: String, modifier: Modifier) {
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
-        color = Color.White
+        color = White
     )
 }
 
@@ -314,7 +342,7 @@ fun BottomNavBarItem(
             painter = painterResource(id = navBarItem.icon),
             contentDescription = navBarItem.title,
             colorFilter = ColorFilter.tint(
-                if (selectedScreen == navBarItem) Color.White else Color.Gray
+                if (selectedScreen == navBarItem) White else Color.Gray
             ),
             modifier = Modifier.size(if (selectedScreen == navBarItem) 24.dp else 18.dp)
         )
@@ -322,7 +350,7 @@ fun BottomNavBarItem(
             navBarItem.title,
             fontFamily = poppinsFontFamily,
             fontSize = 12.sp,
-            color = if (selectedScreen == navBarItem) Color.White else Color.Gray
+            color = if (selectedScreen == navBarItem) White else Color.Gray
         )
     }
 }
@@ -358,37 +386,6 @@ fun CashAmountAndIcon(
             fontWeight = FontWeight.Normal,
             fontSize = textSize.sp,
             color = color
-        )
-    }
-}
-
-@Composable
-fun LogoutDialog() {
-    val openDialog = remember { mutableStateOf(true) }
-
-    if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = { openDialog.value = false },
-            title = { Text("Sign out") },
-            buttons = {
-                Row(
-                    modifier = Modifier.padding(all = 8.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { openDialog.value = false }
-                    ) {
-                        Text("Dismiss")
-                    }
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { openDialog.value = false }
-                    ) {
-                        Text("Dismiss")
-                    }
-                }
-            }
         )
     }
 }

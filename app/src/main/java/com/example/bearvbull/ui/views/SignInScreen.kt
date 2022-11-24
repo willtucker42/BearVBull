@@ -48,18 +48,13 @@ fun SignInScreen(mainViewModel: MainViewModel, gsc: GoogleSignInClient, sp: Shar
                     GoogleSignIn.getSignedInAccountFromIntent(intent)
 //                handleSignInResult(task)
                 task.addOnSuccessListener { googleAccount ->
+                    mainViewModel.googleSignInClient = gsc
                     println("Login SUCCESS ${googleAccount.email} ${googleAccount.id}")
                     mainViewModel._userId.value = googleAccount.id.toString()
                     mainViewModel.checkIfUserExistsInDb(googleAccount, sp)
                 }
                 task.addOnFailureListener { e ->
                     println("Login FAILURE $e")
-                }
-                task.addOnCanceledListener {
-                    println("addOnCanceledListener")
-                }
-                task.addOnCompleteListener {
-                    println("addoncompletelistener")
                 }
             } else {
                 println("result code: ${it.resultCode}")
@@ -104,7 +99,6 @@ fun SignInScreen(mainViewModel: MainViewModel, gsc: GoogleSignInClient, sp: Shar
                         Button(
                             onClick = {
                                       startForResult.launch(gsc.signInIntent)
-//                                startForResult.launch(googleSignInClient?.signInIntent)
                             },
                             modifier = Modifier
                                 .fillMaxWidth()

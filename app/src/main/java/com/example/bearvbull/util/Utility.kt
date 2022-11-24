@@ -204,7 +204,8 @@ enum class ChangeUserNameValue {
 enum class NavBarItems(val icon: Int, val title: String) {
     BET_SCREEN(R.drawable.bet_chips_icon, "Home"),
     RANKINGS_SCREEN(R.drawable.trophy_icon_2, "Rankings"),
-    PROFILE_SCREEN(R.drawable.profile_icon, "Profile")
+    PROFILE_SCREEN(R.drawable.profile_icon, "Profile"),
+    SIGN_IN_SCREEN(R.drawable.sign_out_icon, "Sign In Screen")
 }
 
 enum class PodiumRanks(val rank: String, val color: Color) {
