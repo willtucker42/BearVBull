@@ -89,7 +89,7 @@ def updateUserAccounts(user_winnings_dict):
 
     for user in user_winnings_dict.keys():
         print("Updating user: ", user, ". They won ", user_winnings_dict[user])
-        user_doc = db.collection(u'users').where(u'username', u'==', user).limit(1).get()
+        user_doc = db.collection(u'users').where(u'user_id', u'==', user).limit(1).get()
         for doc in user_doc:
             user_dict = doc.to_dict()
             og_balance_avail = user_dict['balance_available']
@@ -104,7 +104,8 @@ def updateUserAccounts(user_winnings_dict):
                 u'elo_score': (og_elo_score + marketPoints)
             })
             print("Their balance is:", round(og_balance_avail + user_winnings_dict[user]))
-            print("Their elo score is:", (og_elo_score + marketPoints))
+            print("Their OG elo score was ", og_elo_score, ". Market points to add is", marketPoints)
+            print("Their current elo score is:", (og_elo_score + marketPoints))
 
         i += 1
         if i == 499:

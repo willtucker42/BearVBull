@@ -171,7 +171,7 @@ fun BearVBullTitle() {
 fun TopBarIcon(
     icon: Int,
     contentDesc: String = "Profile",
-    logoutFunctionality: () -> Unit = {}
+    signOutFunctionality: () -> Unit = {}
 ) {
     val openComposable = remember { mutableStateOf(false) }
     Image(
@@ -201,7 +201,7 @@ fun TopBarIcon(
                     Button(
                         onClick = {
                             openComposable.value = false
-                            logoutFunctionality()
+                            signOutFunctionality()
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = BetRed),
                         modifier = Modifier.padding(4.dp)

@@ -5,21 +5,20 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.*
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
@@ -42,7 +41,6 @@ import com.example.bearvbull.util.Utility
 import com.example.bearvbull.util.formatBigLong
 import com.example.bearvbull.util.getEloRank
 import com.example.bearvbull.viewmodel.MainViewModel
-import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -374,7 +372,7 @@ fun ProfileTopBar(
         TopBarIcon(
             icon = R.drawable.sign_out_icon,
             contentDesc = "Sign out button",
-            logoutFunctionality = { viewModel.signOut(c) }
+            signOutFunctionality = { viewModel.signOut(c) }
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(

@@ -33,7 +33,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.math.roundToLong
 import kotlin.random.Random
@@ -634,9 +633,9 @@ class MainViewModel(application: Application) :
 
     fun navToDiffScreen(screen: NavBarItems) {
         when (screen) {
-            NavBarItems.BET_SCREEN -> {}
             NavBarItems.RANKINGS_SCREEN -> getUserRankingsList()
             NavBarItems.PROFILE_SCREEN -> getUserBetHistory()
+            else -> {}
         }
         _selectedNavItem.value = screen
     }
@@ -668,7 +667,7 @@ class MainViewModel(application: Application) :
         updateSignInStatus(SignInStatus.ADDING_NEW_USER)
         println("User not found... adding new user... ${account.email}")
         val user = hashMapOf(
-            "balance_available" to 1000000,
+            "balance_available" to 100000,
             "elo_score" to 100,
             "email" to account.email,
             "user_id" to account.id.toString(),
