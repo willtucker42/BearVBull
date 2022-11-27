@@ -1,6 +1,7 @@
 import firebase_admin
 import yfinance as yf
 import datetime
+from flask import Flask
 from firebase_admin import credentials
 from firebase_admin import firestore
 import create_new_market as cnm

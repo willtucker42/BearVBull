@@ -28,6 +28,7 @@ import com.example.bearvbull.data.ActiveMarkets
 import com.example.bearvbull.data.OrderBookEntry
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.*
+import com.example.bearvbull.util.NavBarItems.PROFILE_SCREEN
 import com.example.bearvbull.util.Utility.DOWN_ARROW
 import com.example.bearvbull.util.Utility.UP_ARROW
 import com.example.bearvbull.util.Utility.simpleDateFormat
@@ -164,6 +165,32 @@ fun BearVBullTitle() {
         color = White,
         fontWeight = FontWeight.Bold,
         fontSize = 22.sp
+    )
+}
+
+@Composable
+fun TopBarProfileIcon(viewModel: MainViewModel) {
+    Image(
+        painter = painterResource(id = R.drawable.profile_icon),
+        contentDescription = "Go to profile screen",
+        modifier = Modifier
+            .size(24.dp)
+            .clickable { viewModel.navToDiffScreen(PROFILE_SCREEN) },
+        colorFilter = ColorFilter.tint(color = White),
+    )
+}
+
+@Composable
+fun TopBarMoneyBagIcon(viewModel: MainViewModel) {
+    Image(
+        painter = painterResource(id = R.drawable.money_bag_icon),
+        contentDescription = "See available balance",
+        modifier = Modifier
+            .size(24.dp)
+            .clickable {
+
+            },
+        colorFilter = ColorFilter.tint(color = White)
     )
 }
 

@@ -49,9 +49,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Timestamp
-import kotlinx.coroutines.coroutineScope
 import java.util.*
-import kotlin.coroutines.coroutineContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -404,6 +402,7 @@ fun UserTotalBalance(balance: Double = 1123.44, viewModel: MainViewModel) {
 @Composable
 fun TopBar(
     txnStatus: BetTransactionStatus,
+    viewModel: MainViewModel
 ) {
     Row(
         modifier = Modifier
@@ -411,7 +410,7 @@ fun TopBar(
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        TopBarIcon(icon = R.drawable.profile_icon)
+        TopBarProfileIcon(viewModel = viewModel)
         Spacer(modifier = Modifier.weight(1.0f))
         BearVBullTitle()
         Spacer(modifier = Modifier.weight(1.0f))

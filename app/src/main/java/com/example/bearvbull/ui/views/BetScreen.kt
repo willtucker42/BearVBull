@@ -1,7 +1,10 @@
 package com.example.bearvbull.ui.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,7 +35,7 @@ fun BetScreen(
                 .background(DeepPurple)
         ) {
             Column {
-                TopBar(txnStatus = transactionStatus)
+                TopBar(txnStatus = transactionStatus, viewModel = viewModel)
                 BetScreenStatusTitle(
                     activeMarketsList = activeMarkets,
                     activeMarketData = activeMarketData,
