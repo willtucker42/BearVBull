@@ -150,13 +150,19 @@ def isTodayAValidStockMarketDay():
 
 
 # First, market waiting
-for market_id in market_waiting.updateMarketsAndGetMarketIds():
-    market_waiting.updateUserBets(market_id)
+HOUR = datetime.datetime.now().hour
+MINUTE = datetime.datetime.now().minute
+
+if HOUR == 23 and MINUTE == 59:
+    for market_id in market_waiting.updateMarketsAndGetMarketIds():
+        market_waiting.updateUserBets(market_id)
+
 
 # First update the existing markets, bets
-for tikr in getWaitingMarkets():
-    getTodaysOpen(tikr)
-cnm.createNewMarkets()
+if HOUR == 5 and MINUTE == 55:
+    for tikr in getWaitingMarkets():
+        getTodaysOpen(tikr)
+    cnm.createNewMarkets()
 
 # Then add the new markets for the day
 # for new_market in new_market_tickers:
