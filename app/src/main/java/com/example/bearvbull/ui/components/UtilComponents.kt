@@ -22,10 +22,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.bearvbull.R
 import com.example.bearvbull.data.ActiveMarket
 import com.example.bearvbull.data.ActiveMarkets
 import com.example.bearvbull.data.OrderBookEntry
+import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.util.*
 import com.example.bearvbull.util.NavBarItems.PROFILE_SCREEN
@@ -181,17 +183,22 @@ fun TopBarProfileIcon(viewModel: MainViewModel) {
 }
 
 @Composable
-fun TopBarMoneyBagIcon(viewModel: MainViewModel) {
+fun TopBarMoneyBagIcon(activeUser: UserAccountInformation) {
+    val openComposable = remember { mutableStateOf(false) }
     Image(
         painter = painterResource(id = R.drawable.money_bag_icon),
         contentDescription = "See available balance",
         modifier = Modifier
             .size(24.dp)
-            .clickable {
-
-            },
+            .clickable { openComposable.value = !openComposable.value },
         colorFilter = ColorFilter.tint(color = White)
     )
+    if (openComposable.value) {
+        Dialog(onDismissRequest = { openComposable.value = false }) {
+            Text("Available balance: ${activeUser.userBalance}",
+            color = White, fontFamily = poppinsFontFamily, fontWeight = FontWeight.Normal)
+        }
+    }
 }
 
 @Composable

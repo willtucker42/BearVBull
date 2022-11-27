@@ -5,6 +5,7 @@ from flask import Flask
 from firebase_admin import credentials
 from firebase_admin import firestore
 import create_new_market as cnm
+import market_waiting
 
 # Use a service account.
 cred = credentials.Certificate('./bearvbull_service_account_key.json')
@@ -147,6 +148,10 @@ def isTodayAValidStockMarketDay():
     # if todayIsAHoliday(): return false
     return True
 
+
+# First, market waiting
+for market_id in market_waiting.updateMarketsAndGetMarketIds():
+    market_waiting.updateUserBets(market_id)
 
 # First update the existing markets, bets
 for tikr in getWaitingMarkets():

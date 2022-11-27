@@ -38,6 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bearvbull.data.ActiveMarket
 import com.example.bearvbull.data.BetInformation
 import com.example.bearvbull.data.OrderBookEntry
+import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.components.*
 import com.example.bearvbull.ui.theme.*
 import com.example.bearvbull.ui.views.*
@@ -71,7 +72,7 @@ class MainActivity : ComponentActivity() {
                 val selectedScreen by viewModel.selectedNavItem.collectAsState()
                 val signInStatus by viewModel.signInStatus.collectAsState()
 
-                viewModel.checkSharedPrefsForUserId()
+
 
                 Box(
                     modifier = Modifier
@@ -402,7 +403,8 @@ fun UserTotalBalance(balance: Double = 1123.44, viewModel: MainViewModel) {
 @Composable
 fun TopBar(
     txnStatus: BetTransactionStatus,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    activeUser: UserAccountInformation
 ) {
     Row(
         modifier = Modifier
@@ -420,7 +422,7 @@ fun TopBar(
             if (txnStatus == BetTransactionStatus.SENDING_BET) {
                 LoadingSpinner(color = Color.LightGray, size = 15.dp)
             }
-            TopBarIcon(icon = R.drawable.money_bag_icon)
+            TopBarMoneyBagIcon(activeUser = activeUser)
         }
     }
 }

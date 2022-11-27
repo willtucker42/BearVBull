@@ -141,6 +141,10 @@ class MainViewModel(application: Application) :
         printSomething()
     }
 
+    init {
+       checkSharedPrefsForUserId()
+    }
+
     private suspend fun getActiveMarketData() {
         while (true) {
             if (checkIfProperNavBarItemAndDelayIfNecessary(NavBarItems.BET_SCREEN)) continue
@@ -171,7 +175,7 @@ class MainViewModel(application: Application) :
 
     private suspend fun checkIfProperNavBarItemAndDelayIfNecessary(betScreen: NavBarItems): Boolean {
         if (selectedNavItem.value != betScreen) {
-            println("Not on bet screen... waiting")
+//            println("Not on bet screen... waiting")
             delay(3000)
             return true
         }
@@ -478,7 +482,7 @@ class MainViewModel(application: Application) :
     private fun getUserRankingsList() {
         println("Getting user rankings list")
         db.collection("users")
-            .orderBy("elo_score", DESCENDING)
+            .orderBy("available_balance", DESCENDING)
             .get()
             .addOnSuccessListener { result ->
                 println("user rankings list result: ${result.size()}")
@@ -652,7 +656,6 @@ class MainViewModel(application: Application) :
                     updateUserFromDbDoc(doc.first())
                     updateSignInStatus(SignInStatus.SIGNED_IN)
                     navToDiffScreen(NavBarItems.BET_SCREEN)
-                    updateSharedPrefsWithUser(doc.first())
 //                    addNewUserToDb(account) // remove this later
                 } else {
                     addNewUserToDb(account)
@@ -732,10 +735,11 @@ class MainViewModel(application: Application) :
             email = doc.get("email") as String,
             eloScore = doc.get("elo_score") as Long
         )
+        updateSharedPrefsWithUser(doc)
     }
 
     private fun updateSharedPrefsWithUser(doc: DocumentSnapshot) {
-        println("Adding user to shared prefs")
+        println("Adding user to shared prefs. Balance is: ${doc.get("balance_available")}")
         val editor = sp.edit()
         editor.putString("user_id", doc.get("user_id") as String)
         editor.putString("user_name", doc.get("username") as String)
@@ -745,7 +749,7 @@ class MainViewModel(application: Application) :
         editor.apply()
     }
 
-    fun checkSharedPrefsForUserId() {
+    private fun checkSharedPrefsForUserId() {
         viewModelScope.launch {
             delay(2000)
             sp.getString("user_id", "").let {
@@ -761,7 +765,7 @@ class MainViewModel(application: Application) :
     }
 
     private fun updateUserFromSharedPrefs() {
-        println("updating user from shared prefs")
+        println("updating user from shared prefs. User balance is ${this.sp.getLong("user_balance", 0)}")
         _activeUser.value = UserAccountInformation(
             userId = this.sp.getString("user_id", "")!!,
             userName = this.sp.getString("user_name", "")!!,

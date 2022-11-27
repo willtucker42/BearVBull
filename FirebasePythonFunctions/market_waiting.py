@@ -5,7 +5,7 @@ from numpy import long
 
 cred = credentials.Certificate('./bearvbull_service_account_key.json')
 
-app = firebase_admin.initialize_app(cred)
+# app = firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
