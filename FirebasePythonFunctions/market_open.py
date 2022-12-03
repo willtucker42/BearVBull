@@ -6,6 +6,9 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 import create_new_market as cnm
 import market_waiting
+# from keep_alive import keep_alive
+import time
+from pushbullet import Pushbullet
 
 # Use a service account.
 cred = credentials.Certificate('./bearvbull_service_account_key.json')
@@ -15,9 +18,13 @@ app = cnm.app
 
 db = firestore.client()
 
+bullet_api_key = "o.W5t8DxH1YgD0Nam3RsM6FouHnQlrhhqv"
+
+pb = Pushbullet(bullet_api_key)
 
 # new_market_tickers = ["SPY", "TSLA", "MSFT", "AAPL", "GOOG"]
 # new_market_tickers = ["asfd", "54h54", "ffdg", "sdafg", "2435t", "gabababa"]
+# keep_alive()
 
 
 def getTodaysOpen(ticker):
@@ -149,20 +156,37 @@ def isTodayAValidStockMarketDay():
     return True
 
 
-# First, market waiting
-HOUR = datetime.datetime.now().hour
-MINUTE = datetime.datetime.now().minute
+while True:
+    # First, market waiting
+    time.sleep(0.25)
 
-if HOUR == 23 and MINUTE == 59:
-    for market_id in market_waiting.updateMarketsAndGetMarketIds():
-        market_waiting.updateUserBets(market_id)
+    dt = datetime.datetime
+    now = dt.now()
+    weekday = dt.today().weekday()
+    HOUR = now.hour
+    MINUTE = now.minute
+    SECOND = now.second
 
+    print("Hour:", HOUR, "Minutes:", MINUTE, "Seconds:", SECOND)
 
-# First update the existing markets, bets
-if HOUR == 5 and MINUTE == 55:
-    for tikr in getWaitingMarkets():
-        getTodaysOpen(tikr)
-    cnm.createNewMarkets()
+    if HOUR == 7 and MINUTE == 59 and weekday != 4 and weekday != 5:
+        # this shall not run on Friday or Saturday nights
+        pb.push_note("BearVbull", "Market waiting")
+        for market_id in market_waiting.updateMarketsAndGetMarketIds():
+            market_waiting.updateUserBets(market_id)
+        time.sleep(69)
+    else:
+        print("It's not market wait time yet")
+
+    # First update the existing markets, bets
+    if HOUR == 13 and MINUTE == 55 and weekday != 5 and weekday != 6:
+        pb.push_note("BearVbull", "market open!")
+        for tikr in getWaitingMarkets():
+            getTodaysOpen(tikr)
+        cnm.createNewMarkets()
+        time.sleep(69)
+    else:
+        print("It's not market open time yet")
 
 # Then add the new markets for the day
 # for new_market in new_market_tickers:
