@@ -482,7 +482,7 @@ class MainViewModel(application: Application) :
     private fun getUserRankingsList() {
         println("Getting user rankings list")
         db.collection("users")
-            .orderBy("available_balance", DESCENDING)
+            .orderBy("balance_available", DESCENDING)
             .get()
             .addOnSuccessListener { result ->
                 println("user rankings list result: ${result.size()}")

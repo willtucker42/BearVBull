@@ -17,12 +17,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
+import coil.size.Size
 import com.example.bearvbull.R.drawable.*
 import com.example.bearvbull.data.users.UserAccountInformation
 import com.example.bearvbull.ui.theme.*
@@ -82,6 +87,16 @@ fun RankingsUserRow(user: UserAccountInformation) {
             .background(ButtonOutline)
             .padding(12.dp)
     ) {
+        val profileImageUrl =
+        "https://avatars.dicebear.com/api/adventurer-neutral/${user.userId}.svg"
+
+        val painter = rememberAsyncImagePainter(
+            model = ImageRequest.Builder(LocalContext.current)
+                .decoderFactory(SvgDecoder.Factory())
+                .data(profileImageUrl)
+                .size(Size.ORIGINAL) // Set the target size to load the image at.
+                .build()
+        )
         Row(verticalAlignment = CenterVertically) {
             Row(
                 verticalAlignment = CenterVertically,
@@ -95,7 +110,7 @@ fun RankingsUserRow(user: UserAccountInformation) {
 
                 )
                 Image(
-                    painter = painterResource(green_wojak),
+                    painter = painter,
                     contentDescription = "${user.userName}, rank: ${user.rank}",
                     modifier = Modifier
                         .size(40.dp)
@@ -142,6 +157,16 @@ fun RankingsPodiumBox(
         2 -> PodiumBronze
         else -> Color.Black
     }
+    val profileImageUrl =
+        "https://avatars.dicebear.com/api/adventurer-neutral/${user.userId}.svg"
+    println("The async image to load is $profileImageUrl")
+    val painter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalContext.current)
+            .decoderFactory(SvgDecoder.Factory())
+            .data(profileImageUrl)
+            .size(Size.ORIGINAL) // Set the target size to load the image at.
+            .build()
+    )
     Box(
         Modifier.fillMaxHeight()
     ) {
@@ -156,7 +181,7 @@ fun RankingsPodiumBox(
                     .alpha(if (rank == 1) 1f else 0f)
             )
             Image(
-                painter = painterResource(profileImage),
+                painter = painter,
                 contentDescription = rank.toString(),
                 modifier = Modifier
                     .size(80.dp)
