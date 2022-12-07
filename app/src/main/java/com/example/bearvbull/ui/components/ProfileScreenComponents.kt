@@ -31,6 +31,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
+import coil.size.Size
 import com.example.bearvbull.R
 import com.example.bearvbull.data.BetInformation
 import com.example.bearvbull.data.users.UserAccountInformation
@@ -184,11 +188,21 @@ fun ProfilePictureAndInfo(
     changeUserNameValue: ChangeUserNameValue,
     badUserName: Boolean
 ) {
+    val profileImageUrl =
+        "https://avatars.dicebear.com/api/adventurer-neutral/${userAccountInformation.email}.svg"
+    println("The async image to load is $profileImageUrl")
+    val painter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalContext.current)
+            .decoderFactory(SvgDecoder.Factory())
+            .data(profileImageUrl)
+            .size(Size.ORIGINAL) // Set the target size to load the image at.
+            .build()
+    )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.green_wojak),
+            painter = painter,
             contentDescription = "User profile picture",
             Modifier
                 .clip(CircleShape)
