@@ -397,7 +397,7 @@ fun ProfileTopBar(
             color = White
         )
         Spacer(modifier = Modifier.weight(1f))
-        TopBarIcon(icon = R.drawable.settings_gear_icon, contentDesc = "Settings")
+        TopBarIcon(icon = R.drawable.settings_gear_icon, contentDesc = "Settings", visible = false)
     }
 }
 

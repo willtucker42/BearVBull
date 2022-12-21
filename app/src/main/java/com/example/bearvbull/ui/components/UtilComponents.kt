@@ -178,7 +178,7 @@ fun TopBarProfileIcon(viewModel: MainViewModel) {
         modifier = Modifier
             .size(24.dp)
             .clickable { viewModel.navToDiffScreen(PROFILE_SCREEN) },
-        colorFilter = ColorFilter.tint(color = White),
+        colorFilter = ColorFilter.tint(color = White)
     )
 }
 
@@ -205,7 +205,8 @@ fun TopBarMoneyBagIcon(activeUser: UserAccountInformation) {
 fun TopBarIcon(
     icon: Int,
     contentDesc: String = "Profile",
-    signOutFunctionality: () -> Unit = {}
+    signOutFunctionality: () -> Unit = {},
+    visible: Boolean = true
 ) {
     val openComposable = remember { mutableStateOf(false) }
     Image(
@@ -213,7 +214,8 @@ fun TopBarIcon(
         contentDescription = contentDesc,
         modifier = Modifier
             .size(24.dp)
-            .clickable { openComposable.value = !openComposable.value },
+            .clickable { openComposable.value = !openComposable.value }
+            .alpha((if (visible) 1.0 else 0.0).toFloat()),
         colorFilter = ColorFilter.tint(color = White),
     )
     if (openComposable.value) {
