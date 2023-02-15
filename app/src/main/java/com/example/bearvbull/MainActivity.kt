@@ -72,8 +72,6 @@ class MainActivity : ComponentActivity() {
                 val selectedScreen by viewModel.selectedNavItem.collectAsState()
                 val signInStatus by viewModel.signInStatus.collectAsState()
 
-
-
                 Box(
                     modifier = Modifier
                         .background(DeepPurple)

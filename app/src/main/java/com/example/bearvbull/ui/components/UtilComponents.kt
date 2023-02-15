@@ -195,8 +195,10 @@ fun TopBarMoneyBagIcon(activeUser: UserAccountInformation) {
     )
     if (openComposable.value) {
         Dialog(onDismissRequest = { openComposable.value = false }) {
-            Text("Available balance: ${activeUser.userBalance}",
-            color = White, fontFamily = poppinsFontFamily, fontWeight = FontWeight.Normal)
+            Text(
+                "Available balance: ${activeUser.userBalance}",
+                color = White, fontFamily = poppinsFontFamily, fontWeight = FontWeight.Normal
+            )
         }
     }
 }

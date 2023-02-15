@@ -674,8 +674,7 @@ class MainViewModel(application: Application) :
             "elo_score" to 100,
             "email" to account.email,
             "user_id" to account.id.toString(),
-            "username" to account.displayName,
-
+            "username" to account.displayName
             )
         db.collection("users")
             .document(account.email.toString())
